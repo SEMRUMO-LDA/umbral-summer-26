@@ -114,10 +114,14 @@
   .folha p strong{font-weight:700}
 
   .ecra{display:none}
-  .ecra.ativo{display:block;opacity:1;transition:opacity .22s ease}
-  /* Sai e entra pelo mesmo caminho, sem deslocar nada: o título e a frase
-     mudam no sítio em vez de saltarem. */
-  .ecra.a-esconder{opacity:0}
+  .ecra.ativo{display:block}
+  /* A caixa branca nunca desaparece. Esbate-se o cabeçalho e o que está
+     dentro da folha, nunca a folha: assim ela lê-se como a mesma caixa a
+     mudar de tamanho, e não como uma a sair e outra a entrar. */
+  .ecra .cabeca,
+  .ecra .folha > *{transition:opacity .2s ease}
+  .ecra.a-esconder .cabeca,
+  .ecra.a-esconder .folha > *{opacity:0}
   /* No jogo o ecrã estica-se e a grelha fica com o que sobra, para caber
      inteira sem scroll em qualquer telemóvel. */
   #ecra-jogo.ativo{display:flex;flex-direction:column;flex:1;min-height:0}
@@ -358,7 +362,7 @@
   <section class="ecra" id="ecra-email">
     <div class="cabeca">
       <h1>Duas borlas<br>de uma vez.</h1>
-      <p class="lead">20% já. E a hipótese de ganhar uma semana de férias — a verdadeira borla.</p>
+      <p class="lead">20% de desconto garantido. E a hipótese de ganhar uma semana de férias — a VERDADEIRA borla.</p>
     </div>
     <div class="folha">
       <label for="nome">Nome</label>
@@ -381,13 +385,13 @@
   <!-- ECRÃ 3 · CÓDIGO + EXTRA -->
   <section class="ecra" id="ecra-codigo">
     <div class="cabeca">
-      <h1>20% teus.<br>Já vão a caminho.</h1>
+      <h1>Os teus 20%<br>já vão a caminho.</h1>
       <p class="lead">O código chega ao teu email daqui a nada.</p>
     </div>
     <div class="folha">
       <div id="convite">
         <h2>Mas 20% é só o aquecimento.</h2>
-        <p>A verdadeira borla é uma <strong>semana de férias grátis</strong> num alojamento Umbral. Falta-te uma foto para entrares no sorteio.</p>
+        <p>A verdadeira borla é uma <strong>semana de férias grátis</strong> num dos alojamentos Umbral. Falta-te uma foto para entrares no sorteio.</p>
         <button class="btn" id="btn-quero-mais">Quero a verdadeira borla</button>
       </div>
 
@@ -410,7 +414,7 @@
         <button class="btn" id="btn-concorrer">Enviar e concorrer</button>
       </div>
 
-      <button class="btn secundario" id="btn-satisfeito">20% chega</button>
+      <button class="btn secundario" id="btn-satisfeito">Quero ir dar um mergulho</button>
     </div>
   </section>
 
@@ -987,12 +991,12 @@
   function abrirExtra(){
     $("convite").style.display = "none";
     $("caixa-extra").classList.add("aberta");
-    $("btn-satisfeito").textContent = "Afinal, 20% chega";
+    $("btn-satisfeito").textContent = "Afinal, vou dar um mergulho";
   }
   function fecharExtra(){
     $("convite").style.display = "";
     $("caixa-extra").classList.remove("aberta");
-    $("btn-satisfeito").textContent = "20% chega";
+    $("btn-satisfeito").textContent = "Quero ir dar um mergulho";
   }
   function finalSemFoto(){
     $("titulo-final").innerHTML = "Já tens o doce.<br>Agora só falta o descanso.";
