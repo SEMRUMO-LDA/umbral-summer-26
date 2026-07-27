@@ -15,7 +15,7 @@ O percurso tem quatro passos, cada um com um propósito:
 
 ## Correr localmente
 
-Não há build nem dependências: `umbral-summer.html` é um ficheiro único e
+Não há build nem dependências: `index.html` é um ficheiro único e
 autónomo, com o logótipo e o mosaico da marca embutidos em SVG.
 
 Abrir o ficheiro diretamente no browser funciona. Para testar no telemóvel,
