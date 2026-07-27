@@ -416,6 +416,10 @@
   var SUPABASE_KEY = "sb_publishable_Nvj8cVRfIzvm9U6nzc8_PQ_BFR4hJYl";
   var BUCKET = "fotos-campanha";
 
+  /* Cupao unico para toda a campanha: nao ha forma de gerar codigos
+     individuais no sistema de reservas. Muda-se aqui e muda em todo o lado. */
+  var CODIGO = "BORLA20";
+
   function pedir(caminho, opcoes){
     return fetch(SUPABASE_URL + caminho, opcoes).then(function(resposta){
       if (resposta.ok) return resposta;
@@ -771,12 +775,6 @@
     setTimeout(function(){ mostrar("ecra-email"); }, 1100);
   }
 
-  function gerarCodigo(){
-    var caracteres = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789", fim = "";
-    for (var i=0;i<4;i++) fim += caracteres[Math.floor(Math.random()*caracteres.length)];
-    return "BORLA20-" + fim;
-  }
-
   function emailValido(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v); }
 
   function guardarInscricao(){
@@ -801,7 +799,7 @@
     /* O id fica preso à tentativa, para que repetir depois de uma falha de rede
        não crie uma segunda inscrição da mesma pessoa. */
     if (!estado.id) estado.id = uuid();
-    if (!estado.codigo) estado.codigo = gerarCodigo();
+    estado.codigo = CODIGO;
     estado.nome = $("nome").value.trim();
     estado.email = email;
 
