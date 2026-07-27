@@ -120,7 +120,7 @@
 
   /* No jogo o herói encolhe para a grelha ter espaço. Nos outros ecrãs, onde
      não há grelha a disputar altura, fica como está. */
-  #ecra-jogo h1{font-size:clamp(25px,6.8vw,31px);margin-bottom:calc(8px + var(--ar,0px))}
+  #ecra-jogo h1{font-size:clamp(25px,6.8vw,31px);margin-bottom:calc(6px + var(--ar,0px) * .25)}
   #ecra-jogo .lead{font-size:14px;line-height:1.4}
   #ecra-jogo .cabeca{padding-bottom:calc(10px + var(--ar,0px))}
   #ecra-jogo .folha{padding-top:calc(12px + var(--ar,0px) * .4);padding-bottom:10px}
@@ -132,9 +132,11 @@
      Lista corrida em vez de pastilhas: as pastilhas comiam quase 100px de
      altura, que a grelha precisa mais do que elas. */
   .palavras{
-    display:grid;grid-template-columns:repeat(3,1fr);gap:4px 8px;
-    margin:0 0 10px;padding:0;list-style:none;text-align:center;
+    display:flex;flex-wrap:wrap;justify-content:center;gap:6px 16px;
+    margin:0 0 13px;padding:0;list-style:none;
   }
+  /* Item invisível que empurra o resto para a linha seguinte. */
+  .palavras .quebra{flex-basis:100%;height:0;margin:0;padding:0}
   .palavras li{
     font-size:14px;font-weight:600;color:var(--azul);
     transition:color .2s ease,opacity .2s ease;
@@ -420,14 +422,17 @@
 (function(){
   "use strict";
 
+  /* A ordem é só de apresentação: quatro curtas em cima, as duas restantes
+     em baixo. A colocação na grelha ordena por comprimento à parte. */
   var PALAVRAS = [
-    {mostrar:"Umbral",     procurar:"UMBRAL"},
+    {mostrar:"Férias",     procurar:"FERIAS"},
     {mostrar:"Algarve",    procurar:"ALGARVE"},
     {mostrar:"Alentejo",   procurar:"ALENTEJO"},
     {mostrar:"Fátima",     procurar:"FATIMA"},
     {mostrar:"Alojamento", procurar:"ALOJAMENTO"},
-    {mostrar:"Férias",     procurar:"FERIAS"}
+    {mostrar:"Umbral",     procurar:"UMBRAL"}
   ];
+  var QUEBRA_DEPOIS = 4;
   /* 10 colunas é fixo: ALOJAMENTO tem exatamente 10 letras. As linhas variam
      com o telemóvel — num ecrã comprido cabem mais e a grelha aproveita a
      altura; num mais baixo ficam 10 e a célula não encolhe. Qualquer valor
@@ -593,11 +598,17 @@
   function desenharPalavras(){
     var ul = $("lista-palavras");
     ul.innerHTML = "";
-    PALAVRAS.forEach(function(p){
+    PALAVRAS.forEach(function(p, i){
       var li = document.createElement("li");
       li.textContent = p.mostrar;
       if (estado.encontradas.indexOf(p.procurar) !== -1) li.className = "encontrada";
       ul.appendChild(li);
+      if (i === QUEBRA_DEPOIS - 1){
+        var quebra = document.createElement("li");
+        quebra.className = "quebra";
+        quebra.setAttribute("aria-hidden", "true");
+        ul.appendChild(quebra);
+      }
     });
     $("contador").textContent = estado.encontradas.length + " de " + PALAVRAS.length + " encontradas";
   }
