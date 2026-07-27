@@ -120,8 +120,10 @@
      dentro da folha, nunca a folha: assim ela lê-se como a mesma caixa a
      mudar de tamanho, e não como uma a sair e outra a entrar. */
   .ecra .cabeca,
+  .ecra .remate-final,
   .ecra .folha > *{transition:opacity .2s ease}
   .ecra.a-esconder .cabeca,
+  .ecra.a-esconder .remate-final,
   .ecra.a-esconder .folha > *{opacity:0}
   /* No jogo o ecrã estica-se e a grelha fica com o que sobra, para caber
      inteira sem scroll em qualquer telemóvel. */
@@ -269,19 +271,36 @@
   /* ---------- ecrã final: remate ----------
      Título a dominar, um sol a marcar o fim, o botão em destaque e o resto
      em nota de rodapé. */
-  #ecra-final .cabeca{text-align:center}
   #ecra-final h1{font-size:clamp(30px,8.6vw,40px)}
-  .app.fim .passos{justify-content:center}
 
-  /* O cartão do fim tem uma função só: mandar a pessoa ver os alojamentos.
-     O resto desce a notas. */
-  #ecra-final .folha{text-align:center}
-  #ecra-final .notas{text-align:left}
-  .etiqueta{
-    font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
-    color:var(--coral-forte);margin:0 0 8px;
+  /* O cartão do fim tem duas saídas: reservar e seguir. Alinhado à esquerda
+     como os outros ecrãs. */
+  .accao + .accao{margin-top:18px;padding-top:18px;border-top:1px solid var(--nevoa-forte)}
+  .accao h2{font-size:clamp(19px,5.4vw,23px);margin-bottom:12px}
+  .nota-sol{
+    margin:18px 0 0;padding-top:14px;border-top:1px solid var(--nevoa-forte);
+    font-size:12px;line-height:1.5;color:#5F6489;
   }
-  #ecra-final h2{margin-bottom:18px}
+  .nota-sol strong{font-weight:700;color:var(--azul)}
+  .amostra{
+    display:inline-block;width:11px;height:11px;border-radius:3px;
+    background:var(--coral);margin-right:6px;vertical-align:-1px;
+  }
+
+  /* O mote fecha a interação, já fora do cartão. */
+  .remate-final{padding:22px 4px 0;text-align:center}
+  .piada{
+    font-size:19px;font-weight:700;line-height:1.3;
+    color:var(--branco);margin:0 0 10px;
+  }
+  .mote{
+    font-family:var(--display);font-weight:900;
+    font-size:clamp(26px,7.8vw,34px);line-height:1;letter-spacing:-.02em;
+    text-transform:uppercase;color:var(--branco);margin:0;
+  }
+
+  /* Confetis: camada por cima de tudo, sem apanhar toques. */
+  .confetis{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50}
 
   .notas{margin-top:20px;padding-top:14px;border-top:1px solid var(--nevoa-forte)}
   .notas p{font-size:12px;line-height:1.5;color:#5F6489;margin:0 0 8px}
@@ -436,19 +455,23 @@
   <section class="ecra" id="ecra-final">
     <div class="cabeca">
       <h1 id="titulo-final">Já tens o doce.<br>Agora só falta o descanso.</h1>
-      <p class="lead" id="texto-final">Nem as mãos limpaste, pois não? O ecrã que o diga.</p>
+      <p class="lead" id="texto-final">O código dos 20% chega ao teu email daqui a nada.</p>
     </div>
     <div class="folha">
-      <p class="etiqueta">Próximo passo</p>
-      <h2>Escolhe onde<br>queres ficar.</h2>
-      <a class="btn" href="https://byumbral.com">Ver os alojamentos</a>
-
-      <div class="notas">
-        <p id="nota-sorteio" hidden><strong>A tua foto está no sorteio.</strong> O nome de quem ganha a semana sai nos nossos stories.</p>
-        <p><strong>O código dos 20%</strong> chega ao teu email daqui a nada.</p>
-        <p><i class="amostra" aria-hidden="true"></i><strong>Pantone Escaldão.</strong> Com creme é sempre melhor — está na hora de pôr protetor solar.</p>
-        <p>Segue <strong>@byumbral</strong>. É lá que saem os stories e as novidades.</p>
+      <div class="accao">
+        <h2>Escolhe onde queres ficar.</h2>
+        <a class="btn" href="https://byumbral.com">Ver alojamentos</a>
       </div>
+      <div class="accao">
+        <h2>Fica de olho.</h2>
+        <a class="btn secundario" href="https://instagram.com/byumbral">Seguir a Umbral</a>
+      </div>
+      <p class="nota-sol"><i class="amostra" aria-hidden="true"></i><strong>Pantone Escaldão.</strong> Com creme é sempre melhor — está na hora de pôr protetor solar.</p>
+    </div>
+
+    <div class="remate-final">
+      <p class="piada">Agora que já tens todas as borlas da Umbral, limpa o ecrã!</p>
+      <p class="mote">Fica mas não pares!</p>
     </div>
   </section>
 
@@ -587,7 +610,6 @@
     marcarPasso(idEcra);
     window.scrollTo(0,0);
     if (idEcra === "ecra-jogo") dimensionarGrelha();
-    document.querySelector(".app").classList.toggle("fim", idEcra === "ecra-final");
   }
 
   /* A troca tem três tempos: o conteúdo actual desvanece, o novo toma o lugar
@@ -612,7 +634,7 @@
       novo.classList.add("ativo", "a-esconder");
       window.scrollTo(0,0);
       if (idEcra === "ecra-jogo") dimensionarGrelha();
-      document.querySelector(".app").classList.toggle("fim", idEcra === "ecra-final");
+      if (idEcra === "ecra-final") confetis();
 
       var folhaNova = novo.querySelector(".folha");
       /* O ecrã do jogo dimensiona-se pelo flex; fixar-lhe uma altura estragava
@@ -1011,13 +1033,11 @@
   }
   function finalSemFoto(){
     $("titulo-final").innerHTML = "Já tens o doce.<br>Agora só falta o descanso.";
-    $("texto-final").textContent = "Nem as mãos limpaste, pois não? O ecrã que o diga.";
-    $("nota-sorteio").hidden = true;
+    $("texto-final").textContent = "O código dos 20% chega ao teu email daqui a nada.";
   }
   function finalComFoto(){
     $("titulo-final").innerHTML = "Foto recebida.<br>Estás no sorteio!";
-    $("texto-final").textContent = "Nem as mãos limpaste, pois não? O ecrã que o diga.";
-    $("nota-sorteio").hidden = false;
+    $("texto-final").innerHTML = "O nome de quem ganha sai nos nossos stories e será enviado por email.<br>O código dos 20% chega ao teu email daqui a nada.";
   }
 
   $("btn-quero-mais").addEventListener("click", function(){
@@ -1166,6 +1186,63 @@
   window.addEventListener("orientationchange", function(){ setTimeout(dimensionarGrelha, 120); });
 
   $("btn-pista").addEventListener("click", darPista);
+
+  /* ---------- confetis ----------
+     Marcam a chegada ao fim. Duram pouco, apagam-se sozinhos e não apanham
+     toques. Quem pediu menos movimento não os vê. */
+  function confetis(){
+    if (semAnimacao()) return;
+    var antiga = document.querySelector(".confetis");
+    if (antiga) antiga.remove();
+
+    var tela = document.createElement("canvas");
+    tela.className = "confetis";
+    tela.setAttribute("aria-hidden", "true");
+    document.body.appendChild(tela);
+
+    var ctx = tela.getContext("2d");
+    var dpr = window.devicePixelRatio || 1;
+    var L = window.innerWidth, A = window.innerHeight;
+    tela.width = Math.round(L * dpr);
+    tela.height = Math.round(A * dpr);
+    ctx.scale(dpr, dpr);
+
+    var cores = ["#EA525C", "#2A3176", "#FFFFFF", "#C0353F"];
+    var pecas = [];
+    for (var i = 0; i < 90; i++){
+      pecas.push({
+        x: Math.random() * L,
+        y: -20 - Math.random() * A * 0.7,
+        larg: 5 + Math.random() * 6,
+        alt: 8 + Math.random() * 8,
+        cor: cores[Math.floor(Math.random() * cores.length)],
+        vy: 2.4 + Math.random() * 3.4,
+        vx: -1.1 + Math.random() * 2.2,
+        rot: Math.random() * 6.3,
+        giro: -0.15 + Math.random() * 0.3
+      });
+    }
+
+    var inicio = Date.now(), DURACAO = 3200, ESVAI = 800;
+    function passo(){
+      var t = Date.now() - inicio;
+      if (t > DURACAO){ tela.remove(); return; }
+      ctx.clearRect(0, 0, L, A);
+      ctx.globalAlpha = t > DURACAO - ESVAI ? (DURACAO - t) / ESVAI : 1;
+      for (var i = 0; i < pecas.length; i++){
+        var p = pecas[i];
+        p.x += p.vx; p.y += p.vy; p.rot += p.giro;
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot);
+        ctx.fillStyle = p.cor;
+        ctx.fillRect(-p.larg / 2, -p.alt / 2, p.larg, p.alt);
+        ctx.restore();
+      }
+      requestAnimationFrame(passo);
+    }
+    requestAnimationFrame(passo);
+  }
 
   /* ---------- barra de testes ----------
      Só aparece em localhost, na rede local, ou com ?dev no endereço. Não vai
