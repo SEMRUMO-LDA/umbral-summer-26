@@ -90,8 +90,9 @@
   /* ---------- folha branca: o jogo ---------- */
   .folha{
     background:var(--branco);
-    /* De ponta a ponta: anula a margem lateral da .app. */
-    margin:0 -16px;border-radius:30px;
+    /* Quase de ponta a ponta: a .app tem 16px de padding lateral, e recuar
+       12 deixa 4px de coral a espreitar de cada lado. */
+    margin:0 -12px;border-radius:30px;
     padding:24px 18px 26px;color:var(--azul);
     /* Sombra interior, do Figma: X0 Y0, blur 8, spread 2, preto a 40%.
        Faz a folha ler-se como um recorte na camada coral, em vez de uma
