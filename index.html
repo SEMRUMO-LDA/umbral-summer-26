@@ -276,7 +276,14 @@
   /* O cartão do fim tem duas saídas: reservar e seguir. Alinhado à esquerda
      como os outros ecrãs. */
   .accao + .accao{margin-top:18px;padding-top:18px;border-top:1px solid var(--nevoa-forte)}
-  .accao h2{font-size:clamp(19px,5.4vw,23px);margin-bottom:12px}
+  /* Estes são rótulos dos botões, não títulos: em Montserrat Black e caixa
+     alta competiam com o headline coral e tornavam o cartão tão forte como
+     tudo o resto. */
+  .accao h2{
+    font-family:var(--corpo);font-weight:700;font-size:15px;
+    line-height:1.35;letter-spacing:0;text-transform:none;
+    color:var(--azul);margin:0 0 10px;
+  }
   .nota-sol{
     margin:18px 0 0;padding-top:14px;border-top:1px solid var(--nevoa-forte);
     font-size:12px;line-height:1.5;color:#5F6489;
@@ -293,9 +300,10 @@
     font-size:19px;font-weight:700;line-height:1.3;
     color:var(--branco);margin:0 0 10px;
   }
+  /* Mesmo tamanho da piada; o que o distingue é o Montserrat Black. */
   .mote{
-    font-family:var(--display);font-weight:900;
-    font-size:clamp(26px,7.8vw,34px);line-height:1;letter-spacing:-.02em;
+    font-family:var(--display);font-weight:900;font-size:19px;
+    line-height:1.25;letter-spacing:-.01em;
     text-transform:uppercase;color:var(--branco);margin:0;
   }
 
