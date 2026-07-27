@@ -200,17 +200,6 @@
   .celula.pista{box-shadow:inset 0 0 0 2px var(--turquesa);animation:pulsar 1s ease-in-out 3}
   @keyframes pulsar{0%,100%{transform:scale(1)}50%{transform:scale(1.14)}}
 
-  /* ---------- Pantone Escaldão · aviso solar ---------- */
-  .escaldao{background:var(--cinza);border-radius:16px;padding:16px;margin:18px 0 20px}
-  .escaldao-amostra{display:flex;align-items:center;gap:10px;margin-bottom:11px}
-  .escaldao-amostra i{width:34px;height:34px;border-radius:8px;background:var(--coral);display:block;flex:none}
-  .escaldao-amostra span{
-    font-size:9px;font-weight:700;letter-spacing:.14em;
-    text-transform:uppercase;color:var(--azul);line-height:1.4;
-  }
-  .escaldao p{margin:0;font-size:13px;line-height:1.4;color:var(--azul)}
-  .escaldao .forte{font-weight:700;margin-bottom:3px}
-
   /* ---------- botões ---------- */
   .btn{
     display:block;width:100%;min-height:54px;border:0;cursor:pointer;
@@ -271,12 +260,31 @@
   .previsualizacao{width:100%;border-radius:16px;margin-bottom:14px;display:none}
   input[type=file]{display:none}
 
-  /* ---------- açúcar ---------- */
-  .remate{background:var(--coral);border-radius:18px;margin:4px 0 18px}
-  .remate p{
-    margin:0;padding:26px 20px;color:var(--branco);
-    font-family:var(--display);font-weight:900;font-size:19px;
-    line-height:1.2;text-align:center;text-transform:uppercase;
+  /* ---------- ecrã final: remate ----------
+     Título a dominar, um sol a marcar o fim, o botão em destaque e o resto
+     em nota de rodapé. */
+  #ecra-final .cabeca{text-align:center}
+  #ecra-final h1{font-size:clamp(30px,8.6vw,40px)}
+  .app.fim .passos{justify-content:center}
+
+  .sol{display:block;width:clamp(76px,22vw,104px);height:auto;margin:2px auto 16px;color:var(--coral)}
+  .sol circle{fill:currentColor}
+  .sol g{stroke:currentColor}
+  .ecra.ativo .sol{animation:nascer .62s cubic-bezier(.34,1.56,.64,1) both}
+  @keyframes nascer{from{opacity:0;transform:scale(.45) rotate(-30deg)}to{opacity:1;transform:none}}
+
+  .remate{
+    font-family:var(--display);font-weight:900;font-size:16px;line-height:1.25;
+    text-align:center;text-transform:uppercase;color:var(--azul);margin:0 0 18px;
+  }
+
+  .notas{margin-top:20px;padding-top:14px;border-top:1px solid var(--nevoa-forte)}
+  .notas p{font-size:12px;line-height:1.5;color:#5F6489;margin:0 0 8px}
+  .notas p:last-child{margin:0}
+  .notas strong{font-weight:700;color:var(--azul)}
+  .notas .amostra{
+    display:inline-block;width:11px;height:11px;border-radius:3px;
+    background:var(--coral);margin-right:6px;vertical-align:-1px;
   }
 
   /* ---------- rodapé coral ---------- */
@@ -422,24 +430,20 @@
   <section class="ecra" id="ecra-final">
     <div class="cabeca">
       <h1 id="titulo-final">Já tens o doce.<br>Agora só falta o descanso.</h1>
-      <p class="lead" id="texto-final">O código dos 20% está a caminho do teu email. Espreita o spam — às vezes o correio também vai à praia.</p>
+      <p class="lead" id="texto-final">O código dos 20% vai a caminho do teu email.</p>
     </div>
     <div class="folha">
-      <div class="remate">
-        <p>Nem as mãos limpaste, pois não?<br>O ecrã que o diga.</p>
-      </div>
-
-      <div class="escaldao">
-        <div class="escaldao-amostra">
-          <i aria-hidden="true"></i>
-          <span>Pantone<br>Escaldão</span>
-        </div>
-        <p class="forte">Com creme é sempre melhor!</p>
-        <p>Está na hora de pôr protetor solar!</p>
-      </div>
-
-      <p>Segue <strong>@byumbral</strong> no Instagram. É lá que saem os stories e o nome de quem ganha a semana de férias.</p>
+      <svg class="sol" viewBox="0 0 120 120" aria-hidden="true">
+        <circle cx="60" cy="60" r="25"/>
+        <g stroke-width="7" stroke-linecap="round"><line x1="60" y1="25" x2="60" y2="13"/><line x1="77.5" y1="29.7" x2="83.5" y2="19.3"/><line x1="90.3" y1="42.5" x2="100.7" y2="36.5"/><line x1="95" y1="60" x2="107" y2="60"/><line x1="90.3" y1="77.5" x2="100.7" y2="83.5"/><line x1="77.5" y1="90.3" x2="83.5" y2="100.7"/><line x1="60" y1="95" x2="60" y2="107"/><line x1="42.5" y1="90.3" x2="36.5" y2="100.7"/><line x1="29.7" y1="77.5" x2="19.3" y2="83.5"/><line x1="25" y1="60" x2="13" y2="60"/><line x1="29.7" y1="42.5" x2="19.3" y2="36.5"/><line x1="42.5" y1="29.7" x2="36.5" y2="19.3"/></g>
+      </svg>
+      <p class="remate">Nem as mãos limpaste, pois não? O ecrã que o diga.</p>
       <a class="btn" href="https://byumbral.com">Ver os alojamentos</a>
+
+      <div class="notas">
+        <p><i class="amostra" aria-hidden="true"></i><strong>Pantone Escaldão.</strong> Com creme é sempre melhor — está na hora de pôr protetor solar.</p>
+        <p>Segue <strong>@byumbral</strong>. É lá que saem os stories e o nome de quem ganha a semana de férias.</p>
+      </div>
     </div>
   </section>
 
@@ -578,6 +582,7 @@
     marcarPasso(idEcra);
     window.scrollTo(0,0);
     if (idEcra === "ecra-jogo") dimensionarGrelha();
+    document.querySelector(".app").classList.toggle("fim", idEcra === "ecra-final");
   }
 
   /* A troca tem três tempos: o conteúdo actual desvanece, o novo toma o lugar
@@ -602,6 +607,7 @@
       novo.classList.add("ativo", "a-esconder");
       window.scrollTo(0,0);
       if (idEcra === "ecra-jogo") dimensionarGrelha();
+      document.querySelector(".app").classList.toggle("fim", idEcra === "ecra-final");
 
       var folhaNova = novo.querySelector(".folha");
       /* O ecrã do jogo dimensiona-se pelo flex; fixar-lhe uma altura estragava
@@ -1000,11 +1006,11 @@
   }
   function finalSemFoto(){
     $("titulo-final").innerHTML = "Já tens o doce.<br>Agora só falta o descanso.";
-    $("texto-final").textContent = "O código dos 20% está a caminho do teu email. Espreita o spam — às vezes o correio também vai à praia.";
+    $("texto-final").textContent = "O código dos 20% vai a caminho do teu email.";
   }
   function finalComFoto(){
     $("titulo-final").innerHTML = "Foto recebida.<br>Estás no sorteio!";
-    $("texto-final").textContent = "Se a tua for das boas, aparece nos nossos stories esta semana. O código dos 20% vai a caminho do email — espreita o spam.";
+    $("texto-final").textContent = "Se a tua for das boas, aparece nos nossos stories. O código dos 20% vai a caminho do email.";
   }
 
   $("btn-quero-mais").addEventListener("click", function(){
