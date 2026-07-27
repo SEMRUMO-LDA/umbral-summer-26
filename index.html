@@ -289,6 +289,23 @@
      do que uma grelha ilegível. */
 
 
+  /* Barra de testes: fixa, fora do fluxo, para não mexer no que se está a
+     testar. Ver barraDeTestes(). */
+  .barra-testes{
+    position:fixed;left:6px;right:6px;bottom:6px;z-index:99;
+    display:flex;flex-wrap:nowrap;justify-content:center;align-items:center;gap:3px;
+    padding:4px;border-radius:11px;
+    background:rgba(16,18,40,.88);
+  }
+  .barra-testes button{
+    border:0;cursor:pointer;border-radius:8px;
+    background:rgba(255,255,255,.14);color:#fff;
+    font-family:var(--corpo);font-size:10px;font-weight:600;white-space:nowrap;
+    padding:6px 7px;min-height:28px;
+  }
+  .barra-testes button:active{background:rgba(255,255,255,.3)}
+  .barra-testes .fechar{background:none;font-size:15px;padding:0 5px;opacity:.7;flex:none}
+
   @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -965,16 +982,34 @@
     });
   });
 
-  $("btn-quero-mais").addEventListener("click", function(){
+  /* Os quatro estados do fim do percurso, em funções, para a barra de testes
+     os poder abrir sem repetir o que os botões fazem. */
+  function abrirExtra(){
     $("convite").style.display = "none";
     $("caixa-extra").classList.add("aberta");
     $("btn-satisfeito").textContent = "Afinal, 20% chega";
+  }
+  function fecharExtra(){
+    $("convite").style.display = "";
+    $("caixa-extra").classList.remove("aberta");
+    $("btn-satisfeito").textContent = "20% chega";
+  }
+  function finalSemFoto(){
+    $("titulo-final").innerHTML = "Já tens o doce.<br>Agora só falta o descanso.";
+    $("texto-final").textContent = "O código dos 20% está a caminho do teu email. Espreita o spam — às vezes o correio também vai à praia.";
+  }
+  function finalComFoto(){
+    $("titulo-final").innerHTML = "Foto recebida.<br>Estás no sorteio!";
+    $("texto-final").textContent = "Se a tua for das boas, aparece nos nossos stories esta semana. O código dos 20% vai a caminho do email — espreita o spam.";
+  }
+
+  $("btn-quero-mais").addEventListener("click", function(){
+    abrirExtra();
     $("caixa-extra").scrollIntoView({behavior:"smooth", block:"start"});
   });
 
   $("btn-satisfeito").addEventListener("click", function(){
-    $("titulo-final").innerHTML = "Já tens o doce.<br>Agora só falta o descanso.";
-    $("texto-final").textContent = "O código dos 20% está a caminho do teu email. Espreita o spam — às vezes o correio também vai à praia.";
+    finalSemFoto();
     mostrar("ecra-final");
   });
 
@@ -1051,8 +1086,7 @@
       if (jaEstavaGuardado(falha)) return;
       throw falha;
     }).then(function(){
-      $("titulo-final").innerHTML = "Foto recebida.<br>Estás no sorteio!";
-      $("texto-final").textContent = "Se a tua for das boas, aparece nos nossos stories esta semana. O código dos 20% vai a caminho do email — espreita o spam.";
+      finalComFoto();
       mostrar("ecra-final");
     }).catch(function(falha){
       dizerErro(erro, "A foto não subiu. Vê a ligação e carrega outra vez.");
@@ -1115,10 +1149,49 @@
 
   $("btn-pista").addEventListener("click", darPista);
 
+  /* ---------- barra de testes ----------
+     Só aparece em localhost, na rede local, ou com ?dev no endereço. Não vai
+     ao ar para quem chega pelo QR. Nota: saltar para o ecrã 2 não contorna
+     nada de importante — o jogo nunca foi validado no servidor, e a regra de
+     uma inscrição por email vive no índice único da base de dados. */
+  function barraDeTestes(){
+    var local = /^(localhost|127\.|192\.168\.|10\.|172\.(1[6-9]|2\d|3[01])\.)/.test(location.hostname);
+    if (!local && location.search.indexOf("dev") === -1) return;
+
+    var destinos = [
+      ["Jogo",    function(){ iniciarJogo(); }],
+      ["Email",   function(){ mostrar("ecra-email"); }],
+      ["Código",  function(){ fecharExtra(); mostrar("ecra-codigo"); }],
+      ["Foto",    function(){ abrirExtra(); mostrar("ecra-codigo"); }],
+      ["Final",   function(){ finalSemFoto(); mostrar("ecra-final"); }],
+      ["Sorteio", function(){ finalComFoto(); mostrar("ecra-final"); }]
+    ];
+
+    var barra = document.createElement("div");
+    barra.className = "barra-testes";
+    destinos.forEach(function(d){
+      var b = document.createElement("button");
+      b.type = "button";
+      b.textContent = d[0];
+      b.addEventListener("click", d[1]);
+      barra.appendChild(b);
+    });
+    var fechar = document.createElement("button");
+    fechar.type = "button";
+    fechar.className = "fechar";
+    fechar.textContent = "×";
+    fechar.setAttribute("aria-label", "Esconder a barra de testes");
+    fechar.addEventListener("click", function(){ barra.remove(); });
+    barra.appendChild(fechar);
+
+    document.body.appendChild(barra);
+  }
+
   /* ---------- arranque ---------- */
   ligarGrelha();
   marcarPasso("ecra-jogo");
   iniciarJogo();
+  barraDeTestes();
 })();
 </script>
 </body>
