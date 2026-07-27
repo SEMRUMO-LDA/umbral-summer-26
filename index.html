@@ -84,7 +84,8 @@
   .passos i.on{width:26px;height:7px;border-radius:4px;opacity:1}
   h1{
     font-family:var(--display);font-weight:900;
-    font-size:clamp(31px,9vw,41px);line-height:.98;letter-spacing:-.028em;
+    font-size:clamp(31px,9vw,41px);line-height:1;letter-spacing:-.028em;
+    text-wrap:balance;
     margin:0 0 14px;text-transform:uppercase;color:var(--branco);
   }
   /* Inter Medium, como manda a marca. Sobre coral fica em 3,58:1 — abaixo do
@@ -234,6 +235,11 @@
     border-radius:14px;border:2px solid var(--nevoa-forte);background:var(--nevoa);
     color:var(--azul);margin-bottom:16px;
   }
+  .opcional{
+    font-weight:500;letter-spacing:.04em;text-transform:none;
+    color:#6B7099;margin-left:5px;
+  }
+  .ajuda-campo{font-size:12px;line-height:1.45;color:#5F6489;margin:-3px 0 9px}
   input::placeholder{color:#6B7099}
   input:focus{border-color:var(--azul);background:var(--branco);outline:none}
   .consentimento{display:flex;gap:12px;align-items:flex-start;margin-bottom:18px}
@@ -267,16 +273,15 @@
   #ecra-final h1{font-size:clamp(30px,8.6vw,40px)}
   .app.fim .passos{justify-content:center}
 
-  .sol{display:block;width:clamp(76px,22vw,104px);height:auto;margin:2px auto 16px;color:var(--coral)}
-  .sol circle{fill:currentColor}
-  .sol g{stroke:currentColor}
-  .ecra.ativo .sol{animation:nascer .62s cubic-bezier(.34,1.56,.64,1) both}
-  @keyframes nascer{from{opacity:0;transform:scale(.45) rotate(-30deg)}to{opacity:1;transform:none}}
-
-  .remate{
-    font-family:var(--display);font-weight:900;font-size:16px;line-height:1.25;
-    text-align:center;text-transform:uppercase;color:var(--azul);margin:0 0 18px;
+  /* O cartão do fim tem uma função só: mandar a pessoa ver os alojamentos.
+     O resto desce a notas. */
+  #ecra-final .folha{text-align:center}
+  #ecra-final .notas{text-align:left}
+  .etiqueta{
+    font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--coral-forte);margin:0 0 8px;
   }
+  #ecra-final h2{margin-bottom:18px}
 
   .notas{margin-top:20px;padding-top:14px;border-top:1px solid var(--nevoa-forte)}
   .notas p{font-size:12px;line-height:1.5;color:#5F6489;margin:0 0 8px}
@@ -393,7 +398,7 @@
   <!-- ECRÃ 3 · CÓDIGO + EXTRA -->
   <section class="ecra" id="ecra-codigo">
     <div class="cabeca">
-      <h1>Os teus 20%<br>já vão a caminho.</h1>
+      <h1>Os teus 20% já vão a caminho.</h1>
       <p class="lead">O código chega ao teu email daqui a nada.</p>
     </div>
     <div class="folha">
@@ -405,17 +410,18 @@
 
       <div class="caixa-extra" id="caixa-extra">
         <h2>Uma foto e estás dentro.</h2>
-        <p>Tira uma foto criativa com a tua Bola de Berlim na praia e deixa o teu Instagram. É a foto que <strong>garante a tua participação</strong> no sorteio. As melhores vão parar aos nossos stories.</p>
+        <p>Tira uma foto criativa com a tua Bola de Berlim na praia. É a foto que <strong>garante a tua participação</strong> no sorteio. As melhores vão parar aos nossos stories.</p>
         <img class="previsualizacao" id="previsualizacao" alt="Pré-visualização da tua foto">
         <input type="file" id="ficheiro" accept="image/*" capture="environment">
         <button class="btn secundario" id="btn-escolher" style="margin-bottom:16px">Escolher a foto</button>
 
-        <label for="instagram">O teu Instagram</label>
+        <label for="instagram">O teu Instagram <span class="opcional">opcional</span></label>
+        <p class="ajuda-campo">Só para te marcarmos, se a foto for parar aos stories. Sem ele concorres na mesma.</p>
         <input type="text" id="instagram" autocomplete="off" placeholder="@oteuinsta">
 
         <div class="consentimento">
           <input type="checkbox" id="consentimento-foto">
-          <label for="consentimento-foto" style="margin:0"><span>Autorizo a Umbral a publicar a minha foto e o meu @ nas redes sociais da marca.</span></label>
+          <label for="consentimento-foto" style="margin:0"><span>Autorizo a Umbral a publicar a minha foto — e o meu @, se o tiver deixado — nas redes sociais da marca.</span></label>
         </div>
 
         <p class="erro" id="erro-foto"></p>
@@ -430,19 +436,18 @@
   <section class="ecra" id="ecra-final">
     <div class="cabeca">
       <h1 id="titulo-final">Já tens o doce.<br>Agora só falta o descanso.</h1>
-      <p class="lead" id="texto-final">O código dos 20% vai a caminho do teu email.</p>
+      <p class="lead" id="texto-final">Nem as mãos limpaste, pois não? O ecrã que o diga.</p>
     </div>
     <div class="folha">
-      <svg class="sol" viewBox="0 0 120 120" aria-hidden="true">
-        <circle cx="60" cy="60" r="25"/>
-        <g stroke-width="7" stroke-linecap="round"><line x1="60" y1="25" x2="60" y2="13"/><line x1="77.5" y1="29.7" x2="83.5" y2="19.3"/><line x1="90.3" y1="42.5" x2="100.7" y2="36.5"/><line x1="95" y1="60" x2="107" y2="60"/><line x1="90.3" y1="77.5" x2="100.7" y2="83.5"/><line x1="77.5" y1="90.3" x2="83.5" y2="100.7"/><line x1="60" y1="95" x2="60" y2="107"/><line x1="42.5" y1="90.3" x2="36.5" y2="100.7"/><line x1="29.7" y1="77.5" x2="19.3" y2="83.5"/><line x1="25" y1="60" x2="13" y2="60"/><line x1="29.7" y1="42.5" x2="19.3" y2="36.5"/><line x1="42.5" y1="29.7" x2="36.5" y2="19.3"/></g>
-      </svg>
-      <p class="remate">Nem as mãos limpaste, pois não? O ecrã que o diga.</p>
+      <p class="etiqueta">Próximo passo</p>
+      <h2>Escolhe onde<br>queres ficar.</h2>
       <a class="btn" href="https://byumbral.com">Ver os alojamentos</a>
 
       <div class="notas">
+        <p id="nota-sorteio" hidden><strong>A tua foto está no sorteio.</strong> O nome de quem ganha a semana sai nos nossos stories.</p>
+        <p><strong>O código dos 20%</strong> chega ao teu email daqui a nada.</p>
         <p><i class="amostra" aria-hidden="true"></i><strong>Pantone Escaldão.</strong> Com creme é sempre melhor — está na hora de pôr protetor solar.</p>
-        <p>Segue <strong>@byumbral</strong>. É lá que saem os stories e o nome de quem ganha a semana de férias.</p>
+        <p>Segue <strong>@byumbral</strong>. É lá que saem os stories e as novidades.</p>
       </div>
     </div>
   </section>
@@ -1006,11 +1011,13 @@
   }
   function finalSemFoto(){
     $("titulo-final").innerHTML = "Já tens o doce.<br>Agora só falta o descanso.";
-    $("texto-final").textContent = "O código dos 20% vai a caminho do teu email.";
+    $("texto-final").textContent = "Nem as mãos limpaste, pois não? O ecrã que o diga.";
+    $("nota-sorteio").hidden = true;
   }
   function finalComFoto(){
     $("titulo-final").innerHTML = "Foto recebida.<br>Estás no sorteio!";
-    $("texto-final").textContent = "Se a tua for das boas, aparece nos nossos stories. O código dos 20% vai a caminho do email.";
+    $("texto-final").textContent = "Nem as mãos limpaste, pois não? O ecrã que o diga.";
+    $("nota-sorteio").hidden = false;
   }
 
   $("btn-quero-mais").addEventListener("click", function(){
@@ -1079,16 +1086,17 @@
     var handle = $("instagram").value.trim();
     var erro = $("erro-foto");
     if (!estado.foto) { dizerErro(erro, "Falta a foto com a bola de berlim."); return; }
-    if (!instagramValido(handle)) { dizerErro(erro, "Escreve o teu Instagram, por exemplo @byumbral."); $("instagram").focus(); return; }
+    /* Campo opcional: só se valida o que foi mesmo escrito. */
+    if (handle && !instagramValido(handle)) { dizerErro(erro, "Esse Instagram não parece bem escrito. Deixa em branco se preferires."); $("instagram").focus(); return; }
     if (!$("consentimento-foto").checked) { dizerErro(erro, "Precisamos da tua autorização para publicar a foto."); return; }
     dizerErro(erro, "");
-    estado.instagram = handle[0] === "@" ? handle : "@" + handle;
+    estado.instagram = handle ? (handle[0] === "@" ? handle : "@" + handle) : null;
 
     ocupar(botao, "A enviar a foto…");
     enviarFoto().then(function(caminho){
       return inserir("participacoes", {
         inscricao_id: estado.id,
-        instagram: estado.instagram,
+        instagram: estado.instagram || null,
         foto_caminho: caminho,
         consentimento_foto: true
       });
