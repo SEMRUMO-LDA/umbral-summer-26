@@ -123,17 +123,17 @@
   #ecra-jogo h1{font-size:clamp(25px,6.8vw,31px);margin-bottom:calc(8px + var(--ar,0px))}
   #ecra-jogo .lead{font-size:14px;line-height:1.4}
   #ecra-jogo .cabeca{padding-bottom:calc(10px + var(--ar,0px))}
-  #ecra-jogo .folha{padding-top:calc(12px + var(--ar,0px) * .4);padding-bottom:12px}
+  #ecra-jogo .folha{padding-top:calc(12px + var(--ar,0px) * .4);padding-bottom:10px}
   #ecra-jogo .dica,
-  #ecra-jogo .pista{margin-top:8px;min-height:28px}
+  #ecra-jogo .pista{margin-top:7px;min-height:22px}
   @keyframes entra{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
   /* ---------- palavras a encontrar ----------
      Lista corrida em vez de pastilhas: as pastilhas comiam quase 100px de
      altura, que a grelha precisa mais do que elas. */
   .palavras{
-    display:flex;flex-wrap:wrap;justify-content:center;gap:5px 16px;
-    margin:0 0 10px;padding:0;list-style:none;
+    display:grid;grid-template-columns:repeat(3,1fr);gap:4px 8px;
+    margin:0 0 10px;padding:0;list-style:none;text-align:center;
   }
   .palavras li{
     font-size:14px;font-weight:600;color:var(--azul);
@@ -168,13 +168,13 @@
      anular o tamanho e as margens declarados aqui. */
   .folha .dica{
     font-size:13px;font-weight:500;line-height:1.5;text-align:center;
-    color:#6B7099;margin:18px 0 0;min-height:44px;
+    color:#6B7099;margin:18px 0 0;min-height:22px;
   }
   .folha .dica[hidden]{display:none}
   .folha .dica.sugestao{font-style:italic;font-weight:600;color:var(--azul)}
   .folha .dica.vitoria{font-weight:600;color:var(--azul)}
   .pista{
-    display:block;margin:18px auto 0;min-height:44px;padding:0 8px;
+    display:block;margin:18px auto 0;min-height:22px;padding:0 8px;
     background:none;border:0;cursor:pointer;
     font-family:var(--corpo);font-size:13px;font-weight:600;
     color:var(--azul);text-decoration:underline;
@@ -262,7 +262,7 @@
   }
 
   /* ---------- rodapé coral ---------- */
-  .rodape{margin-top:auto;padding:calc(12px + var(--ar,0px) * .5) 4px 0}
+  .rodape{margin-top:auto;padding:9px 4px 0}
   .credito{
     font-size:12px;font-weight:500;color:var(--branco);
     margin:16px 0 0;text-align:center;
@@ -316,7 +316,7 @@
       <div class="zona-grelha">
         <div class="grelha" id="grelha" role="grid" aria-label="Grelha de letras"></div>
       </div>
-      <p class="dica" id="dica">Arrasta o dedo pelas letras — ou toca na primeira e na última.</p>
+      <p class="dica" id="dica">Arrasta ou toca na primeira e na última letra.</p>
       <button class="pista" id="btn-pista" hidden>Encalhado? Pede uma pista</button>
       <p class="oculto" id="anuncio" aria-live="polite"></p>
     </div>
@@ -627,7 +627,7 @@
     $("btn-pista").hidden = true;
     relogioDica = setTimeout(function(){
       if (estado.encontradas.length >= PALAVRAS.length) return;
-      dizerDica("Vale em todas as direções — incluindo na diagonal.", "sugestao");
+      dizerDica("Também vale na diagonal e ao contrário.", "sugestao");
     }, 30000);
     relogioPista = setTimeout(function(){
       if (estado.encontradas.length >= PALAVRAS.length) return;
@@ -801,7 +801,7 @@
     if (celula <= 0) return 10;
     /* A folga reservada impede a grelha de engolir a altura toda: sem ela a
        grelha crescia até ao limite e o cabeçalho ficava colado a si próprio. */
-    var FOLGA = 56;
+    var FOLGA = 88;
     var cabem = Math.floor((caixa.height - FOLGA + lacuna) / (celula + lacuna));
     return Math.max(10, Math.min(12, cabem));
   }
@@ -818,7 +818,7 @@
     desenharPalavras();
     $("cronometro").textContent = "0:00";
     $("anuncio").textContent = "";
-    dizerDica("Arrasta o dedo pelas letras — ou toca na primeira e na última.", "");
+    dizerDica("Arrasta ou toca na primeira e na última letra.", "");
     agendarDica();
     mostrar("ecra-jogo");
     dimensionarGrelha();
@@ -1023,7 +1023,7 @@
     var r = medirEEscrever();
     if (!r) return;
     if (r.sobra > 12){
-      raiz.style.setProperty("--ar", Math.floor(r.sobra / 5) + "px");
+      raiz.style.setProperty("--ar", Math.floor(r.sobra / 4.4) + "px");
       medirEEscrever();
     }
   }
