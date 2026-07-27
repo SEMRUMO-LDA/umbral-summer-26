@@ -62,22 +62,22 @@
   }
 
   /* ---------- logo ---------- */
-  .topo{display:flex;justify-content:center;padding:2px 0 22px}
-  .logo{width:186px;color:var(--branco)}
+  .topo{display:flex;justify-content:center;padding:0 0 18px}
+  .logo{width:158px;color:var(--branco)}
   .logo svg{width:100%;height:auto;display:block}
 
   /* ---------- cabeça coral: marca, título, instrução ---------- */
   .cabeca{padding:0 4px 20px}
   /* Onde estamos é uma barra; o resto são círculos. A forma distingue o passo
      atual sem depender só da opacidade. */
-  .passos{display:flex;align-items:center;gap:7px;margin:0 0 16px}
+  .passos{display:flex;align-items:center;gap:6px;margin:0 0 10px}
   .passos i{
-    width:9px;height:9px;border-radius:50%;display:block;
+    width:7px;height:7px;border-radius:50%;display:block;
     background:var(--branco);opacity:.42;
     transition:width .3s ease,opacity .3s ease,border-radius .3s ease;
   }
   .passos i.feito{opacity:.75}
-  .passos i.on{width:30px;height:9px;border-radius:5px;opacity:1}
+  .passos i.on{width:26px;height:7px;border-radius:4px;opacity:1}
   h1{
     font-family:var(--display);font-weight:900;
     font-size:clamp(31px,9vw,41px);line-height:.98;letter-spacing:-.028em;
@@ -106,35 +106,53 @@
 
   .ecra{display:none;animation:entra .32s ease both}
   .ecra.ativo{display:block}
+  /* No jogo o ecrã estica-se e a grelha fica com o que sobra, para caber
+     inteira sem scroll em qualquer telemóvel. */
+  #ecra-jogo.ativo{display:flex;flex-direction:column;flex:1;min-height:0}
+  #ecra-jogo .cabeca{flex:none}
+  #ecra-jogo .folha{flex:1;min-height:0;display:flex;flex-direction:column}
+  #ecra-jogo .palavras,
+  #ecra-jogo .dica,
+  #ecra-jogo .pista{flex:none}
+  /* Piso: abaixo disto a grelha deixa de ser jogável, e mais vale a página
+     rolar do que ter células de 10px. */
+  .zona-grelha{flex:1;min-height:264px;display:flex;justify-content:center;align-items:center}
+
+  /* No jogo o herói encolhe para a grelha ter espaço. Nos outros ecrãs, onde
+     não há grelha a disputar altura, fica como está. */
+  #ecra-jogo h1{font-size:clamp(25px,6.8vw,31px);margin-bottom:10px}
+  #ecra-jogo .lead{font-size:15px;line-height:1.4}
+  #ecra-jogo .cabeca{padding-bottom:14px}
+  #ecra-jogo .folha{padding-top:18px;padding-bottom:18px}
+  #ecra-jogo .dica,
+  #ecra-jogo .pista{margin-top:12px;min-height:34px}
   @keyframes entra{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
-  /* ---------- palavras a encontrar ---------- */
+  /* ---------- palavras a encontrar ----------
+     Lista corrida em vez de pastilhas: as pastilhas comiam quase 100px de
+     altura, que a grelha precisa mais do que elas. */
   .palavras{
-    display:flex;flex-wrap:wrap;justify-content:center;gap:8px;
-    margin:0 0 20px;padding:0;list-style:none;
+    display:flex;flex-wrap:wrap;justify-content:center;gap:5px 16px;
+    margin:0 0 14px;padding:0;list-style:none;
   }
   .palavras li{
-    font-size:14px;font-weight:600;
-    padding:12px 17px;border-radius:999px;
-    background:var(--branco);color:var(--azul);
-    box-shadow:inset 0 0 0 1.5px var(--nevoa-forte);
-    transition:background .2s ease,color .2s ease,box-shadow .2s ease;
+    font-size:14px;font-weight:600;color:var(--azul);
+    transition:color .2s ease,opacity .2s ease;
   }
-  /* Ao contrário do habitual: começam vazias e acendem-se ao acertar. Deixa
-     o ecrã calmo em repouso e transforma o progresso em coleção. */
-  .palavras li.encontrada{
-    background:var(--azul);color:var(--branco);box-shadow:none;
-  }
+  .palavras li.encontrada{color:#6B7099;text-decoration:line-through;opacity:.8}
 
   /* ---------- grelha ---------- */
+  /* O lado é posto em pixels pelo JS: o height:100% não resolve contra uma
+     altura que vem de flex-grow, e a grelha ficava do tamanho do conteúdo. */
   .grelha{
     display:grid;gap:6px;touch-action:none;user-select:none;-webkit-user-select:none;
+    margin:0 auto;
   }
   .celula{
-    aspect-ratio:1;display:flex;align-items:center;justify-content:center;
+    display:flex;align-items:center;justify-content:center;min-width:0;
     background:var(--cinza);border-radius:10px;
     font-family:var(--corpo);font-weight:700;
-    font-size:clamp(13px,4.1vw,18px);color:var(--tinta);
+    font-size:clamp(11px,var(--letra,4.1vw),18px);color:var(--tinta);
     transition:background .12s ease,color .12s ease,transform .12s ease;
   }
   .celula.ativa{background:var(--turquesa);color:var(--tinta);transform:scale(1.08)}
@@ -150,12 +168,13 @@
      anular o tamanho e as margens declarados aqui. */
   .folha .dica{
     font-size:13px;font-weight:500;line-height:1.5;text-align:center;
-    color:#6B7099;margin:18px 0 0;min-height:38px;
+    color:#6B7099;margin:18px 0 0;min-height:44px;
   }
+  .folha .dica[hidden]{display:none}
   .folha .dica.sugestao{font-style:italic;font-weight:600;color:var(--azul)}
   .folha .dica.vitoria{font-weight:600;color:var(--azul)}
   .pista{
-    display:block;margin:0 auto;min-height:44px;padding:0 8px;
+    display:block;margin:18px auto 0;min-height:44px;padding:0 8px;
     background:none;border:0;cursor:pointer;
     font-family:var(--corpo);font-size:13px;font-weight:600;
     color:var(--azul);text-decoration:underline;
@@ -251,6 +270,32 @@
   .credito strong{font-weight:700}
   .credito a{color:inherit;text-decoration:none}
 
+  /* Telemóveis baixos (SE, Androids pequenos): o herói aperta-se para o jogo
+     continuar a caber num ecrã só. Abaixo disto a página rola, que é melhor
+     do que uma grelha ilegível. */
+  @media (max-height:700px){
+    .topo{padding:0 0 10px}
+    .logo{width:122px}
+    .passos{margin-bottom:7px}
+    #ecra-jogo h1{font-size:clamp(21px,6vw,26px);margin-bottom:8px}
+    #ecra-jogo .lead{font-size:13px;line-height:1.35}
+    #ecra-jogo .cabeca{padding-bottom:8px}
+    #ecra-jogo .folha{padding-top:13px;padding-bottom:13px}
+    #ecra-jogo .palavras{margin-bottom:10px;gap:4px 13px}
+    #ecra-jogo .palavras li{font-size:13px}
+    #ecra-jogo .grelha{gap:4px}
+    #ecra-jogo .dica{margin-top:8px;min-height:30px}
+    #ecra-jogo .pista{margin-top:8px;min-height:30px}
+    .zona-grelha{min-height:248px}
+    .rodape{padding-top:12px}
+    .app{
+      padding-top:calc(12px + env(safe-area-inset-top));
+      padding-bottom:calc(14px + env(safe-area-inset-bottom));
+    }
+    #ecra-jogo .dica{margin-top:6px;min-height:30px}
+    #ecra-jogo .pista{margin-top:6px;min-height:30px}
+  }
+
   @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -289,7 +334,9 @@
       <p class="oculto" id="contador">0 de 6 encontradas</p>
       <p class="oculto" id="cronometro">0:00</p>
       <ul class="palavras" id="lista-palavras"></ul>
-      <div class="grelha" id="grelha" role="grid" aria-label="Grelha de letras"></div>
+      <div class="zona-grelha">
+        <div class="grelha" id="grelha" role="grid" aria-label="Grelha de letras"></div>
+      </div>
       <p class="dica" id="dica">Arrasta o dedo pelas letras — ou toca na primeira e na última.</p>
       <button class="pista" id="btn-pista" hidden>Encalhado? Pede uma pista</button>
       <p class="oculto" id="anuncio" aria-live="polite"></p>
@@ -402,10 +449,12 @@
     {mostrar:"Alojamento", procurar:"ALOJAMENTO"},
     {mostrar:"Férias",     procurar:"FERIAS"}
   ];
-  /* 10 é o mínimo: ALOJAMENTO tem exatamente 10 letras. Testado — o gerador
-     acerta em todas as tentativas, mas encurtar a grelha deixa de ser possível
-     sem encurtar também a palavra mais longa. */
-  var TAMANHO = 10;
+  /* 10 colunas é fixo: ALOJAMENTO tem exatamente 10 letras. As linhas variam
+     com o telemóvel — num ecrã comprido cabem mais e a grelha aproveita a
+     altura; num mais baixo ficam 10 e a célula não encolhe. Qualquer valor
+     entre 10 e 12 serve, porque a palavra mais longa só precisa de 10. */
+  var COLUNAS = 10;
+  var LINHAS = 10;
   var LETRAS = "AAAEEEIIOOUURSTLNMCDPGBFVZJH";
 
   /* ---------- Supabase ----------
@@ -505,11 +554,11 @@
   function tentaColocar(g, palavra, posicoes){
     for (var t = 0; t < 500; t++){
       var d = DIRECOES[Math.floor(Math.random()*DIRECOES.length)];
-      var linha = Math.floor(Math.random()*TAMANHO);
-      var coluna = Math.floor(Math.random()*TAMANHO);
+      var linha = Math.floor(Math.random()*LINHAS);
+      var coluna = Math.floor(Math.random()*COLUNAS);
       var fimL = linha + d[0]*(palavra.length-1);
       var fimC = coluna + d[1]*(palavra.length-1);
-      if (fimL < 0 || fimL >= TAMANHO || fimC < 0 || fimC >= TAMANHO) continue;
+      if (fimL < 0 || fimL >= LINHAS || fimC < 0 || fimC >= COLUNAS) continue;
       var cabe = true;
       for (var i = 0; i < palavra.length; i++){
         var atual = g[linha + d[0]*i][coluna + d[1]*i];
@@ -529,14 +578,14 @@
     for (var tentativa = 0; tentativa < 400; tentativa++){
       var posicoes = {};
       var g = [];
-      for (var l = 0; l < TAMANHO; l++) g.push(new Array(TAMANHO).fill(""));
+      for (var l = 0; l < LINHAS; l++) g.push(new Array(COLUNAS).fill(""));
       var todas = true;
       for (var i = 0; i < ordenadas.length; i++){
         if (!tentaColocar(g, ordenadas[i], posicoes)) { todas = false; break; }
       }
       if (!todas) continue;
-      for (var a = 0; a < TAMANHO; a++){
-        for (var b = 0; b < TAMANHO; b++){
+      for (var a = 0; a < LINHAS; a++){
+        for (var b = 0; b < COLUNAS; b++){
           if (g[a][b] === "") g[a][b] = LETRAS[Math.floor(Math.random()*LETRAS.length)];
         }
       }
@@ -548,9 +597,10 @@
   function desenharGrelha(){
     var el = $("grelha");
     el.innerHTML = "";
-    el.style.gridTemplateColumns = "repeat(" + TAMANHO + ", 1fr)";
-    for (var l = 0; l < TAMANHO; l++){
-      for (var c = 0; c < TAMANHO; c++){
+    el.style.gridTemplateColumns = "repeat(" + COLUNAS + ", 1fr)";
+    el.style.gridTemplateRows = "repeat(" + LINHAS + ", 1fr)";
+    for (var l = 0; l < LINHAS; l++){
+      for (var c = 0; c < COLUNAS; c++){
         var cel = document.createElement("div");
         cel.className = "celula";
         cel.textContent = estado.grelha[l][c];
@@ -580,20 +630,31 @@
   var arrastar = false, inicioCel = null, selecao = [], ancora = null, moveu = false;
 
   /* A dica só aparece a quem encalha. Mostrá-la logo estraga o puzzle. */
-  var relogioDica = null;
+  var relogioDica = null, relogioPista = null;
+  /* Texto vazio esconde o elemento em vez de o deixar a ocupar altura, para a
+     dica e a pista nunca aparecerem empilhadas. */
   function dizerDica(texto, tipo){
     var el = $("dica");
-    el.textContent = texto;
+    el.textContent = texto || "";
     el.className = "dica" + (tipo ? " " + tipo : "");
+    el.hidden = !texto;
   }
+  /* Escalonamento: primeiro uma dica de texto, e só se a pessoa continuar
+     encalhada é que aparece a oferta de pista — no lugar da dica, nunca ao
+     lado dela. */
   function agendarDica(){
     clearTimeout(relogioDica);
+    clearTimeout(relogioPista);
     $("btn-pista").hidden = true;
     relogioDica = setTimeout(function(){
       if (estado.encontradas.length >= PALAVRAS.length) return;
       dizerDica("Vale em todas as direções — incluindo na diagonal.", "sugestao");
+    }, 30000);
+    relogioPista = setTimeout(function(){
+      if (estado.encontradas.length >= PALAVRAS.length) return;
+      dizerDica("", "");
       $("btn-pista").hidden = false;
-    }, 40000);
+    }, 70000);
   }
 
   /* Pista a sério: acende a primeira letra de uma palavra que falte. Nunca
@@ -608,8 +669,8 @@
     if (!cel) return;
     cel.classList.add("pista");
     setTimeout(function(){ cel.classList.remove("pista"); }, 4000);
-    dizerDica(alvo.mostrar + " começa na letra acesa.", "sugestao");
     agendarDica();
+    dizerDica(alvo.mostrar + " começa na letra acesa.", "sugestao");
   }
 
   function celulaDoPonto(x,y){
@@ -747,7 +808,24 @@
   }
 
   /* ---------- fluxo ---------- */
+  /* Quantas linhas cabem com a célula que a largura permite. Medir com a
+     grelha por dimensionar, senão o tamanho anterior contamina a medição. */
+  function linhasQueCabem(){
+    var zona = document.querySelector(".zona-grelha");
+    var el = $("grelha");
+    if (!zona) return 10;
+    if (el){ el.style.width = ""; el.style.height = ""; }
+    var lacuna = el ? (parseFloat(getComputedStyle(el).gap) || 6) : 6;
+    var caixa = zona.getBoundingClientRect();
+    if (!caixa.width || !caixa.height) return 10;
+    var celula = (caixa.width - (COLUNAS - 1) * lacuna) / COLUNAS;
+    if (celula <= 0) return 10;
+    var cabem = Math.floor((caixa.height + lacuna) / (celula + lacuna));
+    return Math.max(10, Math.min(12, cabem));
+  }
+
   function iniciarJogo(){
+    LINHAS = linhasQueCabem();
     var criada = criarGrelha();
     estado.grelha = criada.grelha;
     estado.posicoes = criada.posicoes;
@@ -761,12 +839,14 @@
     dizerDica("Arrasta o dedo pelas letras — ou toca na primeira e na última.", "");
     agendarDica();
     mostrar("ecra-jogo");
+    dimensionarGrelha();
     arrancarCronometro();
   }
 
   function terminarJogo(){
     clearInterval(estado.cronometro);
     clearTimeout(relogioDica);
+    clearTimeout(relogioPista);
     largarAncora();
     $("btn-pista").hidden = true;
     dizerDica("Todas apanhadas. Já sabes quem somos.", "vitoria");
@@ -917,6 +997,35 @@
       libertar(botao);
     });
   });
+
+
+  /* A grelha é um quadrado do tamanho do menor lado do espaço que sobra. Medir
+     e escrever em pixels evita as armadilhas de percentagens dentro de flex.
+     Limpa-se o tamanho antes de medir, senão a medição vinha contaminada pelo
+     valor anterior. */
+  function dimensionarGrelha(){
+    var zona = document.querySelector(".zona-grelha");
+    var el = $("grelha");
+    if (!zona || !el) return;
+    el.style.width = "";
+    el.style.height = "";
+    var caixa = zona.getBoundingClientRect();
+    /* A lacuna vem do CSS porque encolhe nos ecrãs baixos: assumi-la em 6
+       dava uma letra grande demais quando o gap era 4. */
+    var lacuna = parseFloat(getComputedStyle(el).gap) || 6;
+    /* A célula é quadrada, por isso o lado é o menor que cabe nas duas
+       direções. As dimensões da grelha saem daí, não o contrário. */
+    var celula = Math.min(
+      (caixa.width  - (COLUNAS - 1) * lacuna) / COLUNAS,
+      (caixa.height - (LINHAS  - 1) * lacuna) / LINHAS
+    );
+    if (celula < 14) return;
+    el.style.width  = Math.floor(celula * COLUNAS + (COLUNAS - 1) * lacuna) + "px";
+    el.style.height = Math.floor(celula * LINHAS  + (LINHAS  - 1) * lacuna) + "px";
+    document.documentElement.style.setProperty("--letra", (celula * 0.5) + "px");
+  }
+  window.addEventListener("resize", dimensionarGrelha);
+  window.addEventListener("orientationchange", function(){ setTimeout(dimensionarGrelha, 120); });
 
   $("btn-pista").addEventListener("click", darPista);
 
