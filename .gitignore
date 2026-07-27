@@ -1,0 +1,12 @@
+.DS_Store
+
+# Configuração local do Claude Code (a launch.json aponta para um caminho
+# temporário desta sessão, não serve a mais ninguém)
+.claude/settings.local.json
+.claude/launch.json
+
+# Skills instaladas pelo `npx skills add` — reinstaláveis a partir do lock
+.agents/
+
+# Symlinks para .agents/, que está ignorado
+.claude/skills/
