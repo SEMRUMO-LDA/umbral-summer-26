@@ -58,19 +58,19 @@
     position:relative;z-index:1;
     display:flex;flex-direction:column;min-height:100dvh;
     width:100%;max-width:440px;margin:0 auto;
-    padding:calc(24px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom));
+    padding:calc(14px + env(safe-area-inset-top)) 16px calc(14px + env(safe-area-inset-bottom));
   }
 
   /* ---------- logo ---------- */
-  .topo{display:flex;justify-content:center;padding:0 0 18px}
-  .logo{width:158px;color:var(--branco)}
+  .topo{display:flex;justify-content:center;padding:2px 0 calc(10px + var(--ar,0px))}
+  .logo{width:136px;color:var(--branco)}
   .logo svg{width:100%;height:auto;display:block}
 
   /* ---------- cabeça coral: marca, título, instrução ---------- */
   .cabeca{padding:0 4px 20px}
   /* Onde estamos é uma barra; o resto são círculos. A forma distingue o passo
      atual sem depender só da opacidade. */
-  .passos{display:flex;align-items:center;gap:6px;margin:0 0 10px}
+  .passos{display:flex;align-items:center;gap:6px;margin:0 0 calc(7px + var(--ar,0px))}
   .passos i{
     width:7px;height:7px;border-radius:50%;display:block;
     background:var(--branco);opacity:.42;
@@ -120,12 +120,12 @@
 
   /* No jogo o herói encolhe para a grelha ter espaço. Nos outros ecrãs, onde
      não há grelha a disputar altura, fica como está. */
-  #ecra-jogo h1{font-size:clamp(25px,6.8vw,31px);margin-bottom:10px}
-  #ecra-jogo .lead{font-size:15px;line-height:1.4}
-  #ecra-jogo .cabeca{padding-bottom:14px}
-  #ecra-jogo .folha{padding-top:18px;padding-bottom:18px}
+  #ecra-jogo h1{font-size:clamp(25px,6.8vw,31px);margin-bottom:calc(8px + var(--ar,0px))}
+  #ecra-jogo .lead{font-size:14px;line-height:1.4}
+  #ecra-jogo .cabeca{padding-bottom:calc(10px + var(--ar,0px))}
+  #ecra-jogo .folha{padding-top:calc(12px + var(--ar,0px) * .4);padding-bottom:12px}
   #ecra-jogo .dica,
-  #ecra-jogo .pista{margin-top:12px;min-height:34px}
+  #ecra-jogo .pista{margin-top:8px;min-height:28px}
   @keyframes entra{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
   /* ---------- palavras a encontrar ----------
@@ -133,7 +133,7 @@
      altura, que a grelha precisa mais do que elas. */
   .palavras{
     display:flex;flex-wrap:wrap;justify-content:center;gap:5px 16px;
-    margin:0 0 14px;padding:0;list-style:none;
+    margin:0 0 10px;padding:0;list-style:none;
   }
   .palavras li{
     font-size:14px;font-weight:600;color:var(--azul);
@@ -145,7 +145,7 @@
   /* O lado é posto em pixels pelo JS: o height:100% não resolve contra uma
      altura que vem de flex-grow, e a grelha ficava do tamanho do conteúdo. */
   .grelha{
-    display:grid;gap:6px;touch-action:none;user-select:none;-webkit-user-select:none;
+    display:grid;gap:5px;touch-action:none;user-select:none;-webkit-user-select:none;
     margin:0 auto;
   }
   .celula{
@@ -262,7 +262,7 @@
   }
 
   /* ---------- rodapé coral ---------- */
-  .rodape{margin-top:auto;padding:26px 4px 0}
+  .rodape{margin-top:auto;padding:calc(12px + var(--ar,0px) * .5) 4px 0}
   .credito{
     font-size:12px;font-weight:500;color:var(--branco);
     margin:16px 0 0;text-align:center;
@@ -273,28 +273,7 @@
   /* Telemóveis baixos (SE, Androids pequenos): o herói aperta-se para o jogo
      continuar a caber num ecrã só. Abaixo disto a página rola, que é melhor
      do que uma grelha ilegível. */
-  @media (max-height:700px){
-    .topo{padding:0 0 10px}
-    .logo{width:122px}
-    .passos{margin-bottom:7px}
-    #ecra-jogo h1{font-size:clamp(21px,6vw,26px);margin-bottom:8px}
-    #ecra-jogo .lead{font-size:13px;line-height:1.35}
-    #ecra-jogo .cabeca{padding-bottom:8px}
-    #ecra-jogo .folha{padding-top:13px;padding-bottom:13px}
-    #ecra-jogo .palavras{margin-bottom:10px;gap:4px 13px}
-    #ecra-jogo .palavras li{font-size:13px}
-    #ecra-jogo .grelha{gap:4px}
-    #ecra-jogo .dica{margin-top:8px;min-height:30px}
-    #ecra-jogo .pista{margin-top:8px;min-height:30px}
-    .zona-grelha{min-height:248px}
-    .rodape{padding-top:12px}
-    .app{
-      padding-top:calc(12px + env(safe-area-inset-top));
-      padding-bottom:calc(14px + env(safe-area-inset-bottom));
-    }
-    #ecra-jogo .dica{margin-top:6px;min-height:30px}
-    #ecra-jogo .pista{margin-top:6px;min-height:30px}
-  }
+
 
   @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -820,7 +799,10 @@
     if (!caixa.width || !caixa.height) return 10;
     var celula = (caixa.width - (COLUNAS - 1) * lacuna) / COLUNAS;
     if (celula <= 0) return 10;
-    var cabem = Math.floor((caixa.height + lacuna) / (celula + lacuna));
+    /* A folga reservada impede a grelha de engolir a altura toda: sem ela a
+       grelha crescia até ao limite e o cabeçalho ficava colado a si próprio. */
+    var FOLGA = 56;
+    var cabem = Math.floor((caixa.height - FOLGA + lacuna) / (celula + lacuna));
     return Math.max(10, Math.min(12, cabem));
   }
 
@@ -1003,27 +985,49 @@
      e escrever em pixels evita as armadilhas de percentagens dentro de flex.
      Limpa-se o tamanho antes de medir, senão a medição vinha contaminada pelo
      valor anterior. */
-  function dimensionarGrelha(){
+  /* A grelha tem teto: passado este tamanho a célula não fica melhor, só come
+     altura que o cabeçalho precisa mais. */
+  var TETO_CELULA = 33;
+
+  /* Uma passagem: mede o espaço livre, escreve o tamanho da grelha e devolve
+     quanto sobrou na zona — é essa sobra que vai virar ar no cabeçalho. */
+  function medirEEscrever(){
     var zona = document.querySelector(".zona-grelha");
     var el = $("grelha");
-    if (!zona || !el) return;
+    if (!zona || !el) return null;
     el.style.width = "";
     el.style.height = "";
     var caixa = zona.getBoundingClientRect();
-    /* A lacuna vem do CSS porque encolhe nos ecrãs baixos: assumi-la em 6
-       dava uma letra grande demais quando o gap era 4. */
     var lacuna = parseFloat(getComputedStyle(el).gap) || 6;
     /* A célula é quadrada, por isso o lado é o menor que cabe nas duas
        direções. As dimensões da grelha saem daí, não o contrário. */
     var celula = Math.min(
       (caixa.width  - (COLUNAS - 1) * lacuna) / COLUNAS,
-      (caixa.height - (LINHAS  - 1) * lacuna) / LINHAS
+      (caixa.height - (LINHAS  - 1) * lacuna) / LINHAS,
+      TETO_CELULA
     );
-    if (celula < 14) return;
+    if (celula < 10) return null;
+    var altura = Math.floor(celula * LINHAS + (LINHAS - 1) * lacuna);
     el.style.width  = Math.floor(celula * COLUNAS + (COLUNAS - 1) * lacuna) + "px";
-    el.style.height = Math.floor(celula * LINHAS  + (LINHAS  - 1) * lacuna) + "px";
+    el.style.height = altura + "px";
     document.documentElement.style.setProperty("--letra", (celula * 0.5) + "px");
+    return { celula: celula, sobra: caixa.height - altura };
   }
+
+  /* Duas passagens: a primeira descobre quanto espaço sobra com o cabeçalho
+     no mínimo, a segunda devolve-lhe esse espaço. Sem isto a grelha crescia
+     até ao limite e o topo ficava tudo colado. */
+  function dimensionarGrelha(){
+    var raiz = document.documentElement;
+    raiz.style.setProperty("--ar", "0px");
+    var r = medirEEscrever();
+    if (!r) return;
+    if (r.sobra > 12){
+      raiz.style.setProperty("--ar", Math.floor(r.sobra / 5) + "px");
+      medirEEscrever();
+    }
+  }
+
   window.addEventListener("resize", dimensionarGrelha);
   window.addEventListener("orientationchange", function(){ setTimeout(dimensionarGrelha, 120); });
 
