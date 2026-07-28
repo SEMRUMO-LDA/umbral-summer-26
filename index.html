@@ -385,7 +385,7 @@
   <section class="ecra ativo" id="ecra-jogo">
     <div class="cabeca">
       <h1>Olhaaá boooorla<br>da Umbral!</h1>
-      <p class="lead">Encontra as seis palavras e fica a conhecer-nos.</p>
+      <p class="lead">Seis palavras escondidas. As nossas letras pequenas são assim.</p>
     </div>
     <div class="folha">
       <p class="oculto" id="contador">0 de 6 encontradas</p>
@@ -403,8 +403,8 @@
   <!-- ECRÃ 2 · EMAIL -->
   <section class="ecra" id="ecra-email">
     <div class="cabeca">
-      <h1>Duas borlas<br>de uma vez.</h1>
-      <p class="lead">20% de desconto garantido. E a hipótese de ganhar uma semana de férias — a VERDADEIRA borla.</p>
+      <h1>Para onde<br>mandamos?</h1>
+      <p class="lead">Os 20%, o teu lugar no sorteio e, de vez em quando, um sítio novo.</p>
     </div>
     <div class="folha">
       <label for="nome">Nome</label>
@@ -420,26 +420,26 @@
         <label for="rgpd" style="margin:0"><span>Autorizo a Umbral a guardar o meu email para me enviar o código e novidades. Saio da lista quando quiser.</span></label>
       </div>
 
-      <button class="btn" id="btn-quero-20">Quero as duas borlas</button>
+      <button class="btn" id="btn-quero-20">Manda vir</button>
     </div>
   </section>
 
   <!-- ECRÃ 3 · CÓDIGO + EXTRA -->
   <section class="ecra" id="ecra-codigo">
     <div class="cabeca">
-      <h1>Os teus 20% já vão a caminho.</h1>
-      <p class="lead">O código chega ao teu email daqui a nada.</p>
+      <h1>Está reservado.</h1>
+      <p class="lead">Chega ao email daqui a nada.</p>
     </div>
     <div class="folha">
       <div id="convite">
-        <h2>Mas 20% é só o aquecimento.</h2>
-        <p>A verdadeira borla é uma <strong>semana de férias grátis</strong> num dos alojamentos Umbral. Falta-te uma foto para entrares no sorteio.</p>
-        <button class="btn" id="btn-quero-mais">Quero a verdadeira borla</button>
+        <h2>Isto foi só para provar.</h2>
+        <p>Uma <strong>semana num alojamento nosso</strong>, sem pagares nada. Só te pedimos uma foto.</p>
+        <button class="btn" id="btn-quero-mais">Alinho</button>
       </div>
 
       <div class="caixa-extra" id="caixa-extra">
-        <h2>Uma foto e estás dentro.</h2>
-        <p>Tira uma foto criativa com a tua Bola de Berlim na praia. É a foto que <strong>garante a tua participação</strong> no sorteio. As melhores vão parar aos nossos stories.</p>
+        <h2>Mostra-nos o teu verão.</h2>
+        <p>Qualquer foto do teu verão serve para entrares. Se nos apanhares nela — a bola, o quarto, o avião lá em cima — é dessas que fazemos stories.</p>
         <img class="previsualizacao" id="previsualizacao" alt="Pré-visualização da tua foto">
         <input type="file" id="ficheiro" accept="image/*" capture="environment">
         <button class="btn secundario" id="btn-escolher" style="margin-bottom:16px">Escolher a foto</button>
@@ -469,11 +469,11 @@
     </div>
     <div class="folha">
       <div class="accao">
-        <h2>Escolhe onde queres ficar.</h2>
+        <h2>Agora escolhe onde te deixares ficar.</h2>
         <a class="btn" href="https://byumbral.com">Ver alojamentos</a>
       </div>
       <div class="accao">
-        <h2>Vem ver os stories.</h2>
+        <h2>O resto sai nos stories.</h2>
         <a class="btn secundario" href="https://instagram.com/byumbral">Seguir a Umbral</a>
       </div>
       <p class="nota-sol"><i class="amostra" aria-hidden="true"></i><strong>Pantone Escaldão.</strong> Com creme é sempre melhor — está na hora de pôr protetor solar.</p>
@@ -521,6 +521,23 @@
   var SUPABASE_URL = "https://vidhfmbsmmadgsudtpco.supabase.co";
   var SUPABASE_KEY = "sb_publishable_Nvj8cVRfIzvm9U6nzc8_PQ_BFR4hJYl";
   var BUCKET = "fotos-campanha";
+
+  /* De onde veio a pessoa. O domínio do avião é exclusivo dele e o saco tem
+     endereço próprio, por isso a origem lê-se do próprio endereço e o QR fica
+     limpo. Endereços desconhecidos — testes, pré-visualizações — ficam em
+     "direto", para não inflacionar nenhum canal. O ?o= serve para forçar. */
+  var CANAIS = {
+    "borlasdaumbral.pt": "aviao",
+    "www.borlasdaumbral.pt": "aviao"
+    /* falta acrescentar aqui o endereço do QR do saco */
+  };
+
+  function origemDaVisita(){
+    var forcada = new URLSearchParams(location.search).get("o");
+    if (forcada && /^[a-z]{3,20}$/.test(forcada)) return forcada;
+    var comCaminho = location.hostname + location.pathname.replace(/\/$/, "");
+    return CANAIS[comCaminho] || CANAIS[location.hostname] || "direto";
+  }
 
   /* Cupao unico para toda a campanha: nao ha forma de gerar codigos
      individuais no sistema de reservas. Muda-se aqui e muda em todo o lado. */
@@ -992,6 +1009,7 @@
       email: estado.email,
       codigo: estado.codigo,
       tempo_segundos: estado.tempo,
+      origem: origemDaVisita(),
       consentimento_dados: true
     });
   }
@@ -1115,7 +1133,7 @@
     var botao = this;
     var handle = $("instagram").value.trim();
     var erro = $("erro-foto");
-    if (!estado.foto) { dizerErro(erro, "Falta a foto com a bola de berlim."); return; }
+    if (!estado.foto) { dizerErro(erro, "Falta a foto."); return; }
     /* Campo opcional: só se valida o que foi mesmo escrito. */
     if (handle && !instagramValido(handle)) { dizerErro(erro, "Esse Instagram não parece bem escrito. Deixa em branco se preferires."); $("instagram").focus(); return; }
     if (!$("consentimento-foto").checked) { dizerErro(erro, "Precisamos da tua autorização para publicar a foto."); return; }
