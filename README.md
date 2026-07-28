@@ -23,8 +23,38 @@ conhecer a marca → email (destrava os 20% e o sorteio) → foto → remate.
 com o convite para o sorteio → remate. O prémio sai no telemóvel porque os
 brindes não têm stock limitado: quem está na carrinha é que os entrega.
 
-A lista de brindes e os pesos de cada um estão no topo do JS da carrinha, em
-`BRINDES`. Só o cupão dos 20% traz código; os outros entregam-se ali.
+A lista de brindes está no topo do JS da carrinha, em `BRINDES`. Só o cupão dos
+20% traz código; os outros entregam-se ali.
+
+### Os pesos saem do stock
+
+| Prémio | Stock | Hipótese |
+|---|---:|---:|
+| Caneta | 6000 | 32,0% |
+| 20% na estadia | — | 28,0% |
+| Chapéu de palha | 500 | 12,9% |
+| Almofada de praia | 500 | 12,9% |
+| Saco de pano | 400 | 10,3% |
+| Para-sol para o carro | 100 | 2,6% |
+| Guarda-sol de praia | 48 | 1,2% |
+
+A caneta e o cupão são inesgotáveis para o tamanho desta campanha, por isso os
+pesos deles são escolhidos: sobram 40% da máquina para os cinco artigos
+escassos. Esses cinco levam **o próprio stock como peso**, e é isso que faz a
+conta fechar — a hipótese de cada um passa a ser a sua parte do stock, portanto
+**todos acabam à mesma jogada, a 3870**, em vez de um morrer no primeiro dia e
+deixar a máquina a prometer o que já não há.
+
+Proporção pura entre os sete dava 79% de caneta e 0,64% de guarda-sol: sete
+prémios na fita para dar caneta quase sempre.
+
+**Mexer numa quantidade é mexer no peso.** Para o stock durar mais jogadas,
+baixa-se a fatia dos cinco: menos peso neles, mais no cupão e na caneta.
+
+Não há contador nem interruptor. Um contador no telemóvel sabe quantas vezes a
+app prometeu, não quantos artigos restam na carrinha — alguém ganha e vai-se
+embora sem levantar, alguém recebe um à mão sem passar pela app, e ao fim de dois
+dias o contador e a caixa não batem certo. Quem sabe o que resta é quem lá está.
 
 **A fita passeia antes de alguém carregar** — uma cópia da lista a cada 11
 segundos. É assim que os prémios se mostram sem pedir a ninguém que leia nada, e
