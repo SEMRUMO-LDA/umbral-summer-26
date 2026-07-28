@@ -80,7 +80,7 @@
                opacity .32s ease,
                border-radius .42s cubic-bezier(.34,1.56,.64,1);
   }
-  .passos i.feito{opacity:.75}
+  .passos i.feito{opacity:1}
   .passos i.on{width:26px;height:7px;border-radius:4px;opacity:1}
   h1{
     font-family:var(--display);font-weight:900;
@@ -158,6 +158,12 @@
     font-size:14px;font-weight:600;color:var(--azul);
     transition:color .2s ease,opacity .2s ease;
   }
+  .palavras button{
+    font:inherit;color:inherit;background:none;border:0;padding:0;margin:0;
+    cursor:pointer;text-decoration:underline;text-decoration-style:dotted;
+    text-underline-offset:3px;text-decoration-color:#B9BDD4;
+  }
+  .palavras button:active{color:var(--coral-forte)}
   .palavras li.encontrada{color:#6B7099;text-decoration:line-through;opacity:.8}
 
   /* ---------- grelha ---------- */
@@ -338,14 +344,16 @@
   }
 
   /* ---------- rodapé coral ---------- */
-  .rodape{margin-top:auto;padding:9px 4px 0}
-  .credito{
-    font-size:12px;font-weight:500;color:var(--branco);
-    margin:16px 0 0;text-align:center;
+  /* Crédito e política na mesma linha. */
+  .rodape{
+    margin-top:auto;padding:9px 4px 0;
+    display:flex;align-items:baseline;justify-content:center;
+    gap:16px;flex-wrap:wrap;
   }
+  .credito{font-size:12px;font-weight:500;color:var(--branco);margin:0}
   .credito strong{font-weight:700}
   .credito a{color:inherit;text-decoration:none}
-  .legal{margin:6px 0 0;text-align:center}
+  .legal{margin:0;font-size:12px;line-height:1.4}
   .legal a{
     font-size:12px;font-weight:600;color:var(--branco);
     text-decoration:underline;text-underline-offset:2px;
@@ -640,10 +648,15 @@
   }
 
   var PASSO_DE = {"ecra-jogo":1, "ecra-email":2, "ecra-codigo":3, "ecra-final":4};
+  var ORDEM_ECRAS = ["ecra-jogo", "ecra-email", "ecra-codigo", "ecra-final"];
+  /* Até onde a pessoa já chegou. Só se navega dentro do que já foi feito —
+     não se salta para a frente sem ter cumprido o passo. */
+  var maisLonge = 1;
 
   function marcarPasso(idEcra){
     var n = PASSO_DE[idEcra];
     if (!n) return;
+    if (n > maisLonge) maisLonge = n;
     var pontos = $("passos").children;
     for (var i = 0; i < pontos.length; i++){
       pontos[i].className = (i + 1 < n) ? "feito" : (i + 1 === n ? "on" : "");
@@ -728,7 +741,7 @@
       }
       if (!cabe) continue;
       for (var j = 0; j < palavra.length; j++) g[linha + d[0]*j][coluna + d[1]*j] = palavra[j];
-      posicoes[palavra] = {linha:linha, coluna:coluna};
+      posicoes[palavra] = {linha:linha, coluna:coluna, direcao:d};
       return true;
     }
     return false;
@@ -773,13 +786,47 @@
     }
   }
 
+  function direcaoDe(){ return [0,1]; }
+
+  /* Marca a palavra na grelha sem passar pela seleção manual. */
+  function marcarPalavra(p){
+    if (estado.encontradas.indexOf(p.procurar) !== -1) return;
+    var pos = estado.posicoes[p.procurar];
+    if (!pos) return;
+    var d = pos.direcao || direcaoDe(p.procurar);
+    for (var i = 0; i < p.procurar.length; i++){
+      var cel = document.querySelector('.celula[data-l="' + (pos.linha + d[0]*i) + '"][data-c="' + (pos.coluna + d[1]*i) + '"]');
+      if (cel){ cel.classList.remove("ativa"); cel.classList.add("encontrada"); }
+    }
+    estado.encontradas.push(p.procurar);
+    $("anuncio").textContent = p.mostrar + " apanhada!";
+    desenharPalavras();
+    if (estado.encontradas.length === PALAVRAS.length) { terminarJogo(); return; }
+    var faltam = PALAVRAS.length - estado.encontradas.length;
+    dizerDica(faltam === 1 ? "Boa! Falta uma." : "Boa! Faltam " + faltam + ".", "");
+    agendarDica();
+  }
+
   function desenharPalavras(){
     var ul = $("lista-palavras");
     ul.innerHTML = "";
     PALAVRAS.forEach(function(p, i){
       var li = document.createElement("li");
-      li.textContent = p.mostrar;
-      if (estado.encontradas.indexOf(p.procurar) !== -1) li.className = "encontrada";
+      var achada = estado.encontradas.indexOf(p.procurar) !== -1;
+      if (achada){
+        li.textContent = p.mostrar;
+        li.className = "encontrada";
+      } else {
+        /* Alternativa para quem não consegue arrastar: a palavra é um botão
+           que a marca na grelha. É a única forma de o jogo não excluir quem
+           usa leitor de ecrã — e a mesma porta serve toda a gente. */
+        var botao = document.createElement("button");
+        botao.type = "button";
+        botao.textContent = p.mostrar;
+        botao.setAttribute("aria-label", "Marcar " + p.mostrar + " na grelha");
+        botao.addEventListener("click", function(){ marcarPalavra(p); });
+        li.appendChild(botao);
+      }
       ul.appendChild(li);
       if (i === QUEBRA_DEPOIS - 1){
         var quebra = document.createElement("li");
@@ -1242,6 +1289,35 @@
   window.addEventListener("resize", dimensionarGrelha);
   window.addEventListener("orientationchange", function(){ setTimeout(dimensionarGrelha, 120); });
 
+  /* ---------- navegação por swipe ----------
+     Só entre ecrãs já completados, e nunca a partir da grelha, onde o arrasto
+     horizontal é a forma de marcar palavras. */
+  function ligarSwipe(){
+    var x0 = 0, y0 = 0, valido = false;
+
+    document.addEventListener("touchstart", function(e){
+      if (e.touches.length !== 1) { valido = false; return; }
+      var alvo = e.target;
+      valido = !(alvo.closest && (alvo.closest("#grelha") || alvo.closest(".barra-testes")));
+      x0 = e.touches[0].clientX;
+      y0 = e.touches[0].clientY;
+    }, {passive: true});
+
+    document.addEventListener("touchend", function(e){
+      if (!valido || !e.changedTouches.length) return;
+      var dx = e.changedTouches[0].clientX - x0;
+      var dy = e.changedTouches[0].clientY - y0;
+      /* Horizontal a sério: mais de 60px e claramente mais horizontal que
+         vertical, senão apanhava o scroll da página. */
+      if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.6) return;
+      var atual = PASSO_DE[(document.querySelector(".ecra.ativo") || {}).id];
+      if (!atual) return;
+      var destino = dx > 0 ? atual - 1 : atual + 1;
+      if (destino < 1 || destino > maisLonge) return;
+      mostrar(ORDEM_ECRAS[destino - 1]);
+    }, {passive: true});
+  }
+
   $("btn-pista").addEventListener("click", darPista);
 
   /* ---------- confetis ----------
@@ -1341,6 +1417,7 @@
 
   /* ---------- arranque ---------- */
   ligarGrelha();
+  ligarSwipe();
   marcarPasso("ecra-jogo");
   iniciarJogo();
   barraDeTestes();
