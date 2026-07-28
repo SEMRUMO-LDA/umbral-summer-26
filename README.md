@@ -9,7 +9,7 @@ circunstâncias diferentes:
 | App | Meio | Quem chega |
 |---|---|---|
 | [`index.html`](index.html) | Saco das bolas de berlim, avião com faixa | Não conhece a marca: há um jogo a apresentá-la |
-| [`carrinha/index.html`](carrinha/index.html) | Carrinha com o quarto ambulante | Já está à frente da marca: não há jogo, há roleta |
+| [`carrinha/index.html`](carrinha/index.html) | Carrinha com o quarto ambulante | Já está à frente da marca: não há jogo, há máquina de prémios |
 
 Ambas acabam no mesmo sítio — uma foto do verão, o sorteio de uma semana de
 alojamento e o remate com o aviso de proteção solar.
@@ -19,12 +19,23 @@ alojamento e o remate com o aviso de proteção solar.
 **Saco e avião** — quatro passos: sopa de letras com seis palavras que dão a
 conhecer a marca → email (destrava os 20% e o sorteio) → foto → remate.
 
-**Carrinha** — três passos: roleta (o email é o que a faz rodar) → prémio, com
-o convite para o sorteio → remate. O prémio sai no telemóvel porque os brindes
-não têm stock limitado: quem está na carrinha é que os entrega.
+**Carrinha** — três passos: a máquina (o email é o que a faz rolar) → prémio,
+com o convite para o sorteio → remate. O prémio sai no telemóvel porque os
+brindes não têm stock limitado: quem está na carrinha é que os entrega.
 
 A lista de brindes e os pesos de cada um estão no topo do JS da carrinha, em
 `BRINDES`. Só o cupão dos 20% traz código; os outros entregam-se ali.
+
+**Um rolo, não três.** Numa slot machine a três rolos perde-se quando os
+símbolos não combinam, e aqui não há como perder — a app promete que sai sempre
+borla. Um rolo diz a verdade da mecânica: uma fita de prémios que para num
+deles. A fita tem oito cópias da lista empilhadas; a máquina para na sétima e as
+que sobram são a folga de que o recuo final precisa.
+
+**Falta a arte dos brindes.** Cada entrada de `BRINDES` tem um campo `imagem`
+por preencher; enquanto for `null` entra um símbolo desenhado, que é provisório.
+Recorte transparente, WebP, lado maior a 600px — a fita mostra-os a ~150px de
+altura e isto abre-se na rua, com uma barra de rede.
 
 ## Correr localmente
 
@@ -76,7 +87,7 @@ Supabase, nunca na página.
 Vivem em índices da base de dados, não no cliente, e são diferentes de propósito:
 
 - `inscricoes_email_por_canal` sobre `(lower(email), origem)` — uma inscrição
-  por canal. Quem veio pelo saco pode rodar a roleta na carrinha: são momentos
+  por canal. Quem veio pelo saco pode jogar a máquina na carrinha: são momentos
   diferentes e o código dos 20% é igual para todos, portanto repetir é inócuo.
 - `participacoes_email_unico` sobre `lower(email)` — **uma** participação no
   sorteio por pessoa, venha de onde vier. É esta a borla a sério.
@@ -95,6 +106,8 @@ quantas pessoas, em que datas.
 Falta também o endereço do QR do saco, para entrar no mapa `CANAIS` e as
 inscrições desse meio se distinguirem das do avião.
 
+E falta a arte dos seis brindes da carrinha, como acima.
+
 ## Acessibilidade
 
 Todo o texto cumpre o contraste AA, com uma exceção conhecida e deliberada: os
@@ -106,4 +119,4 @@ A sopa de letras é jogável sem arrastar: cada palavra da lista é um botão qu
 marca na grelha. Sem isso o jogo excluía quem usa leitor de ecrã.
 
 Ambas as apps respeitam `prefers-reduced-motion` — sem confetis, sem transições
-e a roleta para no prémio sem girar.
+e a máquina para no prémio sem rolar.

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#EA525C">
-<title>Umbral · Roda a roleta</title>
+<title>Umbral · Deixa rolar</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&family=Montserrat:wght@900&display=swap" rel="stylesheet">
@@ -13,7 +13,7 @@
     --coral:#EA525C;
     --coral-fundo:#CF454E;
     /* Degrau escuro do coral. O #EA525C com texto branco pequeno dá 3,58:1;
-       este dá 5,49:1. Usado só onde há branco pequeno sobre coral. */
+       este dá 5,49:1. Usado só onde há branco sobre coral. */
     --coral-forte:#C0353F;
     --rosa:#FDECEE;
     --cinza:#F2F2F4;
@@ -106,27 +106,74 @@
   .ecra.a-esconder .remate-final,
   .ecra.a-esconder .folha > *{opacity:0;transform:translateY(7px)}
 
-  /* ---------- roleta ----------
-     A roda é o cartaz do ecrã e come a altura que houver. O clamp é o que a
-     mantém inteira num 360x640 sem obrigar a rolar. */
-  /* O --aperto é folga que a roleta devolve quando o ecrã é baixo: primeiro
-     encolhe a roda, depois tira-se destes dois espaços. Ver ajustarRoleta(). */
-  .roleta{width:clamp(166px,50vw,228px);margin:0 auto calc(20px - var(--aperto,0px));position:relative}
-  #ecra-roleta h1{margin-bottom:calc(14px - var(--aperto,0px))}
-  .roleta svg{display:block;width:100%;height:auto;overflow:visible}
-  /* fill-box para a origem cair no centro da roda sem depender do viewBox. */
-  #roda{transform-box:fill-box;transform-origin:center}
-  .roleta.a-rodar #roda{transition:transform 3.6s cubic-bezier(.14,.72,.06,1)}
-  /* Enquanto roda, ninguém deve poder mexer no formulário por baixo. */
-  .roleta.a-rodar{pointer-events:none}
+  /* ---------- a máquina ----------
+     Um rolo, não três. Numa slot machine a três rolos perde-se quando os
+     símbolos não combinam, e aqui não há como perder — o ecrã promete que sai
+     sempre borla. Um rolo diz a verdade da mecânica: uma fita de prémios que
+     para num deles.
+     O --rolo e o --aperto são folga que a máquina devolve quando o ecrã é
+     baixo. Ver ajustarMaquina(). */
+  /* O corpo é o que faz isto ler-se como uma máquina e não como uma lista a
+     deslizar. Leva a mesma sombra sólida dos botões: é a linguagem que a app já
+     usa para as coisas com que se mexe.
+     Azul e não o cinza metálico do mockup: a marca é coral e azul, e um terceiro
+     material trazia uma cor que não é de ninguém. Trocar é mudar esta linha. */
+  .maquina{
+    position:relative;
+    margin:0 auto calc(22px - var(--aperto,0px));
+    background:var(--azul);border-radius:20px;padding:10px;
+    box-shadow:0 4px 0 var(--azul-fundo);
+  }
+  #ecra-sorte h1{margin-bottom:calc(14px - var(--aperto,0px))}
+  .maquina-janela{
+    position:relative;height:var(--rolo,150px);overflow:hidden;
+    border-radius:12px;background:var(--nevoa);
+  }
+  /* Sombra no topo e no fundo, a sugerir que a fita curva para dentro da
+     máquina. Chega a zero antes do meio, para não escurecer a arte. */
+  .maquina-janela::after{
+    content:"";position:absolute;inset:0;border-radius:12px;pointer-events:none;
+    background:linear-gradient(rgba(28,28,30,.16),rgba(28,28,30,0) 32%,
+                               rgba(28,28,30,0) 68%,rgba(28,28,30,.16));
+  }
+  .fita{will-change:transform}
+  .maquina-item{
+    height:var(--rolo,150px);
+    display:flex;align-items:center;justify-content:center;
+    padding:12px;color:var(--azul);
+  }
+  /* A arte encaixa na janela sem se deformar, seja imagem ou símbolo. */
+  .maquina-item .arte,
+  .maquina-item .simbolo{
+    display:block;max-width:100%;max-height:100%;width:auto;height:auto;
+  }
+  /* O símbolo é vetorial e não tem tamanho próprio: dão-se-lhe estas. */
+  .maquina-item .simbolo{height:62%}
+  /* A linha onde o prémio para, como nas máquinas: dois bicos a apontar para
+     dentro. Sem eles não se sabe onde olhar. */
+  .maquina::before,.maquina::after{
+    content:"";position:absolute;top:50%;transform:translateY(-50%);
+    width:0;height:0;z-index:1;
+    border-top:8px solid transparent;border-bottom:8px solid transparent;
+  }
+  .maquina::before{left:1px;border-left:9px solid var(--coral)}
+  .maquina::after{right:1px;border-right:9px solid var(--coral)}
+  /* No ecrã do prémio a mesma janela guarda o que saiu: a máquina fica com a
+     resposta em vez de a passar a texto noutro sítio. */
+  #ecra-brinde .maquina{margin-bottom:16px}
+  #ecra-brinde .maquina::before,
+  #ecra-brinde .maquina::after{display:none}
 
-  /* O prémio é a resposta do ecrã: entra grande e em coral. O coral sobre
-     branco dá 3,94:1 — passa o AA porque isto é texto grande. */
+  /* O prémio é a resposta do ecrã seguinte: entra grande e em coral. O coral
+     sobre branco dá 3,94:1 — passa o AA porque isto é texto grande. */
+  /* Debaixo da janela, e centrado com ela. Já não é o headline do cartão — a
+     janela é que dá a notícia — mas o nome tem de estar escrito: quem entrega o
+     brinde na carrinha não pode ficar a interpretar uma fotografia. */
   .folha .brinde{
     font-family:var(--display);font-weight:900;
-    font-size:clamp(26px,7.6vw,33px);line-height:1.05;letter-spacing:-.025em;
+    font-size:clamp(21px,6vw,26px);line-height:1.06;letter-spacing:-.02em;
     text-transform:uppercase;color:var(--coral);
-    margin:0 0 4px;text-wrap:balance;
+    margin:0 0 4px;text-align:center;text-wrap:balance;
   }
   /* Ponte entre o prémio e o convite. Em Montserrat Black e caixa alta
      competia com o prémio coral logo acima e com o título coral fora do
@@ -138,6 +185,7 @@
   }
   .folha .brinde-nota{
     font-size:13px;font-weight:600;line-height:1.4;color:#5F6489;
+    text-align:center;
     margin:0 0 18px;padding-bottom:18px;border-bottom:1px solid var(--nevoa-forte);
   }
 
@@ -179,8 +227,8 @@
     font-weight:500;letter-spacing:.04em;text-transform:none;
     color:#6B7099;margin-left:5px;
   }
-  /* Prefixados com .folha: a regra do parágrafo tem mais especificidade e impunha-lhes
-     15px e a cor azul. */
+  /* Prefixados com .folha: a regra do parágrafo do cartão tem mais
+     especificidade e impunha-lhes 15px e a cor azul. */
   .folha .ajuda-campo{font-size:12px;line-height:1.45;color:#5F6489;margin:-3px 0 9px}
   input::placeholder{color:#6B7099}
   input:focus{border-color:var(--azul);background:var(--branco);outline:none}
@@ -325,34 +373,66 @@
 
   <div class="passos" id="passos" role="img" aria-label="Passo 1 de 3"><i class="on"></i><i></i><i></i></div>
 
-  <!-- ECRÃ 1 · ROLETA -->
-  <section class="ecra ativo" id="ecra-roleta">
+  <!-- ECRÃ 1 · A MÁQUINA -->
+  <section class="ecra ativo" id="ecra-sorte">
     <div class="cabeca">
-      <h1>Dá-lhe uma<br>volta</h1>
-      <p class="lead">Deixa o email e a roda é tua. Não há fatias vazias — sai sempre borla.</p>
+      <h1>Deixa<br>rolar</h1>
+      <p class="lead">Deixa o email e a máquina faz o resto. Não há linhas vazias — sai sempre borla.</p>
     </div>
     <div class="folha">
-      <div class="roleta" id="roleta">
-        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Roleta com seis prémios: 20% na próxima estadia, Bola de Berlim, Saco de praia da Umbral, Boné da Umbral, Protetor solar, Toalha de praia.">
-    <g id="roda">
-      <path d="M100 104L100.00 14.00A90 90 0 0 1 177.94 59.00Z" fill="#C0353F"/>
-      <path d="M100 104L177.94 59.00A90 90 0 0 1 177.94 149.00Z" fill="#2A3176"/>
-      <path d="M100 104L177.94 149.00A90 90 0 0 1 100.00 194.00Z" fill="#FDECEE"/>
-      <path d="M100 104L100.00 194.00A90 90 0 0 1 22.06 149.00Z" fill="#2A3176"/>
-      <path d="M100 104L22.06 149.00A90 90 0 0 1 22.06 59.00Z" fill="#FDECEE"/>
-      <path d="M100 104L22.06 59.00A90 90 0 0 1 100.00 14.00Z" fill="#2A3176"/>
-      <circle cx="100" cy="104" r="90" fill="none" stroke="#2A3176" stroke-width="3"/>
-      <text x="134" y="104" dy=".35em" text-anchor="start" transform="rotate(-60.00 100 104)" fill="#FFFFFF" font-family="Montserrat,sans-serif" font-weight="900" font-size="17" letter-spacing="-.5">20%</text>
-      <text x="134" y="104" dy=".35em" text-anchor="start" transform="rotate(0.00 100 104)" fill="#FFFFFF" font-family="Montserrat,sans-serif" font-weight="900" font-size="11" letter-spacing=".4">BOLA</text>
-      <text x="134" y="104" dy=".35em" text-anchor="start" transform="rotate(60.00 100 104)" fill="#2A3176" font-family="Montserrat,sans-serif" font-weight="900" font-size="11" letter-spacing=".4">SACO</text>
-      <text x="66" y="104" dy=".35em" text-anchor="end" transform="rotate(300.00 100 104)" fill="#FFFFFF" font-family="Montserrat,sans-serif" font-weight="900" font-size="11" letter-spacing=".4">BONÉ</text>
-      <text x="66" y="104" dy=".35em" text-anchor="end" transform="rotate(360.00 100 104)" fill="#2A3176" font-family="Montserrat,sans-serif" font-weight="900" font-size="11" letter-spacing=".4">CREME</text>
-      <text x="66" y="104" dy=".35em" text-anchor="end" transform="rotate(420.00 100 104)" fill="#FFFFFF" font-family="Montserrat,sans-serif" font-weight="900" font-size="11" letter-spacing=".4">TOALHA</text>
-    </g>
-    <circle cx="100" cy="104" r="23" fill="#FFFFFF" stroke="#EA525C" stroke-width="4"/>
-    <circle cx="100" cy="104" r="7" fill="#EA525C"/>
-    <path d="M91 0h18l-9 21z" fill="#2A3176"/>
-  </svg>
+      <div class="maquina" id="maquina">
+        <div class="maquina-janela" role="img" aria-label="Máquina com 6 prémios: 20% na próxima estadia, Bola de Berlim, Saco de praia da Umbral, Boné da Umbral, Protetor solar, Toalha de praia.">
+          <div class="fita" id="fita">
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><text x="20" y="27" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-size="17" letter-spacing="-.6" fill="currentColor" stroke="none">20%</text></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="20" cy="22" r="11.6"/><path d="M8.9 24.1h22.2"/><circle cx="15.1" cy="15.4" r="1.25" fill="currentColor" stroke="none"/><circle cx="20" cy="13.6" r="1.25" fill="currentColor" stroke="none"/><circle cx="24.9" cy="15.4" r="1.25" fill="currentColor" stroke="none"/></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.6 15.2c0-8.4 12.8-8.4 12.8 0"/><path d="M8.4 15.2h23.2l-1.6 16a2.1 2.1 0 0 1-2.1 1.9H12.1a2.1 2.1 0 0 1-2.1-1.9Z"/></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.6 25.4a9.4 9.4 0 0 1 18.8 0"/><path d="M10.6 25.4h22.6a2.2 2.2 0 0 1 0 4.4H10.6Z"/></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="20" cy="20" r="6.4" fill="currentColor" stroke="none"/><path d="M20 5.6v3.8M20 30.6v3.8M5.6 20h3.8M30.6 20h3.8M10.1 10.1l2.7 2.7M27.2 27.2l2.7 2.7M29.9 10.1l-2.7 2.7M12.8 27.2l-2.7 2.7"/></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.6 13.2h26.8"/><path d="M12 13.2v13.9a3.2 3.2 0 0 0 3.2 3.2h9.6a3.2 3.2 0 0 0 3.2-3.2V13.2"/><path d="M12 24.2h16"/></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><text x="20" y="27" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-size="17" letter-spacing="-.6" fill="currentColor" stroke="none">20%</text></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="20" cy="22" r="11.6"/><path d="M8.9 24.1h22.2"/><circle cx="15.1" cy="15.4" r="1.25" fill="currentColor" stroke="none"/><circle cx="20" cy="13.6" r="1.25" fill="currentColor" stroke="none"/><circle cx="24.9" cy="15.4" r="1.25" fill="currentColor" stroke="none"/></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.6 15.2c0-8.4 12.8-8.4 12.8 0"/><path d="M8.4 15.2h23.2l-1.6 16a2.1 2.1 0 0 1-2.1 1.9H12.1a2.1 2.1 0 0 1-2.1-1.9Z"/></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.6 25.4a9.4 9.4 0 0 1 18.8 0"/><path d="M10.6 25.4h22.6a2.2 2.2 0 0 1 0 4.4H10.6Z"/></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="20" cy="20" r="6.4" fill="currentColor" stroke="none"/><path d="M20 5.6v3.8M20 30.6v3.8M5.6 20h3.8M30.6 20h3.8M10.1 10.1l2.7 2.7M27.2 27.2l2.7 2.7M29.9 10.1l-2.7 2.7M12.8 27.2l-2.7 2.7"/></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.6 13.2h26.8"/><path d="M12 13.2v13.9a3.2 3.2 0 0 0 3.2 3.2h9.6a3.2 3.2 0 0 0 3.2-3.2V13.2"/><path d="M12 24.2h16"/></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><text x="20" y="27" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-size="17" letter-spacing="-.6" fill="currentColor" stroke="none">20%</text></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="20" cy="22" r="11.6"/><path d="M8.9 24.1h22.2"/><circle cx="15.1" cy="15.4" r="1.25" fill="currentColor" stroke="none"/><circle cx="20" cy="13.6" r="1.25" fill="currentColor" stroke="none"/><circle cx="24.9" cy="15.4" r="1.25" fill="currentColor" stroke="none"/></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.6 15.2c0-8.4 12.8-8.4 12.8 0"/><path d="M8.4 15.2h23.2l-1.6 16a2.1 2.1 0 0 1-2.1 1.9H12.1a2.1 2.1 0 0 1-2.1-1.9Z"/></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.6 25.4a9.4 9.4 0 0 1 18.8 0"/><path d="M10.6 25.4h22.6a2.2 2.2 0 0 1 0 4.4H10.6Z"/></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="20" cy="20" r="6.4" fill="currentColor" stroke="none"/><path d="M20 5.6v3.8M20 30.6v3.8M5.6 20h3.8M30.6 20h3.8M10.1 10.1l2.7 2.7M27.2 27.2l2.7 2.7M29.9 10.1l-2.7 2.7M12.8 27.2l-2.7 2.7"/></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.6 13.2h26.8"/><path d="M12 13.2v13.9a3.2 3.2 0 0 0 3.2 3.2h9.6a3.2 3.2 0 0 0 3.2-3.2V13.2"/><path d="M12 24.2h16"/></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><text x="20" y="27" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-size="17" letter-spacing="-.6" fill="currentColor" stroke="none">20%</text></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="20" cy="22" r="11.6"/><path d="M8.9 24.1h22.2"/><circle cx="15.1" cy="15.4" r="1.25" fill="currentColor" stroke="none"/><circle cx="20" cy="13.6" r="1.25" fill="currentColor" stroke="none"/><circle cx="24.9" cy="15.4" r="1.25" fill="currentColor" stroke="none"/></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.6 15.2c0-8.4 12.8-8.4 12.8 0"/><path d="M8.4 15.2h23.2l-1.6 16a2.1 2.1 0 0 1-2.1 1.9H12.1a2.1 2.1 0 0 1-2.1-1.9Z"/></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.6 25.4a9.4 9.4 0 0 1 18.8 0"/><path d="M10.6 25.4h22.6a2.2 2.2 0 0 1 0 4.4H10.6Z"/></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="20" cy="20" r="6.4" fill="currentColor" stroke="none"/><path d="M20 5.6v3.8M20 30.6v3.8M5.6 20h3.8M30.6 20h3.8M10.1 10.1l2.7 2.7M27.2 27.2l2.7 2.7M29.9 10.1l-2.7 2.7M12.8 27.2l-2.7 2.7"/></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.6 13.2h26.8"/><path d="M12 13.2v13.9a3.2 3.2 0 0 0 3.2 3.2h9.6a3.2 3.2 0 0 0 3.2-3.2V13.2"/><path d="M12 24.2h16"/></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><text x="20" y="27" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-size="17" letter-spacing="-.6" fill="currentColor" stroke="none">20%</text></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="20" cy="22" r="11.6"/><path d="M8.9 24.1h22.2"/><circle cx="15.1" cy="15.4" r="1.25" fill="currentColor" stroke="none"/><circle cx="20" cy="13.6" r="1.25" fill="currentColor" stroke="none"/><circle cx="24.9" cy="15.4" r="1.25" fill="currentColor" stroke="none"/></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.6 15.2c0-8.4 12.8-8.4 12.8 0"/><path d="M8.4 15.2h23.2l-1.6 16a2.1 2.1 0 0 1-2.1 1.9H12.1a2.1 2.1 0 0 1-2.1-1.9Z"/></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.6 25.4a9.4 9.4 0 0 1 18.8 0"/><path d="M10.6 25.4h22.6a2.2 2.2 0 0 1 0 4.4H10.6Z"/></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="20" cy="20" r="6.4" fill="currentColor" stroke="none"/><path d="M20 5.6v3.8M20 30.6v3.8M5.6 20h3.8M30.6 20h3.8M10.1 10.1l2.7 2.7M27.2 27.2l2.7 2.7M29.9 10.1l-2.7 2.7M12.8 27.2l-2.7 2.7"/></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.6 13.2h26.8"/><path d="M12 13.2v13.9a3.2 3.2 0 0 0 3.2 3.2h9.6a3.2 3.2 0 0 0 3.2-3.2V13.2"/><path d="M12 24.2h16"/></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><text x="20" y="27" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-size="17" letter-spacing="-.6" fill="currentColor" stroke="none">20%</text></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="20" cy="22" r="11.6"/><path d="M8.9 24.1h22.2"/><circle cx="15.1" cy="15.4" r="1.25" fill="currentColor" stroke="none"/><circle cx="20" cy="13.6" r="1.25" fill="currentColor" stroke="none"/><circle cx="24.9" cy="15.4" r="1.25" fill="currentColor" stroke="none"/></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.6 15.2c0-8.4 12.8-8.4 12.8 0"/><path d="M8.4 15.2h23.2l-1.6 16a2.1 2.1 0 0 1-2.1 1.9H12.1a2.1 2.1 0 0 1-2.1-1.9Z"/></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.6 25.4a9.4 9.4 0 0 1 18.8 0"/><path d="M10.6 25.4h22.6a2.2 2.2 0 0 1 0 4.4H10.6Z"/></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="20" cy="20" r="6.4" fill="currentColor" stroke="none"/><path d="M20 5.6v3.8M20 30.6v3.8M5.6 20h3.8M30.6 20h3.8M10.1 10.1l2.7 2.7M27.2 27.2l2.7 2.7M29.9 10.1l-2.7 2.7M12.8 27.2l-2.7 2.7"/></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.6 13.2h26.8"/><path d="M12 13.2v13.9a3.2 3.2 0 0 0 3.2 3.2h9.6a3.2 3.2 0 0 0 3.2-3.2V13.2"/><path d="M12 24.2h16"/></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><text x="20" y="27" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-size="17" letter-spacing="-.6" fill="currentColor" stroke="none">20%</text></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="20" cy="22" r="11.6"/><path d="M8.9 24.1h22.2"/><circle cx="15.1" cy="15.4" r="1.25" fill="currentColor" stroke="none"/><circle cx="20" cy="13.6" r="1.25" fill="currentColor" stroke="none"/><circle cx="24.9" cy="15.4" r="1.25" fill="currentColor" stroke="none"/></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.6 15.2c0-8.4 12.8-8.4 12.8 0"/><path d="M8.4 15.2h23.2l-1.6 16a2.1 2.1 0 0 1-2.1 1.9H12.1a2.1 2.1 0 0 1-2.1-1.9Z"/></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.6 25.4a9.4 9.4 0 0 1 18.8 0"/><path d="M10.6 25.4h22.6a2.2 2.2 0 0 1 0 4.4H10.6Z"/></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="20" cy="20" r="6.4" fill="currentColor" stroke="none"/><path d="M20 5.6v3.8M20 30.6v3.8M5.6 20h3.8M30.6 20h3.8M10.1 10.1l2.7 2.7M27.2 27.2l2.7 2.7M29.9 10.1l-2.7 2.7M12.8 27.2l-2.7 2.7"/></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.6 13.2h26.8"/><path d="M12 13.2v13.9a3.2 3.2 0 0 0 3.2 3.2h9.6a3.2 3.2 0 0 0 3.2-3.2V13.2"/><path d="M12 24.2h16"/></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><text x="20" y="27" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-size="17" letter-spacing="-.6" fill="currentColor" stroke="none">20%</text></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="20" cy="22" r="11.6"/><path d="M8.9 24.1h22.2"/><circle cx="15.1" cy="15.4" r="1.25" fill="currentColor" stroke="none"/><circle cx="20" cy="13.6" r="1.25" fill="currentColor" stroke="none"/><circle cx="24.9" cy="15.4" r="1.25" fill="currentColor" stroke="none"/></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.6 15.2c0-8.4 12.8-8.4 12.8 0"/><path d="M8.4 15.2h23.2l-1.6 16a2.1 2.1 0 0 1-2.1 1.9H12.1a2.1 2.1 0 0 1-2.1-1.9Z"/></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.6 25.4a9.4 9.4 0 0 1 18.8 0"/><path d="M10.6 25.4h22.6a2.2 2.2 0 0 1 0 4.4H10.6Z"/></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="20" cy="20" r="6.4" fill="currentColor" stroke="none"/><path d="M20 5.6v3.8M20 30.6v3.8M5.6 20h3.8M30.6 20h3.8M10.1 10.1l2.7 2.7M27.2 27.2l2.7 2.7M29.9 10.1l-2.7 2.7M12.8 27.2l-2.7 2.7"/></svg></div>
+            <div class="maquina-item"><svg class="simbolo" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.6 13.2h26.8"/><path d="M12 13.2v13.9a3.2 3.2 0 0 0 3.2 3.2h9.6a3.2 3.2 0 0 0 3.2-3.2V13.2"/><path d="M12 24.2h16"/></svg></div>
+          </div>
+        </div>
       </div>
 
       <label for="email">Email</label>
@@ -365,7 +445,7 @@
         <label for="rgpd" style="margin:0"><span>Autorizo a Umbral a guardar o meu email para me enviar o prémio e novidades. Saio da lista quando quiser. <a href="https://drive.google.com/file/d/1m5NhpdfgIsI4HhKV9nCdjpDMnG8akkpS/view" target="_blank" rel="noopener noreferrer">Política de privacidade</a>.</span></label>
       </div>
 
-      <button class="btn" id="btn-rodar">À roda!</button>
+      <button class="btn" id="btn-rolar">Dá-lhe!</button>
       <p class="oculto" id="anuncio" aria-live="polite"></p>
     </div>
   </section>
@@ -374,10 +454,15 @@
   <section class="ecra" id="ecra-brinde">
     <div class="cabeca">
       <h1>Olha o que<br>te saiu</h1>
-      <p class="lead">Foi só rodar. E não há letras pequenas.</p>
+      <p class="lead">Saiu à primeira. E não há letras pequenas.</p>
     </div>
     <div class="folha">
-      <p class="brinde" id="nome-brinde">Uma bola de Berlim</p>
+      <div class="maquina">
+        <div class="maquina-janela">
+          <div class="maquina-item" id="vitrine"></div>
+        </div>
+      </div>
+      <p class="brinde" id="nome-brinde">Bola de Berlim</p>
       <p class="brinde-nota" id="nota-brinde">Mostra este ecrã a quem está na carrinha e é teu.</p>
 
       <div id="convite">
@@ -449,51 +534,48 @@
   "use strict";
 
   /* ---------- os brindes ----------
-     ATENÇÃO: esta é a lista a confirmar com quem carrega a carrinha. As
-     etiquetas são o que cabe na fatia; o nome é o que a pessoa lê no fim e o
-     que fica gravado. O `peso` é a probabilidade relativa — o cupão sai mais
-     vezes porque não custa nada à Umbral e é o que traz reservas.
-     Só o cupão tem `codigo`; os outros entregam-se ali, na carrinha. */
+     ATENÇÃO: esta é a lista a confirmar com quem carrega a carrinha. O nome é o
+     que a pessoa lê na fita e no fim, e o que fica gravado. O `peso` é a
+     probabilidade relativa — o cupão sai mais vezes porque não custa nada à
+     Umbral e é o que traz reservas.
+     Só o cupão tem `codigo`; os outros entregam-se ali, na carrinha.
+     Mexer nesta lista é mexer também na fita do HTML: cada brinde é um item,
+     repetido em cópias, e a ordem tem de ser a mesma. */
   var BRINDES = [
     {
-      "etiqueta": "20%",
       "nome": "20% na próxima estadia",
       "codigo": "BORLA20",
       "peso": 4
     },
     {
-      "etiqueta": "BOLA",
       "nome": "Bola de Berlim",
       "codigo": null,
       "peso": 1
     },
     {
-      "etiqueta": "SACO",
       "nome": "Saco de praia da Umbral",
       "codigo": null,
       "peso": 1
     },
     {
-      "etiqueta": "BONÉ",
       "nome": "Boné da Umbral",
       "codigo": null,
       "peso": 1
     },
     {
-      "etiqueta": "CREME",
       "nome": "Protetor solar",
       "codigo": null,
       "peso": 1
     },
     {
-      "etiqueta": "TOALHA",
       "nome": "Toalha de praia",
       "codigo": null,
       "peso": 1
     }
   ];
 
-  var ARCO = 360 / BRINDES.length;
+  /* Tem de bater com o que está empilhado na fita. */
+  var COPIA_ALVO = 6;
 
   /* ---------- Supabase ----------
      Chave publicável: pode viver no código-fonte. O papel `anon` só tem INSERT
@@ -555,7 +637,7 @@
     return !!falha && falha.estado === 409 &&
            String(falha.message).indexOf(indice) !== -1;
   }
-  /* Já rodou a roleta nesta carrinha. */
+  /* Já jogou nesta carrinha. */
   function emailJaJogou(falha){ return violou(falha, "inscricoes_email_por_canal"); }
   /* Já está no sorteio da semana, venha do saco, do avião ou da carrinha. */
   function jaParticipouNoSorteio(falha){ return violou(falha, "participacoes_email_unico"); }
@@ -580,7 +662,8 @@
 
   var estado = {
     id:null, email:"", instagram:"", brinde:null,
-    foto:null, fotoUrl:null, fotoCaminho:null, rodou:false, guardado:false
+    foto:null, fotoUrl:null, fotoCaminho:null,
+    rolou:false, guardado:false, aRolar:false
   };
 
   function $(id){ return document.getElementById(id); }
@@ -607,8 +690,8 @@
   function instagramValido(v){ return /^@?[A-Za-z0-9._]{1,30}$/.test(v); }
 
   /* ---------- passos ---------- */
-  var PASSO_DE = {"ecra-roleta":1, "ecra-brinde":2, "ecra-final":3};
-  var ORDEM_ECRAS = ["ecra-roleta", "ecra-brinde", "ecra-final"];
+  var PASSO_DE = {"ecra-sorte":1, "ecra-brinde":2, "ecra-final":3};
+  var ORDEM_ECRAS = ["ecra-sorte", "ecra-brinde", "ecra-final"];
   var TOTAL_PASSOS = ORDEM_ECRAS.length;
   /* Até onde a pessoa já chegou: não se salta para a frente sem ter cumprido
      o passo. */
@@ -685,7 +768,7 @@
       window.scrollTo(0,0);
       document.querySelector(".app").classList.toggle("fim", idEcra === "ecra-final");
       if (idEcra === "ecra-final") confetis();
-      if (idEcra === "ecra-roleta") ajustarRoleta();
+      if (idEcra === "ecra-sorte") ajustarMaquina();
 
       animarAltura(novo.querySelector(".cabeca"), deCabeca, alturaDe(novo, ".cabeca"));
       animarAltura(novo.querySelector(".folha"), deFolha, alturaDe(novo, ".folha"));
@@ -696,11 +779,11 @@
     }, 190);
   }
 
-  /* ---------- a roda ----------
-     O prémio é sorteado aqui, no telemóvel. Pode ser: os brindes não têm
-     stock limitado — quem está na carrinha é que os entrega — por isso não há
-     nada para reservar no servidor, e uma roda que espera pela rede antes de
-     começar a girar não tem graça nenhuma. */
+  /* ---------- a máquina ----------
+     O prémio é sorteado aqui, no telemóvel. Pode ser: os brindes não têm stock
+     limitado — quem está na carrinha é que os entrega — por isso não há nada
+     para reservar no servidor, e uma máquina que espera pela rede antes de
+     começar a rolar não tem graça nenhuma. */
   function sortearBrinde(){
     var total = 0, i;
     for (i = 0; i < BRINDES.length; i++) total += BRINDES[i].peso;
@@ -712,36 +795,50 @@
     return BRINDES.length - 1;
   }
 
-  var DURACAO_RODA = 3600;
+  var DURACAO_ROLO = 3000, DURACAO_ASSENTO = 340;
 
-  /* Roda até a fatia `indice` parar debaixo do ponteiro, que está no topo.
-     Cinco voltas inteiras antes, e um desvio dentro da fatia para não parar
-     sempre no mesmo sítio. */
-  function girar(indice){
-    var meio = -60 + indice * ARCO;          /* centro da fatia, em graus */
-    var desvio = (Math.random() - 0.5) * (ARCO - 16);
-    var angulo = 1800 - 90 - meio + desvio;
-    var roda = $("roda");
-    var caixa = $("roleta");
-    caixa.classList.add("a-rodar");
-    /* Dois quadros antes de escrever o alvo: sem isto o browser podia juntar
-       a transição e o valor final e a roda saltava. */
+  function alturaDoItem(){
+    var it = document.querySelector(".maquina-item");
+    return it ? it.getBoundingClientRect().height : 150;
+  }
+
+  /* Roda a fita até o prémio parar na linha, passa um pouco do sítio e volta
+     atrás. É esse recuo que faz a máquina parecer uma máquina, e não uma lista
+     a deslizar até ao fim. */
+  function rolar(indice){
+    var fita = $("fita");
+    var h = alturaDoItem();
+    var alvo = -((COPIA_ALVO * BRINDES.length + indice) * h);
+    var passou = alvo - h * 0.26;
+
+    if (semAnimacao()){
+      fita.style.transform = "translateY(" + alvo.toFixed(1) + "px)";
+      return new Promise(function(r){ setTimeout(r, 200); });
+    }
+
+    estado.aRolar = true;
     return new Promise(function(resolve){
+      /* Dois quadros antes de escrever o destino: sem isto o browser podia
+         juntar a transição e o valor final, e a fita saltava. */
       requestAnimationFrame(function(){
         requestAnimationFrame(function(){
-          roda.style.transform = "rotate(" + angulo.toFixed(2) + "deg)";
-          setTimeout(resolve, semAnimacao() ? 200 : DURACAO_RODA);
+          fita.style.transition = "transform " + (DURACAO_ROLO/1000) + "s cubic-bezier(.12,.72,.04,1)";
+          fita.style.transform = "translateY(" + passou.toFixed(1) + "px)";
+          setTimeout(function(){
+            fita.style.transition = "transform " + (DURACAO_ASSENTO/1000) + "s cubic-bezier(.3,1.3,.5,1)";
+            fita.style.transform = "translateY(" + alvo.toFixed(1) + "px)";
+            setTimeout(function(){ estado.aRolar = false; resolve(); }, DURACAO_ASSENTO);
+          }, DURACAO_ROLO);
         });
       });
     });
   }
 
-  /* Num 360x640 o botão principal caía 66px abaixo da linha de água, e o botão
-     é a única coisa deste ecrã que não pode ficar escondida. Mede-se o excesso
-     real e tira-se dele: primeiro da roda, que é o que mais se pode encolher,
-     e só depois do ar em volta do título. Um breakpoint de altura já me tinha
-     apanhado um telemóvel grande por ser comprido. */
-  var RODA_MIN = 132, APERTO_MAX = 12;
+  /* A janela da máquina é o que mais se pode encolher, e o botão é o que não
+     pode ficar escondido. Mede-se o excesso real e tira-se dele: primeiro da
+     janela, depois do ar em volta do título. Um breakpoint de altura já me
+     tinha apanhado um telemóvel grande por ser comprido. */
+  var ROLO_MIN = 86, APERTO_MAX = 14;
 
   function excessoDaPagina(){
     /* A .app tem min-height:100dvh, por isso qualquer altura a mais é excesso.
@@ -749,29 +846,33 @@
     return document.querySelector(".app").getBoundingClientRect().height - window.innerHeight;
   }
 
-  function ajustarRoleta(){
-    var caixa = $("roleta");
-    if (!caixa || !$("ecra-roleta").classList.contains("ativo")) return;
-    caixa.style.width = "";
-    document.documentElement.style.setProperty("--aperto", "0px");
+  function ajustarMaquina(){
+    /* A meio de uma rolagem o destino já foi calculado com a altura actual do
+       item. Mudá-la agora — e no iOS a barra de endereço a recolher dispara um
+       resize — punha a fita a parar no prémio errado. */
+    if (estado.aRolar) return;
+    if (!$("ecra-sorte").classList.contains("ativo")) return;
+
+    var raiz = document.documentElement;
+    raiz.style.setProperty("--rolo", "");
+    raiz.style.setProperty("--aperto", "0px");
 
     var excesso = excessoDaPagina();
     if (excesso <= 1) return;
 
-    /* A roda é quadrada, por isso cada pixel de largura é um de altura. */
-    var largura = caixa.getBoundingClientRect().width;
-    var nova = Math.max(RODA_MIN, largura - excesso);
-    if (nova < largura) caixa.style.width = Math.floor(nova) + "px";
+    var alt = alturaDoItem();
+    var nova = Math.max(ROLO_MIN, alt - excesso);
+    if (nova < alt) raiz.style.setProperty("--rolo", Math.floor(nova) + "px");
 
     excesso = excessoDaPagina();
     if (excesso > 1){
-      document.documentElement.style.setProperty(
+      raiz.style.setProperty(
         "--aperto", Math.min(Math.ceil(excesso / 2), APERTO_MAX) + "px");
     }
   }
 
-  window.addEventListener("resize", ajustarRoleta);
-  window.addEventListener("orientationchange", function(){ setTimeout(ajustarRoleta, 120); });
+  window.addEventListener("resize", ajustarMaquina);
+  window.addEventListener("orientationchange", function(){ setTimeout(ajustarMaquina, 120); });
 
   function guardarInscricao(){
     return inserirTeimoso("inscricoes", {
@@ -787,19 +888,23 @@
   }
 
   function apresentarBrinde(brinde){
+    /* A mesma arte da fita, copiada para a vitrine: a máquina fica com a
+       resposta em vez de a notícia passar a texto noutro sítio. */
+    var naFita = document.querySelectorAll(".fita .maquina-item")[BRINDES.indexOf(brinde)];
+    if (naFita) $("vitrine").innerHTML = naFita.innerHTML;
     $("nome-brinde").textContent = brinde.nome;
     $("nota-brinde").textContent = brinde.codigo
       ? "O código chega-te ao email daqui a nada."
       : "Mostra este ecrã a quem está na carrinha e é teu.";
-    $("anuncio").textContent = "Ganhaste: " + brinde.nome + ".";
+    $("anuncio").textContent = "Saiu-te: " + brinde.nome + ".";
   }
 
-  $("btn-rodar").addEventListener("click", function(){
+  $("btn-rolar").addEventListener("click", function(){
     var botao = this;
     var email = $("email").value.trim();
     var erro = $("erro-email");
 
-    /* Quem já rodou e voltou atrás pelo swipe encontra o botão outra vez. Sem
+    /* Quem já jogou e voltou atrás pelo swipe encontra o botão outra vez. Sem
        isto tentava gravar de novo e apanhava o 409 do email repetido — um erro
        à frente de alguém que não fez nada de errado. */
     if (estado.guardado){
@@ -807,42 +912,42 @@
       mostrar("ecra-brinde");
       return;
     }
+
     if (!emailValido(email)) { dizerErro(erro, "Falta-te o @ ou o ponto algures. Tenta outra vez."); $("email").focus(); return; }
     if (!$("rgpd").checked) { dizerErro(erro, "Sem essa cruzinha não te conseguimos mandar nada."); return; }
     dizerErro(erro, "");
 
-    /* O id fica preso à tentativa: repetir depois de uma falha de rede não
-       cria uma segunda inscrição da mesma pessoa. E o brinde também, senão
-       carregar outra vez era rodar outra vez até dar o cupão. */
+    /* O id fica preso à tentativa: repetir depois de uma falha de rede não cria
+       uma segunda inscrição da mesma pessoa. E o brinde também, senão carregar
+       outra vez era jogar outra vez até sair o cupão. */
     if (!estado.id) estado.id = uuid();
     estado.email = email;
     if (!estado.brinde) estado.brinde = BRINDES[sortearBrinde()];
 
-    ocupar(botao, "A rodar…");
-    /* A roda gira enquanto o registo viaja: três segundos e meio de animação
-       tapam a latência em vez de a pessoa ficar à espera de um spinner. */
-    var aGirar = estado.rodou ? Promise.resolve() : girar(BRINDES.indexOf(estado.brinde));
-    estado.rodou = true;
+    ocupar(botao, "A rolar…");
+    /* A fita roda enquanto o registo viaja: três segundos de animação tapam a
+       latência, em vez de a pessoa ficar à espera de um spinner. */
+    var aRolar = estado.rolou ? Promise.resolve() : rolar(BRINDES.indexOf(estado.brinde));
+    estado.rolou = true;
 
     var aGuardar = guardarInscricao().catch(function(falha){
       if (jaEstavaGuardado(falha)) return;
       throw falha;
     });
 
-    Promise.all([aGirar, aGuardar]).then(function(){
+    Promise.all([aRolar, aGuardar]).then(function(){
       estado.guardado = true;
       apresentarBrinde(estado.brinde);
       mostrar("ecra-brinde");
     }).catch(function(falha){
       if (emailJaJogou(falha)){
-        dizerErro(erro, "Este email já rodou. É uma volta por pessoa.");
+        dizerErro(erro, "Este email já jogou. É uma vez por pessoa.");
       } else {
         dizerErro(erro, "Não conseguimos guardar agora. Vê a ligação e carrega outra vez.");
         if (window.console) console.error("Falhou a inscrição:", falha);
       }
     }).then(function(){
       libertar(botao);
-      $("roleta").classList.remove("a-rodar");
     });
   });
 
@@ -1110,7 +1215,7 @@
     var coisa = BRINDES[1];
 
     var destinos = [
-      ["Roleta",  function(){ mostrar("ecra-roleta"); }],
+      ["Máquina", function(){ mostrar("ecra-sorte"); }],
       ["Cupão",   function(){ fecharExtra(); fingirBrinde(cupao); mostrar("ecra-brinde"); }],
       ["Brinde",  function(){ fecharExtra(); fingirBrinde(coisa); mostrar("ecra-brinde"); }],
       ["Foto",    function(){ fingirBrinde(coisa); abrirExtra(); mostrar("ecra-brinde"); }],
@@ -1140,8 +1245,8 @@
 
   /* ---------- arranque ---------- */
   ligarSwipe();
-  ajustarRoleta();
-  marcarPasso("ecra-roleta");
+  ajustarMaquina();
+  marcarPasso("ecra-sorte");
   barraDeTestes();
 })();
 </script>
