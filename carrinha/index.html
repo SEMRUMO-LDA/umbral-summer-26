@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#EA525C">
-<title>Umbral · Hotels &amp; More</title>
+<title>Umbral · Roda a roleta</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&family=Montserrat:wght@900&display=swap" rel="stylesheet">
@@ -19,9 +19,6 @@
     --cinza:#F2F2F4;
     --cinza-erro:#F9DADC;
     --tinta:#1C1C1E;
-    /* Turquesa da seleção. Como cor de letra dava 2,4:1 sobre o rosa; como
-       fundo com letra preta dá 6,20:1. Por isso pinta a célula, não a letra. */
-    --turquesa:#00ADB6;
     --azul:#2A3176;
     --azul-fundo:#1E2358;
     --nevoa:#F1F2F7;
@@ -39,7 +36,6 @@
     min-height:100dvh;
     font-family:var(--corpo);font-weight:500;color:var(--branco);
     -webkit-tap-highlight-color:transparent;
-    /* Sem isto o arrastar na grelha dispara o "puxar para recarregar" do iOS. */
     overscroll-behavior-y:contain;
   }
   .oculto{
@@ -51,9 +47,6 @@
   .mosaico{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
   .mosaico svg{width:100%;height:100%;display:block}
 
-  /* Coluna com a altura do ecrã: com o `margin-top:auto` do rodapé, o crédito
-     encosta ao fundo quando o conteúdo é curto e volta a rolar quando é longo.
-     Preferi isto a position:fixed, que taparia a grelha ao rolar. */
   .app{
     position:relative;z-index:1;
     display:flex;flex-direction:column;min-height:100dvh;
@@ -62,20 +55,16 @@
   }
 
   /* ---------- logo ---------- */
-  .topo{display:flex;justify-content:center;padding:2px 0 calc(12px + var(--ar,0px))}
+  .topo{display:flex;justify-content:center;padding:2px 0 12px}
   .logo{width:172px;color:var(--branco)}
   .logo svg{width:100%;height:auto;display:block}
 
-  /* ---------- cabeça coral: marca, título, instrução ---------- */
+  /* ---------- cabeça coral ---------- */
   .cabeca{padding:0 4px 20px}
-  /* Onde estamos é uma barra; o resto são círculos. A forma distingue o passo
-     atual sem depender só da opacidade. */
-  .passos{display:flex;align-items:center;gap:6px;margin:0 4px calc(7px + var(--ar,0px));flex:none}
+  .passos{display:flex;align-items:center;gap:6px;margin:0 4px 7px;flex:none}
   .passos i{
     width:7px;height:7px;border-radius:50%;display:block;
     background:var(--branco);opacity:.42;
-    /* A curva passa do alvo e volta: é o que dá o ar orgânico à passagem
-       de círculo para barra. */
     transition:width .42s cubic-bezier(.34,1.56,.64,1),
                opacity .32s ease,
                border-radius .42s cubic-bezier(.34,1.56,.64,1);
@@ -88,22 +77,14 @@
     text-wrap:balance;
     margin:0 0 14px;text-transform:uppercase;color:var(--branco);
   }
-  /* Inter Medium, como manda a marca. Sobre coral fica em 3,58:1 — abaixo do
-     AA. Só passaria a 18,66px+ a negrito, que era o que dava o ar pesado. */
   .lead{font-size:17px;font-weight:500;line-height:1.5;margin:0;color:var(--branco)}
 
-  /* ---------- folha branca: o jogo ---------- */
+  /* ---------- folha branca ---------- */
   .folha{
     background:var(--branco);
-    /* Altura animada durante a troca de ecrã; ver mostrar(). */
     overflow:hidden;
-    /* Quase de ponta a ponta: a .app tem 16px de padding lateral, e recuar
-       12 deixa 4px de coral a espreitar de cada lado. */
     margin:0 -12px;border-radius:30px;
     padding:24px 18px 26px;color:var(--azul);
-    /* Sombra interior, do Figma: X0 Y0, blur 8, spread 2, preto a 40%.
-       Faz a folha ler-se como um recorte na camada coral, em vez de uma
-       placa pousada por cima dela. */
     box-shadow:inset 0 0 8px 2px rgba(0,0,0,.4);
   }
   .folha h2{
@@ -116,101 +97,49 @@
 
   .ecra{display:none}
   .ecra.ativo{display:block}
-  /* A caixa branca nunca desaparece. Esbate-se o cabeçalho e o que está
-     dentro da folha, nunca a folha: assim ela lê-se como a mesma caixa a
-     mudar de tamanho, e não como uma a sair e outra a entrar. */
+  /* A caixa branca nunca desaparece: esbate-se o que está dentro dela, para
+     ler-se como a mesma caixa a mudar de tamanho. */
   .ecra .cabeca,
   .ecra .remate-final,
   .ecra .folha > *{transition:opacity .24s ease, transform .24s ease}
-  /* Um deslocamento pequeno com a opacidade: a troca lê-se como movimento
-     em vez de um piscar. */
   .ecra.a-esconder .cabeca,
   .ecra.a-esconder .remate-final,
   .ecra.a-esconder .folha > *{opacity:0;transform:translateY(7px)}
-  /* No jogo o ecrã estica-se e a grelha fica com o que sobra, para caber
-     inteira sem scroll em qualquer telemóvel. */
-  #ecra-jogo.ativo{display:flex;flex-direction:column;flex:1;min-height:0}
-  #ecra-jogo .cabeca{flex:none}
-  #ecra-jogo .folha{flex:1;min-height:0;display:flex;flex-direction:column}
-  #ecra-jogo .palavras,
-  #ecra-jogo .dica,
-  #ecra-jogo .pista{flex:none}
-  /* Piso: abaixo disto a grelha deixa de ser jogável, e mais vale a página
-     rolar do que ter células de 10px. */
-  .zona-grelha{flex:1;min-height:264px;display:flex;justify-content:center;align-items:center}
 
-  /* No jogo o herói encolhe para a grelha ter espaço. Nos outros ecrãs, onde
-     não há grelha a disputar altura, fica como está. */
-  #ecra-jogo h1{margin-bottom:calc(6px + var(--ar,0px) * .25)}
-  #ecra-jogo .cabeca{padding-bottom:calc(10px + var(--ar,0px))}
-  #ecra-jogo .folha{padding-top:calc(12px + var(--ar,0px) * .4);padding-bottom:10px}
-  #ecra-jogo .dica,
-  #ecra-jogo .pista{margin-top:7px;min-height:22px}
+  /* ---------- roleta ----------
+     A roda é o cartaz do ecrã e come a altura que houver. O clamp é o que a
+     mantém inteira num 360x640 sem obrigar a rolar. */
+  /* O --aperto é folga que a roleta devolve quando o ecrã é baixo: primeiro
+     encolhe a roda, depois tira-se destes dois espaços. Ver ajustarRoleta(). */
+  .roleta{width:clamp(166px,50vw,228px);margin:0 auto calc(20px - var(--aperto,0px));position:relative}
+  #ecra-roleta h1{margin-bottom:calc(14px - var(--aperto,0px))}
+  .roleta svg{display:block;width:100%;height:auto;overflow:visible}
+  /* fill-box para a origem cair no centro da roda sem depender do viewBox. */
+  #roda{transform-box:fill-box;transform-origin:center}
+  .roleta.a-rodar #roda{transition:transform 3.6s cubic-bezier(.14,.72,.06,1)}
+  /* Enquanto roda, ninguém deve poder mexer no formulário por baixo. */
+  .roleta.a-rodar{pointer-events:none}
 
-  /* ---------- palavras a encontrar ----------
-     Lista corrida em vez de pastilhas: as pastilhas comiam quase 100px de
-     altura, que a grelha precisa mais do que elas. */
-  .palavras{
-    display:flex;flex-wrap:wrap;justify-content:center;gap:6px 16px;
-    margin:0 0 13px;padding:0;list-style:none;
+  /* O prémio é a resposta do ecrã: entra grande e em coral. O coral sobre
+     branco dá 3,94:1 — passa o AA porque isto é texto grande. */
+  .folha .brinde{
+    font-family:var(--display);font-weight:900;
+    font-size:clamp(26px,7.6vw,33px);line-height:1.05;letter-spacing:-.025em;
+    text-transform:uppercase;color:var(--coral);
+    margin:0 0 4px;text-wrap:balance;
   }
-  /* Item invisível que empurra o resto para a linha seguinte. */
-  .palavras .quebra{flex-basis:100%;height:0;margin:0;padding:0}
-  .palavras li{
-    font-size:14px;font-weight:600;color:var(--azul);
-    transition:color .2s ease,opacity .2s ease;
+  /* Ponte entre o prémio e o convite. Em Montserrat Black e caixa alta
+     competia com o prémio coral logo acima e com o título coral fora do
+     cartão — tudo forte ao mesmo tempo não deixa nada ler-se primeiro. */
+  .folha .ponte{
+    font-family:var(--corpo);font-weight:700;font-size:17px;
+    line-height:1.35;letter-spacing:0;text-transform:none;
+    color:var(--azul);margin:0 0 10px;
   }
-  .palavras button{
-    font:inherit;color:inherit;background:none;border:0;padding:0;margin:0;
-    cursor:pointer;text-decoration:underline;text-decoration-style:dotted;
-    text-underline-offset:3px;text-decoration-color:#B9BDD4;
+  .folha .brinde-nota{
+    font-size:13px;font-weight:600;line-height:1.4;color:#5F6489;
+    margin:0 0 18px;padding-bottom:18px;border-bottom:1px solid var(--nevoa-forte);
   }
-  .palavras button:active{color:var(--coral-forte)}
-  .palavras li.encontrada{color:#6B7099;text-decoration:line-through;opacity:.8}
-
-  /* ---------- grelha ---------- */
-  /* O lado é posto em pixels pelo JS: o height:100% não resolve contra uma
-     altura que vem de flex-grow, e a grelha ficava do tamanho do conteúdo. */
-  .grelha{
-    display:grid;gap:5px;touch-action:none;user-select:none;-webkit-user-select:none;
-    margin:0 auto;
-  }
-  .celula{
-    display:flex;align-items:center;justify-content:center;min-width:0;
-    background:var(--cinza);border-radius:10px;
-    font-family:var(--corpo);font-weight:700;
-    font-size:clamp(11px,var(--letra,4.1vw),18px);color:var(--tinta);
-    transition:background .12s ease,color .12s ease,transform .12s ease;
-  }
-  .celula.ativa{background:var(--turquesa);color:var(--tinta);transform:scale(1.08)}
-  .celula.encontrada{background:var(--azul);color:var(--branco);transform:none}
-  /* Tentativa falhada: sem isto o erro era silencioso e as pessoas repetiam. */
-  .celula.errada{background:var(--cinza-erro);color:var(--tinta);animation:tremer .32s ease}
-  /* Âncora do modo toca-toca: marca a primeira letra escolhida. */
-  .celula.ancora{box-shadow:inset 0 0 0 2px var(--turquesa)}
-  @keyframes tremer{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}75%{transform:translateX(2px)}}
-  /* Um slot só, quatro estados: como se joga, quantas faltam, dica se
-     encalhar, e a vitória. O min-height evita o salto quando o texto muda. */
-  /* Prefixado com .folha porque `.folha p` tem mais especificidade e estava a
-     anular o tamanho e as margens declarados aqui. */
-  /* A ajuda de como se joga é a que interessa ler: fica forte. As sugestões
-     são acessórias e ficam num tom mais leve. */
-  .folha .dica{
-    font-size:13px;font-weight:600;line-height:1.5;text-align:center;
-    color:var(--azul);margin:18px 0 0;min-height:22px;
-  }
-  .folha .dica[hidden]{display:none}
-  .folha .dica.sugestao{font-style:italic;font-weight:500;color:#6B7099}
-  .folha .dica.vitoria{font-weight:600;color:var(--azul)}
-  .pista{
-    display:block;margin:18px auto 0;min-height:22px;padding:0 8px;
-    background:none;border:0;cursor:pointer;
-    font-family:var(--corpo);font-size:13px;font-weight:600;
-    color:var(--azul);text-decoration:underline;
-  }
-  .pista[hidden]{display:none}
-  .celula.pista{box-shadow:inset 0 0 0 2px var(--turquesa);animation:pulsar 1s ease-in-out 3}
-  @keyframes pulsar{0%,100%{transform:scale(1)}50%{transform:scale(1.14)}}
 
   /* ---------- botões ---------- */
   .btn{
@@ -250,21 +179,20 @@
     font-weight:500;letter-spacing:.04em;text-transform:none;
     color:#6B7099;margin-left:5px;
   }
-  /* Prefixado: `.folha p` tem mais especificidade e estava a impor-lhe 15px
-     e a cor azul — a ajuda saía do tamanho do texto principal. */
+  /* Prefixados com .folha: a regra do parágrafo tem mais especificidade e impunha-lhes
+     15px e a cor azul. */
   .folha .ajuda-campo{font-size:12px;line-height:1.45;color:#5F6489;margin:-3px 0 9px}
   input::placeholder{color:#6B7099}
   input:focus{border-color:var(--azul);background:var(--branco);outline:none}
   .consentimento{display:flex;gap:12px;align-items:flex-start;margin-bottom:18px}
   .consentimento input{margin-top:1px;width:24px;height:24px;accent-color:var(--coral);flex:none}
-  /* Sem isto herdava o text-transform do label e o aviso RGPD saía todo
-     em maiúsculas — precisamente o texto que mais precisa de se ler bem. */
+  /* Sem isto herdava o text-transform do label e o aviso RGPD saía todo em
+     maiúsculas — precisamente o texto que mais precisa de se ler bem. */
   .consentimento span{
     font-size:13px;font-weight:500;line-height:1.45;color:var(--azul);
     text-transform:none;letter-spacing:0;
   }
-  /* Prefixado pela mesma razão que a ajuda: `.folha p` anulava-lhe o tamanho
-     e as margens. */
+  .consentimento a{color:var(--azul);text-decoration:underline;text-underline-offset:2px}
   .folha .erro{
     display:none;background:var(--rosa);color:var(--azul);
     border-left:4px solid var(--coral-forte);
@@ -273,7 +201,7 @@
   }
   .folha .erro.visivel{display:block}
 
-  /* ---------- código ---------- */
+  /* ---------- foto ---------- */
   .caixa-extra{display:none;animation:abrir .3s ease both}
   @keyframes abrir{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
   .caixa-extra.aberta{display:block}
@@ -290,41 +218,28 @@
   }
   input[type=file]{display:none}
 
-  /* ---------- ecrã final: remate ----------
-     Título a dominar, um sol a marcar o fim, o botão em destaque e o resto
-     em nota de rodapé. */
-
-  /* O cartão do fim tem duas saídas: reservar e seguir. Alinhado à esquerda
-     como os outros ecrãs. */
+  /* ---------- ecrã final ---------- */
   .accao + .accao{margin-top:18px;padding-top:18px;border-top:1px solid var(--nevoa-forte)}
-  /* Estes são rótulos dos botões, não títulos: em Montserrat Black e caixa
-     alta competiam com o headline coral e tornavam o cartão tão forte como
-     tudo o resto. */
+  /* Rótulos dos botões, não títulos: em Montserrat Black competiam com o
+     headline coral. */
   .accao h2{
     font-family:var(--corpo);font-weight:700;font-size:15px;
     line-height:1.35;letter-spacing:0;text-transform:none;
     color:var(--azul);margin:0 0 10px;
   }
   /* O mote abre o cartão porque nomeia as duas ações que vêm a seguir: fica
-     (ver alojamentos) e não pares (seguir). Deixa de ser floreado e passa a
-     cabeçalho, e por isso não precisa de ser o maior do ecrã.
-     Prefixados com .folha: a regra `.folha p` tem mais especificidade e
-     impunha-lhes 15px. */
+     (ver alojamentos) e não pares (seguir). */
   .folha .mote{
     font-family:var(--display);font-weight:900;font-size:20px;
     line-height:1.1;letter-spacing:-.01em;text-transform:uppercase;
     color:var(--azul);margin:0 0 18px;
   }
-  /* A piada fecha. O balance reparte as linhas e evita a palavra órfã. */
   .folha .piada{
     margin:18px 0 0;padding-top:16px;border-top:1px solid var(--nevoa-forte);
     font-size:14px;font-weight:500;line-height:1.45;color:#5F6489;
     text-align:center;text-wrap:balance;
   }
 
-  /* Depois do cartão fica só o lockup do protetor solar, que já traz a amostra
-     Pantone, a mensagem e o crédito — e por isso dispensa o rodapé no último
-     ecrã. Encostado ao fundo, como o crédito estava nos outros. */
   /* Dois selos lado a lado, cada um com o seu destino: o do protetor aponta
      para a Liga Contra o Cancro, o da Ao Rubro para o Instagram deles. */
   .remate-final{
@@ -332,38 +247,21 @@
     gap:16px;padding:22px 4px 0;
   }
   .selo-fim{display:block;flex:none;-webkit-tap-highlight-color:transparent}
-  /* O último ecrã estica-se para os selos poderem encostar ao fundo, onde o
-     crédito estava nos outros. Sem isto o margin-top:auto não tinha espaço
-     nenhum para empurrar, porque a secção media apenas o seu conteúdo. */
   #ecra-final.ativo{display:flex;flex-direction:column;flex:1;min-height:0}
   #ecra-final .cabeca,
   #ecra-final .folha{flex:none}
-  /* O mínimo desce para ecrãs estreitos: a 19vw os selos empurravam o último
-     ecrã 24px para lá do fundo num 360x640. */
   .selo-fim svg{display:block;height:clamp(44px,16vw,80px);width:auto}
   .selo-fim:active{opacity:.7}
   .app.fim .credito{display:none}
-  /* Sem o crédito à esquerda, a barra separadora ficava sozinha. */
   .app.fim .legal::before{display:none}
   .app.fim .rodape{margin-top:0;padding-top:0}
-  /* Margem automática em cima e em baixo: a folga que sobra reparte-se por
-     igual, e os selos ficam centrados entre o cartão e a política. */
+  /* Margem automática em cima e em baixo: a folga reparte-se por igual e os
+     selos ficam centrados entre o cartão e a política. */
   .app.fim .remate-final{margin-top:auto;margin-bottom:auto}
 
-  /* Confetis: camada por cima de tudo, sem apanhar toques. */
   .confetis{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50}
 
-  .notas{margin-top:20px;padding-top:14px;border-top:1px solid var(--nevoa-forte)}
-  .notas p{font-size:12px;line-height:1.5;color:#5F6489;margin:0 0 8px}
-  .notas p:last-child{margin:0}
-  .notas strong{font-weight:700;color:var(--azul)}
-  .notas .amostra{
-    display:inline-block;width:11px;height:11px;border-radius:3px;
-    background:var(--coral);margin-right:6px;vertical-align:-1px;
-  }
-
   /* ---------- rodapé coral ---------- */
-  /* Crédito e política na mesma linha. */
   .rodape{
     margin-top:auto;padding:9px 4px 0;
     display:flex;align-items:baseline;justify-content:center;
@@ -373,7 +271,6 @@
   .credito strong{font-weight:700}
   .credito a{color:inherit;text-decoration:none}
   .legal{margin:0;font-size:12px;line-height:1.4;position:relative}
-  /* Barra a separar, em vez de os dois textos se tocarem. */
   .legal::before{
     content:"";position:absolute;left:-17px;top:50%;transform:translateY(-50%);
     width:1px;height:13px;background:rgba(255,255,255,.5);
@@ -382,15 +279,8 @@
     font-size:12px;font-weight:600;color:var(--branco);
     text-decoration:underline;text-underline-offset:2px;
   }
-  .consentimento a{color:var(--azul);text-decoration:underline;text-underline-offset:2px}
 
-  /* Telemóveis baixos (SE, Androids pequenos): o herói aperta-se para o jogo
-     continuar a caber num ecrã só. Abaixo disto a página rola, que é melhor
-     do que uma grelha ilegível. */
-
-
-  /* Barra de testes: fixa, fora do fluxo, para não mexer no que se está a
-     testar. Ver barraDeTestes(). */
+  /* Barra de testes: fixa, fora do fluxo. Ver barraDeTestes(). */
   .barra-testes{
     position:fixed;left:6px;right:6px;bottom:6px;z-index:99;
     display:flex;flex-wrap:nowrap;justify-content:center;align-items:center;gap:3px;
@@ -433,36 +323,37 @@
     <div class="logo" role="img" aria-label="Umbral · Hotels &amp; More"><svg viewBox="0 0 240.872 59.1172" xmlns="http://www.w3.org/2000/svg" focusable="false"><defs><style>.uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2{fill:currentColor;}</style></defs><g id="uuid-fd979f35-9b53-4f3c-acd9-fde8786b9f0a"><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M61.219,58.9573h-2.1043v-9.3381h2.1043v9.3381ZM65.5075,55.1289h-4.4438v-1.8275h4.4438v1.8275ZM65.3513,49.6192h2.1052v9.3381h-2.1052v-9.3381Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M75.0053,59.1172c-.7193,0-1.3841-.1198-1.9944-.3599s-1.1389-.5781-1.5848-1.014c-.4468-.4354-.7928-.9469-1.0399-1.5338s-.3705-1.2275-.3705-1.9212.1235-1.3338.3705-1.9208.5958-1.0984,1.0462-1.5343c.4496-.4354.9781-.7734,1.5848-1.0135s1.2651-.3604,1.9753-.3604c.7184,0,1.3795.1203,1.9817.3604.6012.2401,1.1252.5781,1.5721,1.0135.4459.4359.7947.945,1.0453,1.5273.2516.5828.3769,1.2252.3769,1.9278,0,.6937-.1253,1.3361-.3769,1.9278-.2507.5916-.5994,1.1026-1.0453,1.5338-.4468.4317-.9709.7674-1.5721,1.0075-.6021.2401-1.2587.3599-1.969.3599ZM74.9926,57.2767c.4069,0,.781-.0713,1.1234-.2135s.643-.3469.9036-.6135c.2597-.2671.4614-.5828.6039-.9473s.2143-.7692.2143-1.214c0-.4443-.0717-.849-.2143-1.214-.1426-.3646-.3424-.6802-.5976-.9469-.2561-.2671-.5567-.4713-.9036-.6135-.346-.1422-.7229-.2135-1.1298-.2135-.4078,0-.7819.0713-1.1243.2135s-.643.3464-.9027.6135c-.2597.2667-.4614.5823-.6039.9469-.1435.365-.2143.7697-.2143,1.214,0,.4359.0708.8382.2143,1.2075.1426.3692.3415.6867.5976.9539.2552.2667.5558.4713.9027.6135.346.1422.7229.2135,1.1307.2135Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M84.2825,58.9573v-7.5772h-2.9107v-1.7609h7.9267v1.7609h-2.9107v7.5772h-2.1052Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M93.4951,57.2231h4.9505v1.7343h-7.043v-9.3381h6.8741v1.7343h-4.7816v5.8695ZM93.3389,53.3811h4.3784v1.6811h-4.3784v-1.6811Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M101.0958,58.9573v-9.3381h2.1052v7.5772h4.5609v1.7609h-6.6661Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M112.855,59.1172c-.7275,0-1.4249-.0998-2.0925-.2998-.6666-.2005-1.2033-.4606-1.6111-.7804l.7147-1.6275c.3896.2844.851.518,1.3841.7002.5322.1823,1.0717.2737,1.6175.2737.416,0,.7511-.0424,1.0072-.1268.2552-.0844.4441-.2023.5649-.3538.1217-.1511.1825-.3245.1825-.5198,0-.249-.0963-.4471-.2861-.5939-.1907-.1469-.4423-.2667-.7538-.3599-.3115-.0937-.6566-.1823-1.0326-.2671-.3769-.0844-.7538-.1888-1.1307-.3133s-.7211-.2844-1.0335-.4802c-.3115-.1958-.5649-.4536-.7592-.7739-.1953-.3198-.2924-.7291-.2924-1.2271,0-.5338.1408-1.0205.4223-1.4606.2806-.4406.7057-.7916,1.2733-1.0541.5667-.262,1.2796-.3935,2.137-.3935.5722,0,1.1352.069,1.6892.2065.554.138,1.0435.345,1.4685.6205l-.6503,1.641c-.4241-.249-.8482-.4336-1.2733-.5539-.4241-.1198-.8401-.18-1.2469-.18-.4078,0-.7411.049-1.0008.1469s-.4459.2242-.5585.38-.1689.3357-.1689.5403c0,.2401.0954.4336.2861.5804.1898.1464.4414.2643.7538.3534.3115.089.6557.1781,1.0326.2667.3769.089.7538.1916,1.1307.3068.3769.1156.7211.2713,1.0326.4671s.5649.4536.7602.7734c.1953.3203.2924.7249.2924,1.214,0,.5249-.1426,1.0051-.4287,1.4406-.2861.4359-.7129.7874-1.2796,1.0541-.5676.2667-1.2851.4-2.1506.4Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M126.6404,59.1172c-.6675,0-1.2606-.111-1.78-.3333-.5204-.2224-.9318-.5245-1.2342-.9072-.3033-.3823-.455-.8224-.455-1.3203,0-.4625.099-.8783.2988-1.2476.1989-.3688.5149-.7156.9481-1.0406.4332-.3245.9836-.6424,1.6502-.9539.485-.2308.8664-.4354,1.1434-.6135.277-.1776.4723-.3487.5849-.5138.1126-.1641.1689-.331.1689-.5002,0-.2308-.0763-.4177-.227-.5599-.1517-.1422-.3751-.2135-.6693-.2135-.3115,0-.5549.0802-.7275.2401-.1735.1599-.2597.3646-.2597.6135,0,.1333.0254.2648.0772.3935.0527.1291.1517.276.2988.4406.148.1646.3551.3758.6239.6336l4.7943,4.5623-1.1044,1.3203-5.2884-5.0425c-.3033-.2844-.5449-.5511-.7275-.8-.1816-.249-.3142-.4937-.396-.7338-.0826-.2401-.1235-.489-.1235-.7473,0-.4532.1172-.8536.3506-1.2005.2343-.3469.5631-.6159.9881-.807.4241-.1911.9218-.2867,1.494-.2867.5286,0,.9854.0867,1.3705.2601.386.1734.6893.4201.91.7403s.3315.7026.3315,1.1473c0,.3911-.0963.7492-.2861,1.0737-.1907.3249-.4877.6294-.89.9138-.4032.2849-.9291.5734-1.5793.8671-.4414.2047-.7901.4023-1.0453.5935-.2561.1916-.4396.3851-.5522.5804-.1126.1958-.1689.4135-.1689.6536,0,.2224.0672.4224.2016.6005.1335.1781.3224.3156.5649.4135s.5286.1464.8573.1464c.5286,0,1.0135-.1263,1.4549-.38.4423-.2536.8165-.6312,1.1243-1.1338.307-.5026.5258-1.1138.6566-1.8345l1.6238.5203c-.1816.9072-.5068,1.6942-.9745,2.3613s-1.0444,1.1828-1.7283,1.5473c-.6848.365-1.4513.5469-2.2995.5469Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M138.8664,58.9573v-9.3381h1.741l3.8725,6.5903h-.9227l3.8071-6.5903h1.7283l.0254,9.3381h-1.9744l-.0136-6.2299h.3642l-3.0406,5.2429h-.9481l-3.106-5.2429h.4423v6.2299h-1.9753Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M156.6678,59.1172c-.7193,0-1.3841-.1198-1.9953-.3599-.6103-.2401-1.1389-.5781-1.5848-1.014-.4459-.4354-.7928-.9469-1.0399-1.5338-.2461-.587-.3696-1.2275-.3696-1.9212s.1235-1.3338.3696-1.9208c.247-.587.5958-1.0984,1.0462-1.5343.4505-.4354.979-.7734,1.5857-1.0135.6058-.2401,1.2642-.3604,1.9744-.3604.7193,0,1.3795.1203,1.9817.3604s1.1262.5781,1.5721,1.0135c.4459.4359.7947.945,1.0462,1.5273.2507.5828.3769,1.2252.3769,1.9278,0,.6937-.1262,1.3361-.3769,1.9278-.2516.5916-.6003,1.1026-1.0462,1.5338-.4459.4317-.9699.7674-1.5721,1.0075s-1.2578.3599-1.968.3599ZM156.6541,57.2767c.4069,0,.7819-.0713,1.1243-.2135.3415-.1422.643-.3469.9027-.6135.2597-.2671.4614-.5828.6039-.9473.1435-.3646.2143-.7692.2143-1.214,0-.4443-.0708-.849-.2143-1.214-.1426-.3646-.3415-.6802-.5976-.9469-.2552-.2671-.5567-.4713-.9027-.6135-.3469-.1422-.7238-.2135-1.1307-.2135s-.7819.0713-1.1234.2135c-.3424.1422-.643.3464-.9036.6135-.2597.2667-.4614.5823-.6039.9469-.1426.365-.2143.7697-.2143,1.214,0,.4359.0717.8382.2143,1.2075s.3424.6867.5976.9539c.2552.2667.5567.4713.9036.6135.346.1422.7229.2135,1.1298.2135Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M164.1903,58.9573v-9.3381h3.937c.8146,0,1.5158.1357,2.1052.407.5885.2713,1.0435.6601,1.3641,1.1674.3206.5068.4813,1.1119.4813,1.814,0,.6937-.1607,1.2919-.4813,1.7944s-.7756.8872-1.3641,1.1539c-.5894.2667-1.2905.4-2.1052.4h-2.7672l.9354-.9469v3.5483h-2.1052ZM166.2955,55.6491l-.9354-1.014h2.6501c.6503,0,1.1352-.1445,1.4558-.4336.3206-.2886.4804-.6867.4804-1.194,0-.5156-.1598-.9156-.4804-1.2005-.3206-.2844-.8056-.427-1.4558-.427h-2.6501l.9354-1.0271v5.2961ZM169.9727,58.9573l-2.2741-3.3884h2.2478l2.2995,3.3884h-2.2732Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M176.8068,57.2231h4.9505v1.7343h-7.0421v-9.3381h6.8732v1.7343h-4.7816v5.8695ZM176.6506,53.3811h4.3793v1.6811h-4.3793v-1.6811Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M99.8537,11.1415c-1.137,1.1668-2.2847,2.2574-3.4278,3.4305,1.0999,1.1302,2.2296,2.3786,3.3356,3.5152,1.1533-1.1852,2.3009-2.3645,3.4194-3.514-1.1016-1.1362-2.2362-2.3064-3.3273-3.4318ZM97.9611,14.572c.6096-.6299,1.2391-1.286,1.8543-1.9217.618.6374,1.2481,1.298,1.8527,1.9217-.6079.6346-1.2342,1.2781-1.8505,1.9217-.6208-.6446-1.2487-1.2908-1.8565-1.9217Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M47.8777,2.8111c.3567-.0346.7126-.0237,1.0611.0297.6564-.5304,1.5051-.7732,2.3428-.6675.2711.0344.528.1133.7754.2133l-1.4209-2.3866h-.892c-.1571,1.1981-.8504,2.2492-1.8665,2.8111Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M47.9638,3.8813c.73,1.0489,1.9519,1.623,3.1785,1.4934-.73-1.0488-1.9519-1.623-3.1785-1.4934Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M50.1771,3.2232c.9558.4568,1.7649,1.2562,2.2367,2.3097l.2491.5564-.5581.177c-1.0276.3261-2.0998.2404-3.042-.1727.2905.7548.9434,1.3309,1.7066,1.4277.5732.0728,1.1247-.0856,1.5528-.4458.426-.3583.7002-.8854.7723-1.4843.0704-.5845-.09-1.1633-.4518-1.6297-.3641-.4694-.8878-.7688-1.4747-.8432-.3371-.0427-.6755-.0033-.9908.1051Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M48.9007,0h-.3807c-.6817.4773-1.1384,1.2548-1.2164,2.1273.8402-.3856,1.4339-1.1901,1.5971-2.1273Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M47.2868,0h-2.132c.4847.5183.9501,1.0563,1.374,1.636.1191-.6091.3871-1.1662.758-1.636Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M94.9535,24.18c.653,0,1.2879.1981,1.827.5639.1454-.1508.3009-.291.4652-.42-.1603-.119-.3279-.2255-.5023-.3176-.5135-.0546-1.0168-.2-1.4859-.4307-.1008-.0079-.202-.013-.304-.013-1.1356,0-2.1566.5019-2.8724,1.2973v1.0327c.5725-1.0216,1.6443-1.7126,2.8724-1.7126Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M104.2479,25.2642c-.692-.1541-1.4122.0832-1.8735.6173.692.1541,1.4123-.0832,1.8735-.6173Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M107.7897,22.5201c-.121.0058-.2333.018-.362.018h-2.8347c-.8835.7973-1.7322,1.7095-2.5136,2.7837.6886-.6674,1.719-.8903,2.6519-.5284.7736-.7007,1.8002-1.5101,3.0583-2.2733Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M138.6969,2.1658c-.7471-1.2809-2.1049-2.0555-3.5321-2.0149.7471,1.2809,2.1049,2.0555,3.5321,2.0149Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M117.9604,17.7263c-1.9616.0003-4.7422.2538-7.6313,1.3353.1914.3235.299.7052.299,1.1595,0,.3586-.0644.6739-.1837.9513,1.9897-.8204,4.3583-1.4005,7.0875-1.4084h.8148c.6615.0019,1.2959.0452,1.9144.1096-.1346-.7563-.3717-1.4573-.7088-2.0967-.5545-.0351-1.0868-.0506-1.5885-.0506h-.0035Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M47.2638,7.9855c.9983,1.4485,2.7367,2.3896,4.4377,2.2993.909-.0493,1.7604-.3548,2.4928-.89-.6223-.4527-1.1294-.8757-1.5428-1.2209-.0397-.0331-.0778-.0649-.1159-.0965-.4489.2704-.9596.4131-1.4924.4131-.1282,0-.2576-.0082-.3877-.0246-1.4273-.1811-2.5854-1.5074-2.675-3.0413-.5361-.4451-.983-1.0199-1.2882-1.7016l-.2491-.5564.0667-.0212-.0022-.0225-.0664.0444c-.7455-1.1769-1.6188-2.2287-2.5994-3.1675h-1.1661v1.236c1.7683,1.6875,3.3557,3.8871,4.5881,6.7495Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M92.0811,16.6468v.9892c.2312.1094.4739.1956.7283.2459-.1554-.4692-.4092-.8859-.7283-1.2351Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M117.9601,16.7743h.0038c.3079,0,.6281.0063.9561.0181-.3583-.4661-.7789-.8903-1.2566-1.2717-4.6816.0107-8.2757.9748-11.0415,2.3834h.8057c.8975,0,1.5945.1499,2.1144.4267,3.0507-1.226,6.068-1.5562,8.4181-1.5566Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M96.5949,22.9047c.4842.0864.9857.0684,1.4701-.0676-.8805-.9162-2.1718-1.2802-3.359-.947.3506.3648.7669.6404,1.2153.821.2294.0478.4544.1126.6736.1936Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M6.5161,12.4075c-.2193.081-.4442.1459-.6737.1936-.4484.1806-.8646.4562-1.2153.821,1.1872.3332,2.4786-.0309,3.3591-.947-.4845-.136-.986-.1539-1.4701-.0676Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M5.9653,6.6425c.4206.0647.8201.1908,1.1916.3681-.3-1.0017-1.2095-1.732-2.2823-1.732-1.3162,0-2.3871,1.0993-2.3871,2.4507s1.0708,2.4507,2.3871,2.4507c.4412,0,.8704-.1264,1.2424-.3593-.4832-.7648-.7567-1.6821-.74-2.6551l.0105-.6122.5777.089Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M6.456,7.8744c.2148,1.2701,1.0732,2.3315,2.2332,2.7608-.2148-1.2701-1.0732-2.3314-2.2332-2.7608Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M9.6836,8.2444c-.0413.4123-.1246.8175-.2646,1.207.1164.2887.2055.5916.2646.9045v-2.1115Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M1.2078,0c-.1023.0999-.2051.2015-.3074.301-.2131.2071-.4273.4132-.6416.6191-.0865.0831-.1725.1667-.2589.2498v1.0609L2.2745,0h-1.0667Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M2.7305,17.4303c-1.1157.2204-2.0454,1.0486-2.4432,2.16.0039.0218.0094.0423.0133.0641,1.1217-.239,2.0537-1.0884,2.4299-2.224Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M9.6836,2.3221c-.6292-.3315-1.174-.8016-1.5743-1.3897.4115,1.839.9473,3.4715,1.5743,4.9318v-3.5421Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M8.7904,7.7294c0-2.2166-1.7566-4.02-3.9157-4.02S.959,5.5128.959,7.7294s1.7566,4.0201,3.9157,4.0201c.102,0,.2032-.005.304-.013.4692-.2308.9724-.3761,1.4859-.4307.1744-.0922.342-.1985.5022-.3176-.1643-.129-.3198-.2692-.4652-.42-.5392.3658-1.174.5639-1.827.5639-1.8275,0-3.3142-1.5265-3.3142-3.4027s1.4868-3.4027,3.3142-3.4027c1.8171,0,3.2967,1.5092,3.3135,3.3707.2047.1819.393.3825.5631.5991.0257-.1868.0391-.3761.0391-.5671Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M46.3745,16.2258c.4539-1.2903-.2394-2.7066-1.4133-3.1989.5428,1.3684.4993,3.0114-.2446,4.4882l-.5553-.2901c-.6083-.3078-1.1027-.7442-1.4856-1.262v1.5611c1.2561.7811,3.19.3746,3.6988-1.2984Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M44.135,15.7733c.2701-1.3973-.1972-2.7969-1.2156-3.6408-.2701,1.3973.1972,2.7969,1.2156,3.6408Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M43.9868,9.0053c-.3698-.7994-.8087-1.5492-1.3111-2.2471v2.7329c.0711.1132.1467.2214.2152.3374.3298-.3346.7006-.6103,1.0959-.8231Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M9.6836,1.0686V0h-.87c.2112.419.5081.7821.87,1.0686Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M43.7903,10.2286c1.0096.3719,2.1901.1319,3.0706-.6245-1.0096-.372-2.1901-.1319-3.0706.6245Z"/><polygon class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" points="9.0262 20.7402 9.7532 21.4834 10.4372 20.7402 9.7378 19.9812 9.0262 20.7402"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M6.3472,20.7402c1.1429,1.173,2.2908,2.2636,3.4277,3.4305.7766-.801,1.5728-1.6222,2.3659-2.4402-.3342-.1549-.6388-.3591-.9104-.618-.4938.512-.9962,1.0362-1.4938,1.5494-.6152-.6357-1.2446-1.2918-1.8543-1.9217.6078-.631,1.2357-1.2772,1.8564-1.9217.1241.1295.2478.2573.3725.3867-.1751-.549-.2982-1.1851-.3651-1.9151-.0212-.0218-.0422-.0433-.0634-.0652-1.106,1.1367-2.2357,2.385-3.3355,3.5153Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M46.4702,8.5215c-.0178-.0418-.0351-.0845-.0531-.1261-.2301-.3517-.4244-.7267-.5732-1.121l.0433-.0173c-.9258-1.8559-2.0182-3.3859-3.2115-4.651v2.6797c.8618,1.0088,1.5853,2.1358,2.1521,3.3737.5374-.158,1.0961-.2073,1.6424-.138Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M178.3547,22.941c.2941-.6913.8858-1.2146,1.6024-1.3827-.0027-.0939-.0045-.1872-.0082-.2819v-.2563c-.7704-.1457-1.3097-.6779-1.6124-1.409-.3197.687-.9542,1.1813-1.6971,1.2759v.6298c.7995.1366,1.3752.6743,1.7152,1.4241Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M178.81,14.1723c.1404.5882.5661,1.0625,1.1143,1.2418-.1405-.5882-.5662-1.0625-1.1143-1.2418Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M179.9489,17.9172c-.3519.3999-.8326.6723-1.3636.7567.5891.0945,1.068.4674,1.3636.9669v-1.7236Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M178.3547,17.685c.2929-.6887.8813-1.2106,1.5942-1.3807v-.3269c-.7196-.1754-1.2451-.6894-1.566-1.3895-.1476.3508-.3731.6569-.6506.8987l-.4294,1.0084c.4613.2526.815.6679,1.0517,1.1901Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M179.9489,16.8521c-.5785.1627-1.0422.6409-1.2086,1.2489.5688-.1533,1.0282-.6118,1.2086-1.1994v-.0495Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M178.752,19.237c.1116.5578.495,1.0194,1.0038,1.2086-.1117-.5578-.4951-1.0194-1.0038-1.2086Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M177.9852,19.2053c-.559.13-1.0192.5701-1.197,1.1447.559-.1301,1.0191-.5701,1.197-1.1447Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M178.0863,18.6792c-.5605-.0816-1.0257-.409-1.3495-.8546l-.0973.2284v1.528c.3406-.4842.8638-.8119,1.4468-.9018Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M177.9285,18.0957c-.1134-.483-.4256-.8795-.8349-1.109l-.1174.2757c.2015.3924.5415.6965.9523.8333Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M178.7404,23.357c.5864-.1581,1.0575-.6402,1.2254-1.2541-.5864.158-1.0574.6402-1.2254,1.2541Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M232.2182,24.7547c-.692-.1541-1.4122.0832-1.8735.6173.692.1541,1.4123-.0832,1.8735-.6173Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M230.0496,24.8124c.6886-.6675,1.719-.8903,2.6519-.5284.852-.7715,2.0046-1.6761,3.4428-2.5041h-3.3101c-.9827.8502-1.923,1.8481-2.7846,3.0326Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M18.063,19.1174c-.6485,2.1327-2.0547,2.999-3.9887,2.999-.375,0-.728-.036-1.0618-.1036-1.1018,1.1212-2.2081,2.2406-3.3124,3.3771-1.4991-1.5385-3.0213-3.1112-4.5205-4.6498,1.5208-1.5651,3.0321-3.1101,4.5086-4.6294-.0007-.0636-.0045-.1221-.0045-.1869v-3.1337c-.1034-.1424-.2161-.2755-.3159-.4215l-.1056.1622c-1.2655,1.9459-3.7246,2.6391-5.72,1.6127l-.522-.2685.3311-.509c.1806-.2778.3863-.5291.6107-.7544C1.7266,12.1721.0318,10.1507.0318,7.7294.0318,4.9879,2.2043,2.7575,4.8746,2.7575c1.1596,0,2.2249.421,3.0596,1.1213-.3896-1.2199-.7077-2.5164-.9637-3.8788h-3.581L0,3.5202v12.6986c0,.6038.029,1.1863.0767,1.7546.7882-.9991,1.9804-1.6264,3.2867-1.6169l.5507.004-.0774.5719c-.2539,1.8731-1.6211,3.3395-3.3315,3.7123,1.4928,6.096,6.2629,9.5184,13.487,9.5184,7.1853,0,11.9463-3.3829,13.4662-9.4175-1.3831-.0015-4.4333-.065-7.8495-1.0975-.5298-.1601-1.044-.3384-1.5459-.5307Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M140.0495,2.2022V0h-1.6697c.7133.558,1.2997,1.3044,1.6697,2.2022Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M179.9489,11.972v-.1055c-.4139.113-.7679.3909-.9993.7612l-.1873.4399c.5391-.1399.9853-.5527,1.1866-1.0956Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M179.9489,10.2809l-.5309,1.2469c.1672-.0889.3438-.1603.5309-.2037v-1.0431Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M179.8529,24.7466c.0505-.5127.0846-1.0396.1021-1.5805-.3525.4038-.8357.679-1.3698.7639.5286.0848.9692.3928,1.2677.8166Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M179.9489,12.9182c-.3138.3415-.7237.5832-1.1767.6864.4735.0978.8784.3692,1.1767.7383v-1.4247Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M143.7431,13.3425v-5.6757h.0917c.0173-1.6153-.0051-4.4743-.0211-7.6668h-2.837v12.4474h.0215c1.011-.0075,1.9582.3264,2.745.8951Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M151.0332,9.9097c2.4503-.0243,4.9615-.1372,6.0337-.0967l1.4322-1.5016,1.5637,1.6394.7508-.7871c-.0522-.3312-.1178-.6544-.1965-.9703-4.8861,0-9.2648.0001-9.2732,0v-.0178c-1.0491.0847-2.128-.1271-3.1114-.6604h0s-.507-.5239-.507-.5239c-1.8266-1.8504-1.9705-4.7401-.7174-6.9913h-2.3802c.0036,3.0008.0737,5.7762.2549,7.6668h2.3893c2.1155,0,3.3393.8314,3.7609,2.2429Z"/><polygon class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" points="157.87 10.3193 158.4991 10.9789 159.1284 10.3193 158.4991 9.6596 157.87 10.3193"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M176.8253,22.111c.1375.5855.5589,1.0594,1.1032,1.2407-.1375-.5855-.5589-1.0594-1.1032-1.2407Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M145.7857,16.7745l.025.1841,13.614-.0738c.3209-.5097.5946-1.053.8183-1.6294l-14.8939.0292c.2145.4604.3649.9608.4366,1.49Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M149.0586,14.3189l11.5022-.0226c.2305-.8312.3656-1.7211.4016-2.6657l-.8994-.9429-1.5637,1.6394-1.4654-1.5364c-1.0048,0-3.5458-.0001-5.8481-.0002.0075.1111.0258.2148.0258.3309,0,1.5937-.7033,2.7201-2.1528,3.1976Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M141.7172,13.6675c.4332,1.3078,1.514,2.2848,2.8116,2.5411-.4332-1.3078-1.514-2.2847-2.8116-2.5411Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M147.9496.7174c-.7874,1.5744-.7094,3.4487.2029,4.8756.7874-1.5744.7094-3.4487-.2029-4.8756Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M155.8538,5.2132c-.4752.86-1.1181,1.5424-1.8574,2.0369h6.3416c-.2575-.734-.5921-1.4189-.9985-2.0536h-3.4763l-.0094.0167Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M178.0863,23.9353c-.6146-.0895-1.1239-.4667-1.4468-.9806v1.0781c0,.2881-.0143.5761-.0402.8633.3387-.5165.8806-.8672,1.487-.9608Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M177.9852,24.4613c-.559.13-1.0192.5701-1.197,1.1447.559-.13,1.0191-.5701,1.197-1.1447Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M150.1875,6.8352c1.6615.3298,3.4105-.3199,4.5496-1.6902-1.6616-.3299-3.4106.3199-4.5496,1.6902Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M149.3756,5.7643c1.5986-1.7325,4.0513-2.3959,6.2376-1.5111h3.0371c-.842-1.0183-1.888-1.8798-3.1344-2.5481h-2.5214c-.0057.0001-.0129.0003-.0214.0003-.1443,0-.6735-.0277-1.0605-.411-.1694-.1679-.3641-.4718-.3834-.9522-.8161-.1569-1.6742-.2608-2.5757-.3059,1.0967,1.6795,1.2441,3.8511.4222,5.728Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M153.1141.7252c-.0209.0203-.0392.0433-.0606.0632h.2837c-.0725-.0232-.1496-.041-.2231-.0632Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M52.2607,17.7761l.3756.6216c.2513-.1616.4843-.3579.6862-.5929-.3532-.0777-.7119-.0812-1.0618-.0287Z"/><polygon class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" points="191.2744 24.1805 191.5905 24.3498 192.2248 24.3498 192.514 23.7804 191.6993 23.344 191.2744 24.1805"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M187.2738,14.3714V0h-2.9473l-.3634.8534c.3145.3796.5006.8434.4243,1.378-.1249,3.8409.2683,15.8988-.1836,22.1184h2.8035c.1419-2.3295.2666-4.834.2666-6.4494v-.7127h-1.0599l1.0599-2.8163Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M188.201,10.3086v1.599l.3466-.9209c-.1306-.2155-.248-.4411-.3466-.6782Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M218.2215,29.4891h.4731c-.2105-.3869-.3691-.8063-.4731-1.2478v1.2478Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M188.201,0v6.6168c.7539-1.8118,2.4939-3.0411,4.4541-3.004l.6251.0119-.0908.6487c-.3005,2.1473-1.8882,3.8107-3.8598,4.1893,1.9716.3787,3.5593,2.0421,3.8598,4.1893l.0908.6488-.6251.0119c-.951.018-1.8475-.2668-2.6074-.767l1.7469,4.642h-3.5937v.7127c0,.9885-.0459,2.3034-.1138,3.7072.4243-.5766.9994-1.0397,1.6902-1.3162l.485-.1941.1301.529c.3333,1.3544-.0168,2.7354-.8406,3.7234h.6035l1.1555-2.2743,2.4387,1.3062-.4919.9681h1.2038l1.9288,5.1393h10.0123L193.8463,0h-5.6454ZM194.8877,17.1415c-.6036-.6291-1.1711-1.2205-1.7121-1.7843.5799-.6011,1.1538-1.1961,1.7121-1.7749v3.5591Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M191.9316,4.8245c-1.2968.2412-2.3804,1.2053-2.8189,2.508,1.2968-.2412,2.3805-1.2053,2.8189-2.508Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M189.1127,9.593c.4384,1.3026,1.5221,2.2668,2.8189,2.5079-.4384-1.3026-1.5221-2.2667-2.8189-2.5079Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M175.7464,24.0328v-3.882l-1.5238,3.5786.1786.4537c.5194,1.3203.5994,2.7302.3044,4.0269.6809-1.3026,1.0408-2.7477,1.0408-4.1772Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M139.2799,13.6675c-1.2974.2564-2.3782,1.2333-2.8114,2.5411,1.2974-.2564,2.3783-1.2333,2.8114-2.5411Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M178.3366,24.8671c-.3534.7595-1.0915,1.2834-1.9355,1.2922-.2622,1.1791-.7404,2.3118-1.3983,3.3298h3.8099c.0989-.2748.1922-.5557.2794-.8428l-.0236-.0068c.0418-.1605.0961-.316.1606-.4664.1726-.6289.3175-1.2859.4319-1.9712-.6186-.2114-1.0609-.6981-1.3244-1.3348Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M178.752,24.493c.1104.5516.4867,1.0087.9869,1.2017.002-.0136.0037-.0273.0056-.0408-.1236-.5362-.4985-.9771-.9926-1.1609Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M188.1972,24.3068c.924-.6073,1.4611-1.7018,1.3968-2.8472-.9241.6073-1.4611,1.7018-1.3968,2.8472Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M180.8677,8.1232v13.1533c0,1.9558-.1407,3.7611-.4207,5.4132.5542-.3846,1.2143-.607,1.8926-.5988.1883-.0009.3662.0156.539.0398l.3336-.8888c.1592-1.249.2563-2.6049.2563-4.3658V2.2314c0-.0647-.0083-.1231-.0141-.1834l-2.5867,6.0752Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M180.0349,28.628c-.0761.2951-.1633.5775-.2497.8611h.8976c.3608-.6448.8731-1.1949,1.5319-1.5893l.3083-.8213c-1.0254-.0636-2.0918.4578-2.4879,1.5495Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M171.7701,29.4891h1.1836c.7148-1.3195.9843-2.8976.7125-4.4528l-1.896,4.4528Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M229.7581,25.803l-.2992-.1311c-.7264,1.1199-1.3847,2.3888-1.9571,3.8171h4.0884c.2713-.4028.5561-.7952.8686-1.1647l-.1315-.2487c-.4886-.9241-.3589-2.0466.2682-2.848-.7112.7587-1.84,1.0126-2.8373.5754Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M233.1623,25.4688c-.4875.5274-.6637,1.2826-.4584,1.9645.4874-.5273.6637-1.2826.4584-1.9645Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M231.4361,21.7798h-2.35c-.4765.5783-.8971,1.1574-1.2541,1.7209l-.0151-.01c.007.6559-.1173,1.286-.3489,1.8606.1554.4321.2497.8818.2837,1.3412,1.0065-1.8829,2.244-3.5124,3.6844-4.9127Z"/><polygon class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" points="227.7869 14.8215 227.9051 14.6932 227.9051 13.4311 227.8022 13.3194 227.0753 14.0625 227.7869 14.8215"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M240.872,29.4891v-1.8081c-1.025.4554-2.0005,1.0625-2.9046,1.8081h2.9046Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M238.163,21.7798c-1.9918.9048-3.5492,2.0443-4.6454,3.0064l.0212.0402c.3855.729.3843,1.5808.0597,2.3016,1.9889-1.856,4.5269-3.1708,7.2735-3.9045v-1.4437h-2.709Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M232.7891,29.4891h3.4297c.2069-.1776.4224-.3439.6475-.4971,1.255-.9695,2.6056-1.7091,4.0058-2.2304v-2.6198c-3.1815.8992-6.0699,2.6752-8.083,5.3473Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M220.7796,17.3724c-.3812-1.1508-1.3322-2.0104-2.4739-2.236.3811,1.1508,1.3322,2.0104,2.4739,2.236Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M226.7382,24.1675c-1.1599.4293-2.0184,1.4907-2.2332,2.7608,1.1599-.4294,2.0184-1.4907,2.2332-2.7608Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M222.6762,21.3807c.3505.3648.7669.6404,1.2152.8209.2295.0478.4545.1126.6737.1936.4842.0864.9856.0684,1.4701-.0676-.8805-.9162-2.1718-1.2802-3.359-.947Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M223.4366,28.2491l-.0105-.6122c-.0167-.973.2568-1.8903.74-2.655-.372-.2329-.8012-.3593-1.2424-.3593-1.3163,0-2.3872,1.0994-2.3872,2.4507,0,1.233.8944,2.2459,2.0503,2.4158h.7368c.8939-.1556,1.6204-.8226,1.8821-1.697-.3713.1773-.771.3034-1.1916.3681l-.5777.0889Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M222.9238,23.6706c.6529,0,1.2879.1981,1.827.5639.1453-.1508.3009-.291.4652-.42-.1602-.1191-.3279-.2255-.5022-.3176-.5135-.0545-1.0168-.1999-1.4859-.4307-.1008-.0079-.202-.013-.304-.013-2.1591,0-3.9158,1.8034-3.9158,4.0201,0,.9072.2977,1.7423.7933,2.4158h.7916c-.6067-.617-.9835-1.4719-.9835-2.4158,0-1.8762,1.4868-3.4027,3.3143-3.4027Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M227.9051,10.7157c-.0267-.0275-.0544-.0562-.081-.0836-1.137,1.1668-2.2847,2.2574-3.4278,3.4305,1.0998,1.1302,2.2295,2.3786,3.3356,3.5152.0579-.0596.1153-.1184.1732-.178v-1.5372c-.0391.0407-.0781.081-.1172.1217-.6208-.6446-1.2487-1.2907-1.8565-1.9217.6096-.6299,1.2391-1.286,1.8543-1.9217.0396.0408.0797.0828.1194.1239v-1.549Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M226.2373,27.1053c-.0085.9309-.3828,1.7737-.9821,2.3838h.791c.4956-.6735.7933-1.5086.7933-2.4158,0-.191-.0135-.3802-.0391-.5671-.1701.2166-.3584.4173-.5631.5991Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M227.9051,21.7798v-3.1501c-.0377.0388-.0759.0791-.1137.1178-1.4935-1.537-3.0235-3.101-4.5627-4.685,1.4993-1.5387,3.0214-3.1113,4.5205-4.6499.0519.0534.104.1056.156.159V0h-9.6836v14.1008c1.8635.2441,3.3941,1.7763,3.6642,3.7694l.0775.5719-.5508.004c-1.2556.0091-2.4035-.5723-3.1909-1.5044v8.9579c.445-1.8776,1.9279-3.3425,3.7896-3.7086-.2244-.2254-.4301-.4766-.6108-.7544l-.3311-.509.522-.2685c1.9955-1.0264,4.4546-.3332,5.7201,1.6126l.1055.1623c.1551-.2266.3267-.4365.4904-.6542h-.002Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M18.4643,12.1674c2.2621,1.3163,5.2741,2.4412,8.9902,2.4521h.5298v-2.3613c-3.3587-.0095-6.7108-.8491-9.52-2.453v2.3622Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M50.2442,19.7696c.5109.3058.9298.729,1.2536,1.2177v-1.1805c-.4136.0554-.8363.0466-1.2536-.0371Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M136.7166,7.954c1.3227-.552,2.2626-1.8217,2.445-3.3029-1.3226.552-2.2626,1.8217-2.445,3.3029Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M49.7742,23.3666c.0679,1.4038.1138,2.7187.1138,3.7072v2.4152h1.6098v-4.7928l-.0334-.0134c-.6908-.2765-1.2659-.7396-1.6902-1.3162Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M52.2304,11.1881c-.159.0228-.3191.0388-.48.0475-.0905.0049-.1816.0073-.2723.0073-.0214,0-.0429-.0011-.0643-.0014.2922.6965.489,1.525.489,2.1767,0,1.7159-.9945,3.2483-2.4976,3.8897.0253.3604.0519.7465.0791,1.1515.4608-.6361,1.0741-1.1081,1.7562-1.387l-.0172-.0181c.097-.0966.1864-.1989.2745-.3022v-.2384l.0847.1402c.7306-.9023,1.129-2.0319,1.129-3.2357,0-.7047-.181-1.5309-.4811-2.2301Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M50.3789,18.8194c.3724.0819.7512.0837,1.119.0212v-.8437c-.4198.1838-.8057.458-1.119.8226Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M69.1005,0l-9.1092,15.7134-5.9741-10.0346c-.001.0097-.0013.0193-.0025.0289-.0802.666-.3426,1.2719-.7506,1.7507.4307.3595.9631.8022,1.619,1.2697l.8166.5964-.426.3975c-.6149.5738-1.3429.9992-2.125,1.2523.3074.7796.4901,1.6722.4901,2.4438,0,1.2224-.3464,2.3814-.9904,3.3625.5393-.0092,1.0854.0955,1.6049.3264l.4777.2123-.2701.47c-.3406.593-.8051,1.0679-1.3382,1.4131l.2029.3358.839-.4493,1.2721,2.5037-.6571.3519,2.955,4.8902h4.2677l6.2368-10.7846.0821,13.439h8.822l-.0821-29.4891h-7.9605Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M92.0811,29.4891h.1288c-.0462-.0698-.0876-.1428-.1288-.2161v.2161Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M50.9756,13.4182c0-.6783-.3021-1.6992-.6642-2.3066-.797-.1771-1.566-.5275-2.2467-1.0116.4592,1.3794.8453,2.8874,1.1417,4.5405l.006.0478c.0018.0227.0502.6389.1202,1.6025.9993-.5559,1.6429-1.6542,1.6429-2.8726Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M47.2096,10.4868c-1.0411.795-2.3375,1.0423-3.517.7232.246.2157.4654.4563.6582.7162l.001-.01c3.6098.3562,3.8929,5.1501,1.3121,6.5718.3593,2.2706.4479,6.5717.4508,11.001h2.846v-2.4152c0-3.6362-.6311-11.779-.6706-12.2847-.2816-1.5648-.6469-2.9938-1.0806-4.3023Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M18.4643,13.226v2.2399c3.4999,1.7428,7.0532,2.1196,9.4173,2.1199h.0036c.0157,0,.0323-.0004.0482-.0004.0287-.4469.0509-.8986.0509-1.3666v-.6706h-.5311c-3.6621-.0107-6.6705-1.0524-8.989-2.3221Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M18.4643,5.5408v3.1903c2.7864,1.7729,6.1588,2.6405,9.52,2.6215v-2.3963c-3.2043.0274-6.4128-1.0178-9.1672-3.1455-.1225-.0834-.2358-.1792-.3529-.27Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M18.2865,18.1917c2.5065.977,5.5829,1.6011,9.3685,1.6018.0767-.4074.1374-.8271.1864-1.2562-2.6056-.0044-6.0206-.4169-9.3918-1.9996-.0224.6048-.0754,1.1583-.163,1.6539Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M27.8582,3.4726c-.0006,0-.0012,0-.0017,0-.0006,0-.0011,0-.0017,0h0c-3.8007-.0011-6.1793-1.7277-7.5055-3.1763-.0867-.0949-.1634-.1982-.2464-.2963h-1.6387v3.9011c2.5662,2.8841,6.0433,4.31,9.52,4.2792V3.469c-.0427.0004-.0831.0036-.1261.0036h0Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M44.0266,18.8834c-.4695.0057-.9278-.1053-1.3509-.298v10.9036h2.4797v-5.3909c0-2.1993-.1497-3.7697-.3853-5.2846-.2327.0469-.4806.0712-.7435.0699Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M26.9924,0h-5.6329c1.5755,1.5348,3.7746,2.5552,6.4969,2.5556.0434,0,.0848-.0037.1279-.0043v-1.471c-.3725-.3072-.7057-.6703-.9919-1.0804Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M51.281,23.5148c.0642-1.1454-.4728-2.24-1.3968-2.8472-.0642,1.1454.4728,2.24,1.3968,2.8472Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M105.192,25.9783c-.4875.5274-.6637,1.2826-.4584,1.9646.4874-.5274.6637-1.2826.4584-1.9646Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M103.2024,22.5382h-1.6014v-.8172c-.6896.765-1.2651,1.5408-1.7392,2.2893l-.0151-.01c.007.6559-.1173,1.286-.3489,1.8606.1554.4321.2497.8818.2837,1.3412.946-1.7697,2.0917-3.3202,3.421-4.6639Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M117.5836,27.1274c-2.3706.0705-4.7254.8145-6.77,2.2408,2.9048-.2766,5.1705-1.0447,6.77-2.2408Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M101.7878,26.3126l-.2992-.1311c-.6384.9842-1.2226,2.0868-1.744,3.3076h4.2326c.1656-.2224.3325-.4438.5113-.6552l-.1315-.2487c-.4886-.9241-.3589-2.0467.2682-2.8481-.7112.7587-1.84,1.0126-2.8373.5754Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M156.5957,19.7685c.704-.4724,1.3305-1.0129,1.8742-1.6184.026-.029.0511-.0589.0767-.0882h-12.151c-.4246-.0526-.6361-.569-.6568-.6236v-.0129s-.491.0036-.491.0036c-2.3151.0168-4.3168-1.7242-4.7493-4.0874-.4325,2.3632-2.4342,4.1042-4.7493,4.0874l-.6259-.0045.0881-.6499c.3367-2.4843,2.3949-4.3447,4.7877-4.3272l.0505.0004v-6.4041c-.6187,1.6959-2.0392,3.0084-3.8374,3.3605l-.6652.1303-.0443-.7086c-.153-2.4417,1.287-4.6467,3.4354-5.4224-1.9857.1369-3.8962-.9487-4.8785-2.7691v28.8549h9.6836v-7.4144h2.6262l4.8835,7.4144h10.3402l-6.0324-9.0992c.3629-.1907.7055-.4002,1.0351-.6214ZM140.4799,18.7993l-1.2973-1.3319,1.2973-1.3319,1.2973,1.3319-1.2973,1.3319Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M105.2218,29.4891h3.0266c.236,0,.4579-.0113.6872-.0166,2.8582-2.194,6.2011-3.2235,9.52-3.1042.6556-.6714,1.1542-1.4395,1.4769-2.3068-5.4424-.5691-11.2118,1.2175-14.7106,5.4276Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M118.3456,20.6928h-.8123c-5.7189.0167-9.7824,2.6691-11.9859,4.603l.0213.0402c.3854.729.3843,1.5807.0596,2.3016,3.6913-3.4445,9.2694-5.0276,14.5721-4.4747.128-.5677.1936-1.1692.1936-1.8041,0-.1838-.0085-.3633-.0193-.5417-.6521-.0754-1.3262-.1223-2.0291-.1243Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M98.267,27.6148c-.0063.6937-.2162,1.3382-.5706,1.8742h.7034c.299-.5676.4693-1.2168.4693-1.9062,0-.191-.0135-.3803-.0391-.5671-.1701.2166-.3584.4173-.5631.5992Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M96.5348,27.4378c1.1598-.4294,2.0183-1.4907,2.2331-2.7608-1.1598.4294-2.0184,1.4907-2.2331,2.7608Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M101.601,17.9042h3.1174c1.4899-.9321,3.1415-1.6877,4.9691-2.2401,2.5777-.7791,4.944-1.0057,6.5463-1.0711-.3699-.1927-.7613-.3673-1.1743-.5225,2.6261-1.3481,3.9805-3.6232,3.9805-6.3612,0-4.4659-3.6934-7.7093-11.6125-7.7093h-15.3466v15.3301c.9665.6821,1.6609,1.7702,1.8344,3.0497l.0775.5719-.5508.004c-.4737.0034-.931-.0807-1.361-.232v4.8626c.571-.4335,1.2362-.7435,1.9597-.8858-.2244-.2253-.4301-.4766-.6108-.7544l-.3311-.509.522-.2685c1.9955-1.0264,4.4546-.3332,5.7201,1.6127l.1055.1622c.6415-.9379,1.3642-1.794,2.1546-2.5796v-2.4596ZM101.601,6.9509h4.5135c2.1747,0,3.1598.7584,3.1598,2.1908s-.9851,2.1901-3.1598,2.1901h-4.5135v-4.3809ZM95.2584,14.572c1.4992-1.5387,3.0213-3.1113,4.5205-4.6498,1.5218,1.5661,3.0521,3.0972,4.5608,4.6498-1.4881,1.5285-3.0149,3.1407-4.5185,4.685-1.4935-1.537-3.0235-3.101-4.5627-4.685Z"/><path class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" d="M95.4664,28.7586l-.0106-.6122c-.0167-.973.2568-1.8903.74-2.6551-.372-.2329-.8012-.3593-1.2424-.3593-1.3162,0-2.3871,1.0993-2.3871,2.4507,0,.7739.3581,1.4568.9055,1.9062h2.9723c.3677-.3039.6495-.7134.7915-1.1875-.3714.1773-.7711.3034-1.1917.3681l-.5776.0889Z"/><polygon class="uuid-72aa0b9f-585a-455b-9511-4f4e5e7b56c2" points="99.8319 13.8289 99.105 14.572 99.8166 15.331 100.516 14.572 99.8319 13.8289"/></g></svg></div>
   </header>
 
-  <div class="passos" id="passos" role="img" aria-label="Passo 1 de 4"><i class="on"></i><i></i><i></i><i></i></div>
+  <div class="passos" id="passos" role="img" aria-label="Passo 1 de 3"><i class="on"></i><i></i><i></i></div>
 
-  <!-- ECRÃ 1 · JOGO -->
-  <section class="ecra ativo" id="ecra-jogo">
+  <!-- ECRÃ 1 · ROLETA -->
+  <section class="ecra ativo" id="ecra-roleta">
     <div class="cabeca">
-      <h1>Olhaaá boooorla<br>da Umbral!</h1>
-      <p class="lead">Seis palavras escondidas. Tudo o que precisas de saber sobre nós.</p>
+      <h1>Dá-lhe uma<br>volta</h1>
+      <p class="lead">Deixa o email e a roda é tua. Não há fatias vazias — sai sempre borla.</p>
     </div>
     <div class="folha">
-      <p class="oculto" id="contador">0 de 6 encontradas</p>
-      <p class="oculto" id="cronometro">0:00</p>
-      <ul class="palavras" id="lista-palavras"></ul>
-      <div class="zona-grelha">
-        <div class="grelha" id="grelha" role="grid" aria-label="Grelha de letras"></div>
+      <div class="roleta" id="roleta">
+        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Roleta com seis prémios: 20% na próxima estadia, Bola de Berlim, Saco de praia da Umbral, Boné da Umbral, Protetor solar, Toalha de praia.">
+    <g id="roda">
+      <path d="M100 104L100.00 14.00A90 90 0 0 1 177.94 59.00Z" fill="#C0353F"/>
+      <path d="M100 104L177.94 59.00A90 90 0 0 1 177.94 149.00Z" fill="#2A3176"/>
+      <path d="M100 104L177.94 149.00A90 90 0 0 1 100.00 194.00Z" fill="#FDECEE"/>
+      <path d="M100 104L100.00 194.00A90 90 0 0 1 22.06 149.00Z" fill="#2A3176"/>
+      <path d="M100 104L22.06 149.00A90 90 0 0 1 22.06 59.00Z" fill="#FDECEE"/>
+      <path d="M100 104L22.06 59.00A90 90 0 0 1 100.00 14.00Z" fill="#2A3176"/>
+      <circle cx="100" cy="104" r="90" fill="none" stroke="#2A3176" stroke-width="3"/>
+      <text x="134" y="104" dy=".35em" text-anchor="start" transform="rotate(-60.00 100 104)" fill="#FFFFFF" font-family="Montserrat,sans-serif" font-weight="900" font-size="17" letter-spacing="-.5">20%</text>
+      <text x="134" y="104" dy=".35em" text-anchor="start" transform="rotate(0.00 100 104)" fill="#FFFFFF" font-family="Montserrat,sans-serif" font-weight="900" font-size="11" letter-spacing=".4">BOLA</text>
+      <text x="134" y="104" dy=".35em" text-anchor="start" transform="rotate(60.00 100 104)" fill="#2A3176" font-family="Montserrat,sans-serif" font-weight="900" font-size="11" letter-spacing=".4">SACO</text>
+      <text x="66" y="104" dy=".35em" text-anchor="end" transform="rotate(300.00 100 104)" fill="#FFFFFF" font-family="Montserrat,sans-serif" font-weight="900" font-size="11" letter-spacing=".4">BONÉ</text>
+      <text x="66" y="104" dy=".35em" text-anchor="end" transform="rotate(360.00 100 104)" fill="#2A3176" font-family="Montserrat,sans-serif" font-weight="900" font-size="11" letter-spacing=".4">CREME</text>
+      <text x="66" y="104" dy=".35em" text-anchor="end" transform="rotate(420.00 100 104)" fill="#FFFFFF" font-family="Montserrat,sans-serif" font-weight="900" font-size="11" letter-spacing=".4">TOALHA</text>
+    </g>
+    <circle cx="100" cy="104" r="23" fill="#FFFFFF" stroke="#EA525C" stroke-width="4"/>
+    <circle cx="100" cy="104" r="7" fill="#EA525C"/>
+    <path d="M91 0h18l-9 21z" fill="#2A3176"/>
+  </svg>
       </div>
-      <p class="dica" id="dica">Arrasta ou toca na primeira e na última letra.</p>
-      <button class="pista" id="btn-pista" hidden>Encalhado? Pede uma pista</button>
-      <p class="oculto" id="anuncio" aria-live="polite"></p>
-    </div>
-  </section>
-
-  <!-- ECRÃ 2 · EMAIL -->
-  <section class="ecra" id="ecra-email">
-    <div class="cabeca">
-      <h1>Para onde<br>mandamos?</h1>
-      <p class="lead">Os 20%, o teu lugar no sorteio e, de vez em quando, um sítio novo.</p>
-    </div>
-    <div class="folha">
-      <label for="nome">Nome</label>
-      <input type="text" id="nome" autocomplete="given-name" placeholder="Como te chamamos">
 
       <label for="email">Email</label>
       <input type="email" id="email" autocomplete="email" inputmode="email" placeholder="o.teu@email.pt">
@@ -471,32 +362,37 @@
 
       <div class="consentimento">
         <input type="checkbox" id="rgpd">
-        <label for="rgpd" style="margin:0"><span>Autorizo a Umbral a guardar o meu email para me enviar o código e novidades. Saio da lista quando quiser. <a href="https://drive.google.com/file/d/1m5NhpdfgIsI4HhKV9nCdjpDMnG8akkpS/view" target="_blank" rel="noopener noreferrer">Política de privacidade</a>.</span></label>
+        <label for="rgpd" style="margin:0"><span>Autorizo a Umbral a guardar o meu email para me enviar o prémio e novidades. Saio da lista quando quiser. <a href="https://drive.google.com/file/d/1m5NhpdfgIsI4HhKV9nCdjpDMnG8akkpS/view" target="_blank" rel="noopener noreferrer">Política de privacidade</a>.</span></label>
       </div>
 
-      <button class="btn" id="btn-quero-20">Manda vir</button>
+      <button class="btn" id="btn-rodar">À roda!</button>
+      <p class="oculto" id="anuncio" aria-live="polite"></p>
     </div>
   </section>
 
-  <!-- ECRÃ 3 · CÓDIGO + EXTRA -->
-  <section class="ecra" id="ecra-codigo">
+  <!-- ECRÃ 2 · BRINDE E CONVITE -->
+  <section class="ecra" id="ecra-brinde">
     <div class="cabeca">
-      <h1>Feito. Já é teu.</h1>
-      <p class="lead">Chega ao email daqui a nada.</p>
+      <h1>Olha o que<br>te saiu</h1>
+      <p class="lead">Foi só rodar. E não há letras pequenas.</p>
     </div>
     <div class="folha">
+      <p class="brinde" id="nome-brinde">Uma bola de Berlim</p>
+      <p class="brinde-nota" id="nota-brinde">Mostra este ecrã a quem está na carrinha e é teu.</p>
+
       <div id="convite">
-        <h2>Isto foi só para abrir o apetite.</h2>
+        <h2 class="ponte">Isto foi só para abrir o apetite.</h2>
         <p>E que tal uma <strong>semana num alojamento nosso</strong>, sem pagares nada? Só te pedimos uma foto.</p>
         <button class="btn" id="btn-quero-mais">Alinho</button>
       </div>
 
       <div class="caixa-extra" id="caixa-extra">
-        <h2>Mostra-nos o teu verão.</h2>
-        <p>Qualquer foto do teu verão serve para entrares. Se nos apanhares nela — a bola, o quarto, o avião lá em cima — é dessas que fazemos stories.</p>
-        <img class="previsualizacao" id="previsualizacao" alt="Pré-visualização da tua foto">
+        <h2 class="ponte">Uma foto do teu verão.</h2>
+        <p>Qualquer foto serve para entrares. Se nos apanhares nela — a carrinha, a bola, o quarto — é dessas que fazemos stories.</p>
+
         <input type="file" id="ficheiro" accept="image/*" capture="environment">
         <button class="btn secundario" id="btn-escolher" style="margin-bottom:16px">Escolher a foto</button>
+        <img class="previsualizacao" id="previsualizacao" alt="A foto que escolheste">
 
         <label for="instagram">O teu Instagram <span class="opcional">opcional</span></label>
         <p class="ajuda-campo">Só para te marcarmos, se a foto for parar aos stories. Sem ele concorres na mesma.</p>
@@ -504,7 +400,7 @@
 
         <div class="consentimento">
           <input type="checkbox" id="consentimento-foto">
-          <label for="consentimento-foto" style="margin:0"><span>Autorizo a Umbral a publicar a minha foto — e o meu @, se o tiver deixado — nas redes sociais da marca.</span></label>
+          <label for="consentimento-foto" style="margin:0"><span>Autorizo a Umbral a publicar a minha foto — nas redes e no site. <a href="https://drive.google.com/file/d/1m5NhpdfgIsI4HhKV9nCdjpDMnG8akkpS/view" target="_blank" rel="noopener noreferrer">Política de privacidade</a>.</span></label>
         </div>
 
         <div class="progresso" id="progresso" hidden aria-hidden="true"><i></i></div>
@@ -516,11 +412,11 @@
     </div>
   </section>
 
-  <!-- ECRÃ 4 · FINAL -->
+  <!-- ECRÃ 3 · FINAL -->
   <section class="ecra" id="ecra-final">
     <div class="cabeca">
-      <h1 id="titulo-final">Já tens o doce.<br>Agora só falta o descanso.</h1>
-      <p class="lead" id="texto-final">Espreita o email.</p>
+      <h1 id="titulo-final">Já tens o brinde.<br>Agora só falta o descanso.</h1>
+      <p class="lead" id="texto-final">O resto é quando quiseres.</p>
     </div>
     <div class="folha">
       <p class="mote">Fica mas não pares!</p>
@@ -532,7 +428,7 @@
         <h2 id="rotulo-stories">O resto sai nos stories.</h2>
         <a class="btn secundario" href="https://instagram.com/byumbral">Seguir a Umbral</a>
       </div>
-      <p class="piada">Isso é açúcar ou areia? Bem, agora que já tens todas as borlas da Umbral, limpa o ecrã!</p>
+      <p class="piada">A carrinha segue viagem. Os nossos quartos ficam quietos — e é essa a vantagem.</p>
     </div>
 
     <div class="remate-final">
@@ -552,53 +448,69 @@
 (function(){
   "use strict";
 
-  /* A ordem é só de apresentação: quatro curtas em cima, as duas restantes
-     em baixo. A colocação na grelha ordena por comprimento à parte. */
-  var PALAVRAS = [
-    {mostrar:"Férias",     procurar:"FERIAS"},
-    {mostrar:"Algarve",    procurar:"ALGARVE"},
-    {mostrar:"Alentejo",   procurar:"ALENTEJO"},
-    {mostrar:"Fátima",     procurar:"FATIMA"},
-    {mostrar:"Alojamento", procurar:"ALOJAMENTO"},
-    {mostrar:"Umbral",     procurar:"UMBRAL"}
+  /* ---------- os brindes ----------
+     ATENÇÃO: esta é a lista a confirmar com quem carrega a carrinha. As
+     etiquetas são o que cabe na fatia; o nome é o que a pessoa lê no fim e o
+     que fica gravado. O `peso` é a probabilidade relativa — o cupão sai mais
+     vezes porque não custa nada à Umbral e é o que traz reservas.
+     Só o cupão tem `codigo`; os outros entregam-se ali, na carrinha. */
+  var BRINDES = [
+    {
+      "etiqueta": "20%",
+      "nome": "20% na próxima estadia",
+      "codigo": "BORLA20",
+      "peso": 4
+    },
+    {
+      "etiqueta": "BOLA",
+      "nome": "Bola de Berlim",
+      "codigo": null,
+      "peso": 1
+    },
+    {
+      "etiqueta": "SACO",
+      "nome": "Saco de praia da Umbral",
+      "codigo": null,
+      "peso": 1
+    },
+    {
+      "etiqueta": "BONÉ",
+      "nome": "Boné da Umbral",
+      "codigo": null,
+      "peso": 1
+    },
+    {
+      "etiqueta": "CREME",
+      "nome": "Protetor solar",
+      "codigo": null,
+      "peso": 1
+    },
+    {
+      "etiqueta": "TOALHA",
+      "nome": "Toalha de praia",
+      "codigo": null,
+      "peso": 1
+    }
   ];
-  var QUEBRA_DEPOIS = 4;
-  /* 10 colunas é fixo: ALOJAMENTO tem exatamente 10 letras. As linhas variam
-     com o telemóvel — num ecrã comprido cabem mais e a grelha aproveita a
-     altura; num mais baixo ficam 10 e a célula não encolhe. Qualquer valor
-     entre 10 e 12 serve, porque a palavra mais longa só precisa de 10. */
-  var COLUNAS = 10;
-  var LINHAS = 10;
-  var LETRAS = "AAAEEEIIOOUURSTLNMCDPGBFVZJH";
+
+  var ARCO = 360 / BRINDES.length;
 
   /* ---------- Supabase ----------
      Chave publicável: pode viver no código-fonte. O papel `anon` só tem INSERT
      em `inscricoes` e `participacoes`, e upload no bucket `fotos-campanha`.
-     Sem leitura, sem alteração, sem remoção. As inscrições vêem-se no dashboard. */
+     Sem leitura, sem alteração, sem remoção. */
   var SUPABASE_URL = "https://vidhfmbsmmadgsudtpco.supabase.co";
   var SUPABASE_KEY = "sb_publishable_Nvj8cVRfIzvm9U6nzc8_PQ_BFR4hJYl";
   var BUCKET = "fotos-campanha";
 
-  /* De onde veio a pessoa. O domínio do avião é exclusivo dele e o saco tem
-     endereço próprio, por isso a origem lê-se do próprio endereço e o QR fica
-     limpo. Endereços desconhecidos — testes, pré-visualizações — ficam em
-     "direto", para não inflacionar nenhum canal. O ?o= serve para forçar. */
-  var CANAIS = {
-    "borlasdaumbral.pt": "aviao",
-    "www.borlasdaumbral.pt": "aviao"
-    /* falta acrescentar aqui o endereço do QR do saco */
-  };
-
+  /* Esta app é só da carrinha, por isso a origem é fixa. O ?o= serve para
+     testar sem sujar o canal. */
+  var ORIGEM = "carrinha";
   function origemDaVisita(){
     var forcada = new URLSearchParams(location.search).get("o");
     if (forcada && /^[a-z]{3,20}$/.test(forcada)) return forcada;
-    var comCaminho = location.hostname + location.pathname.replace(/\/$/, "");
-    return CANAIS[comCaminho] || CANAIS[location.hostname] || "direto";
+    return ORIGEM;
   }
-
-  /* Cupao unico para toda a campanha: nao ha forma de gerar codigos
-     individuais no sistema de reservas. Muda-se aqui e muda em todo o lado. */
-  var CODIGO = "BORLA20";
 
   function pedir(caminho, opcoes){
     return fetch(SUPABASE_URL + caminho, opcoes).then(function(resposta){
@@ -623,6 +535,19 @@
     });
   }
 
+  /* Uma falha de rede ou do servidor costuma passar à segunda. Erros de
+     validação não, por isso só se repete em falhas sem resposta ou 5xx. */
+  function inserirTeimoso(tabela, linha, tentativas){
+    return inserir(tabela, linha).catch(function(falha){
+      var vaiPassar = !falha.estado || falha.estado >= 500;
+      if (tentativas > 0 && vaiPassar){
+        return new Promise(function(r){ setTimeout(r, 1000); })
+          .then(function(){ return inserirTeimoso(tabela, linha, tentativas - 1); });
+      }
+      throw falha;
+    });
+  }
+
   /* 409 é sempre chave duplicada, mas por razões muito diferentes, e cada uma
      pede uma mensagem própria. Confundi-las era o pior dos casos: dizer que
      está tudo bem a quem ficou de fora. */
@@ -630,12 +555,11 @@
     return !!falha && falha.estado === 409 &&
            String(falha.message).indexOf(indice) !== -1;
   }
-  /* Já se inscreveu por este canal. */
+  /* Já rodou a roleta nesta carrinha. */
   function emailJaJogou(falha){ return violou(falha, "inscricoes_email_por_canal"); }
-  /* Já está no sorteio da semana, venha de que canal vier: é um por pessoa. */
+  /* Já está no sorteio da semana, venha do saco, do avião ou da carrinha. */
   function jaParticipouNoSorteio(falha){ return violou(falha, "participacoes_email_unico"); }
-  /* O resto é a mesma submissão repetida depois de a rede falhar: a primeira
-     chegou lá e só a resposta é que se perdeu. */
+  /* O resto é a mesma submissão repetida depois de a rede falhar. */
   function jaEstavaGuardado(falha){
     return !!falha && falha.estado === 409 &&
            !emailJaJogou(falha) && !jaParticipouNoSorteio(falha);
@@ -655,10 +579,11 @@
   }
 
   var estado = {
-    id:null, nome:"", email:"", instagram:"", codigo:"",
-    grelha:[], posicoes:{}, encontradas:[], inicio:0, cronometro:null,
-    foto:null, fotoUrl:null, fotoCaminho:null, tempo:null
+    id:null, email:"", instagram:"", brinde:null,
+    foto:null, fotoUrl:null, fotoCaminho:null, rodou:false, guardado:false
   };
+
+  function $(id){ return document.getElementById(id); }
 
   function ocupar(botao, texto){
     botao.dataset.texto = botao.textContent;
@@ -670,18 +595,23 @@
     botao.disabled = false;
   }
 
-  function $(id){ return document.getElementById(id); }
-
   /* A caixa de erro só ocupa espaço quando tem alguma coisa para dizer. */
   function dizerErro(elemento, texto){
     elemento.textContent = texto || "";
     elemento.classList.toggle("visivel", !!texto);
   }
 
-  var PASSO_DE = {"ecra-jogo":1, "ecra-email":2, "ecra-codigo":3, "ecra-final":4};
-  var ORDEM_ECRAS = ["ecra-jogo", "ecra-email", "ecra-codigo", "ecra-final"];
-  /* Até onde a pessoa já chegou. Só se navega dentro do que já foi feito —
-     não se salta para a frente sem ter cumprido o passo. */
+  function emailValido(v){
+    return /^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/.test(v);
+  }
+  function instagramValido(v){ return /^@?[A-Za-z0-9._]{1,30}$/.test(v); }
+
+  /* ---------- passos ---------- */
+  var PASSO_DE = {"ecra-roleta":1, "ecra-brinde":2, "ecra-final":3};
+  var ORDEM_ECRAS = ["ecra-roleta", "ecra-brinde", "ecra-final"];
+  var TOTAL_PASSOS = ORDEM_ECRAS.length;
+  /* Até onde a pessoa já chegou: não se salta para a frente sem ter cumprido
+     o passo. */
   var maisLonge = 1;
 
   function marcarPasso(idEcra){
@@ -692,7 +622,7 @@
     for (var i = 0; i < pontos.length; i++){
       pontos[i].className = (i + 1 < n) ? "feito" : (i + 1 === n ? "on" : "");
     }
-    $("passos").setAttribute("aria-label", "Passo " + n + " de 4");
+    $("passos").setAttribute("aria-label", "Passo " + n + " de " + TOTAL_PASSOS);
   }
 
   function semAnimacao(){
@@ -704,17 +634,15 @@
     novo.classList.add("ativo");
     marcarPasso(idEcra);
     window.scrollTo(0,0);
-    if (idEcra === "ecra-jogo") dimensionarGrelha();
     document.querySelector(".app").classList.toggle("fim", idEcra === "ecra-final");
   }
 
   var CURVA = "cubic-bezier(.32,.72,0,1)";
   var DURACAO_ALTURA = 460;
 
-  /* Anima a altura de um elemento e devolve-o ao natural no fim.
-     A folha do jogo é um item flex com flex:1, e nesses a altura declarada é
-     ignorada pelo layout — daí o flex:none temporário. Sem isto, o cartão do
-     jogo saltava em vez de crescer. */
+  /* Anima a altura de um elemento e devolve-o ao natural no fim. O flex:none
+     temporário existe porque num item com flex-grow a altura declarada é
+     ignorada pelo layout, e o cartão saltava em vez de crescer. */
   function animarAltura(el, de, para){
     if (!el || !de || !para || Math.abs(de - para) < 2) return;
     var flexAntes = el.style.flex;
@@ -737,15 +665,13 @@
 
   /* A troca tem três tempos: o conteúdo actual desvanece, o novo toma o lugar,
      e a cabeça e o cartão crescem ou encolhem da altura antiga para a nova.
-     Animar as duas é o que evita o salto — animar só o cartão deixava a cabeça
-     mudar de altura de repente e empurrar tudo o que está abaixo. */
+     Animar as duas é o que evita o salto. */
   function mostrar(idEcra){
     var novo = $(idEcra);
     var antigo = document.querySelector(".ecra.ativo");
     if (antigo === novo) { marcarPasso(idEcra); return; }
     if (semAnimacao()) { trocarSeco(antigo, novo, idEcra); return; }
 
-    /* Os pontos mudam já, para a animação deles correr durante a troca. */
     marcarPasso(idEcra);
 
     var deCabeca = alturaDe(antigo, ".cabeca");
@@ -758,17 +684,11 @@
       novo.classList.add("ativo", "a-esconder");
       window.scrollTo(0,0);
       document.querySelector(".app").classList.toggle("fim", idEcra === "ecra-final");
-      /* A grelha é dimensionada antes de medir, para o alvo da animação ser a
-         altura final e não uma intermédia. */
-      if (idEcra === "ecra-jogo") dimensionarGrelha();
       if (idEcra === "ecra-final") confetis();
+      if (idEcra === "ecra-roleta") ajustarRoleta();
 
       animarAltura(novo.querySelector(".cabeca"), deCabeca, alturaDe(novo, ".cabeca"));
       animarAltura(novo.querySelector(".folha"), deFolha, alturaDe(novo, ".folha"));
-
-      /* A folha do jogo esteve com altura fixa durante a animação; volta a
-         medir-se quando ela é devolvida ao flex. */
-      if (idEcra === "ecra-jogo") setTimeout(dimensionarGrelha, DURACAO_ALTURA + 80);
 
       requestAnimationFrame(function(){
         requestAnimationFrame(function(){ novo.classList.remove("a-esconder"); });
@@ -776,410 +696,159 @@
     }, 190);
   }
 
-  /* ---------- grelha ---------- */
-  var DIRECOES = [[0,1],[1,0],[1,1],[-1,1],[0,-1],[-1,0],[-1,-1],[1,-1]];
-
-  function tentaColocar(g, palavra, posicoes){
-    for (var t = 0; t < 500; t++){
-      var d = DIRECOES[Math.floor(Math.random()*DIRECOES.length)];
-      var linha = Math.floor(Math.random()*LINHAS);
-      var coluna = Math.floor(Math.random()*COLUNAS);
-      var fimL = linha + d[0]*(palavra.length-1);
-      var fimC = coluna + d[1]*(palavra.length-1);
-      if (fimL < 0 || fimL >= LINHAS || fimC < 0 || fimC >= COLUNAS) continue;
-      var cabe = true;
-      for (var i = 0; i < palavra.length; i++){
-        var atual = g[linha + d[0]*i][coluna + d[1]*i];
-        if (atual !== "" && atual !== palavra[i]) { cabe = false; break; }
-      }
-      if (!cabe) continue;
-      for (var j = 0; j < palavra.length; j++) g[linha + d[0]*j][coluna + d[1]*j] = palavra[j];
-      posicoes[palavra] = {linha:linha, coluna:coluna, direcao:d};
-      return true;
+  /* ---------- a roda ----------
+     O prémio é sorteado aqui, no telemóvel. Pode ser: os brindes não têm
+     stock limitado — quem está na carrinha é que os entrega — por isso não há
+     nada para reservar no servidor, e uma roda que espera pela rede antes de
+     começar a girar não tem graça nenhuma. */
+  function sortearBrinde(){
+    var total = 0, i;
+    for (i = 0; i < BRINDES.length; i++) total += BRINDES[i].peso;
+    var alvo = Math.random() * total;
+    for (i = 0; i < BRINDES.length; i++){
+      alvo -= BRINDES[i].peso;
+      if (alvo <= 0) return i;
     }
-    return false;
+    return BRINDES.length - 1;
   }
 
-  function criarGrelha(){
-    var ordenadas = PALAVRAS.map(function(p){ return p.procurar; })
-                            .sort(function(a,b){ return b.length - a.length; });
-    for (var tentativa = 0; tentativa < 400; tentativa++){
-      var posicoes = {};
-      var g = [];
-      for (var l = 0; l < LINHAS; l++) g.push(new Array(COLUNAS).fill(""));
-      var todas = true;
-      for (var i = 0; i < ordenadas.length; i++){
-        if (!tentaColocar(g, ordenadas[i], posicoes)) { todas = false; break; }
-      }
-      if (!todas) continue;
-      for (var a = 0; a < LINHAS; a++){
-        for (var b = 0; b < COLUNAS; b++){
-          if (g[a][b] === "") g[a][b] = LETRAS[Math.floor(Math.random()*LETRAS.length)];
-        }
-      }
-      return {grelha:g, posicoes:posicoes};
-    }
-    return null;
-  }
+  var DURACAO_RODA = 3600;
 
-  function desenharGrelha(){
-    var el = $("grelha");
-    el.innerHTML = "";
-    el.style.gridTemplateColumns = "repeat(" + COLUNAS + ", 1fr)";
-    el.style.gridTemplateRows = "repeat(" + LINHAS + ", 1fr)";
-    for (var l = 0; l < LINHAS; l++){
-      for (var c = 0; c < COLUNAS; c++){
-        var cel = document.createElement("div");
-        cel.className = "celula";
-        cel.textContent = estado.grelha[l][c];
-        cel.dataset.l = l;
-        cel.dataset.c = c;
-        el.appendChild(cel);
-      }
-    }
-  }
-
-  function direcaoDe(){ return [0,1]; }
-
-  /* Marca a palavra na grelha sem passar pela seleção manual. */
-  function marcarPalavra(p){
-    if (estado.encontradas.indexOf(p.procurar) !== -1) return;
-    var pos = estado.posicoes[p.procurar];
-    if (!pos) return;
-    var d = pos.direcao || direcaoDe(p.procurar);
-    for (var i = 0; i < p.procurar.length; i++){
-      var cel = document.querySelector('.celula[data-l="' + (pos.linha + d[0]*i) + '"][data-c="' + (pos.coluna + d[1]*i) + '"]');
-      if (cel){ cel.classList.remove("ativa"); cel.classList.add("encontrada"); }
-    }
-    estado.encontradas.push(p.procurar);
-    $("anuncio").textContent = p.mostrar + " apanhada!";
-    desenharPalavras();
-    if (estado.encontradas.length === PALAVRAS.length) { terminarJogo(); return; }
-    var faltam = PALAVRAS.length - estado.encontradas.length;
-    dizerDica(faltam === 1 ? "Boa! Falta uma." : "Boa! Faltam " + faltam + ".", "");
-    agendarDica();
-  }
-
-  function desenharPalavras(){
-    var ul = $("lista-palavras");
-    ul.innerHTML = "";
-    PALAVRAS.forEach(function(p, i){
-      var li = document.createElement("li");
-      var achada = estado.encontradas.indexOf(p.procurar) !== -1;
-      if (achada){
-        li.textContent = p.mostrar;
-        li.className = "encontrada";
-      } else {
-        /* Alternativa para quem não consegue arrastar: a palavra é um botão
-           que a marca na grelha. É a única forma de o jogo não excluir quem
-           usa leitor de ecrã — e a mesma porta serve toda a gente. */
-        var botao = document.createElement("button");
-        botao.type = "button";
-        botao.textContent = p.mostrar;
-        botao.setAttribute("aria-label", "Marcar " + p.mostrar + " na grelha");
-        botao.addEventListener("click", function(){ marcarPalavra(p); });
-        li.appendChild(botao);
-      }
-      ul.appendChild(li);
-      if (i === QUEBRA_DEPOIS - 1){
-        var quebra = document.createElement("li");
-        quebra.className = "quebra";
-        quebra.setAttribute("aria-hidden", "true");
-        ul.appendChild(quebra);
-      }
-    });
-    $("contador").textContent = estado.encontradas.length + " de " + PALAVRAS.length + " encontradas";
-  }
-
-  /* ---------- seleção ----------
-     Dois modos: arrastar de ponta a ponta, ou tocar na primeira letra e
-     depois na última. O segundo existe porque em células de 29px o arrasto
-     falha muito, sobretudo na diagonal e para quem tem menos destreza. */
-  var arrastar = false, inicioCel = null, selecao = [], ancora = null, moveu = false;
-
-  /* A dica só aparece a quem encalha. Mostrá-la logo estraga o puzzle. */
-  var relogioDica = null, relogioPista = null;
-  /* Texto vazio esconde o elemento em vez de o deixar a ocupar altura, para a
-     dica e a pista nunca aparecerem empilhadas. */
-  function dizerDica(texto, tipo){
-    var el = $("dica");
-    el.textContent = texto || "";
-    el.className = "dica" + (tipo ? " " + tipo : "");
-    el.hidden = !texto;
-  }
-  /* Escalonamento: primeiro uma dica de texto, e só se a pessoa continuar
-     encalhada é que aparece a oferta de pista — no lugar da dica, nunca ao
-     lado dela. */
-  function agendarDica(){
-    clearTimeout(relogioDica);
-    clearTimeout(relogioPista);
-    $("btn-pista").hidden = true;
-    relogioDica = setTimeout(function(){
-      if (estado.encontradas.length >= PALAVRAS.length) return;
-      dizerDica("Também vale na diagonal e ao contrário.", "sugestao");
-    }, 30000);
-    relogioPista = setTimeout(function(){
-      if (estado.encontradas.length >= PALAVRAS.length) return;
-      dizerDica("", "");
-      $("btn-pista").hidden = false;
-    }, 70000);
-  }
-
-  /* Pista a sério: acende a primeira letra de uma palavra que falte. Nunca
-     salta o jogo — é o jogo que dá a conhecer a Umbral. */
-  function darPista(){
-    var falta = PALAVRAS.filter(function(p){ return estado.encontradas.indexOf(p.procurar) === -1; });
-    if (!falta.length) return;
-    var alvo = falta[Math.floor(Math.random() * falta.length)];
-    var pos = estado.posicoes[alvo.procurar];
-    if (!pos) return;
-    var cel = document.querySelector('.celula[data-l="' + pos.linha + '"][data-c="' + pos.coluna + '"]');
-    if (!cel) return;
-    cel.classList.add("pista");
-    setTimeout(function(){ cel.classList.remove("pista"); }, 4000);
-    agendarDica();
-    dizerDica(alvo.mostrar + " começa na letra acesa.", "sugestao");
-  }
-
-  function celulaDoPonto(x,y){
-    var el = document.elementFromPoint(x,y);
-    return (el && el.classList.contains("celula")) ? el : null;
-  }
-
-  function caminho(a,b){
-    var l1=+a.dataset.l, c1=+a.dataset.c, l2=+b.dataset.l, c2=+b.dataset.c;
-    var dl=l2-l1, dc=c2-c1, passos;
-    if (dl===0 && dc===0) passos=0;
-    else if (dl===0) passos=Math.abs(dc);
-    else if (dc===0) passos=Math.abs(dl);
-    else if (Math.abs(dl)===Math.abs(dc)) passos=Math.abs(dl);
-    else return null;
-    var pl = passos===0 ? 0 : dl/passos;
-    var pc = passos===0 ? 0 : dc/passos;
-    var lista = [];
-    for (var i=0;i<=passos;i++){
-      lista.push(document.querySelector('.celula[data-l="'+(l1+pl*i)+'"][data-c="'+(c1+pc*i)+'"]'));
-    }
-    return lista;
-  }
-
-  function limparSelecao(){
-    selecao.forEach(function(c){ if(c) c.classList.remove("ativa"); });
-    selecao = [];
-  }
-
-  function pintarSelecao(){
-    selecao.forEach(function(c){ if(c) c.classList.add("ativa"); });
-  }
-
-  function largarAncora(){
-    if (ancora) ancora.classList.remove("ancora");
-    ancora = null;
-  }
-
-  /* Errar tem de se notar. Antes a seleção desaparecia sem dizer nada e as
-     pessoas repetiam a mesma tentativa sem perceber que estava errada. */
-  function recusar(){
-    var cels = selecao.slice();
-    limparSelecao();
-    cels.forEach(function(c){ if(c) c.classList.add("errada"); });
-    setTimeout(function(){
-      cels.forEach(function(c){ if(c) c.classList.remove("errada"); });
-    }, 340);
-  }
-
-  function validarSelecao(){
-    if (selecao.length < 2) { limparSelecao(); return; }
-    var texto = selecao.map(function(c){ return c.textContent; }).join("");
-    var invertido = texto.split("").reverse().join("");
-    var acerto = null;
-    PALAVRAS.forEach(function(p){
-      if ((p.procurar===texto || p.procurar===invertido) && estado.encontradas.indexOf(p.procurar)===-1) acerto = p;
-    });
-    if (!acerto) { recusar(); return; }
-
-    selecao.forEach(function(c){ c.classList.remove("ativa"); c.classList.add("encontrada"); });
-    selecao = [];
-    estado.encontradas.push(acerto.procurar);
-    $("anuncio").textContent = acerto.mostrar + " apanhada!";
-    desenharPalavras();
-
-    if (estado.encontradas.length === PALAVRAS.length) { terminarJogo(); return; }
-    var faltam = PALAVRAS.length - estado.encontradas.length;
-    dizerDica(faltam === 1 ? "Boa! Falta uma." : "Boa! Faltam " + faltam + ".", "");
-    agendarDica();
-  }
-
-  function ligarGrelha(){
-    var el = $("grelha");
-
-    el.addEventListener("pointerdown", function(e){
-      var cel = celulaDoPonto(e.clientX, e.clientY);
-      if (!cel) return;
-      e.preventDefault();
-
-      if (ancora === cel) { largarAncora(); limparSelecao(); return; }
-
-      /* Segundo toque: fecha a palavra entre a âncora e esta célula. */
-      if (ancora){
-        var lista = caminho(ancora, cel);
-        largarAncora();
-        if (lista){ limparSelecao(); selecao = lista; pintarSelecao(); validarSelecao(); }
-        else { limparSelecao(); ancora = cel; cel.classList.add("ancora"); }
-        return;
-      }
-
-      largarAncora();
-      arrastar = true; moveu = false; inicioCel = cel;
-      limparSelecao(); selecao = [cel]; pintarSelecao();
-    });
-
-    window.addEventListener("pointermove", function(e){
-      if (!arrastar) return;
-      var cel = celulaDoPonto(e.clientX, e.clientY);
-      if (!cel || cel === inicioCel) return;
-      var lista = caminho(inicioCel, cel);
-      if (!lista) return;
-      moveu = true;
-      limparSelecao();
-      selecao = lista;
-      pintarSelecao();
-    });
-
-    window.addEventListener("pointerup", function(){
-      if (!arrastar) return;
-      arrastar = false;
-      /* Toque simples: guarda a primeira letra e fica à espera da última. */
-      if (!moveu){
-        limparSelecao();
-        ancora = inicioCel;
-        ancora.classList.add("ancora");
-        return;
-      }
-      validarSelecao();
+  /* Roda até a fatia `indice` parar debaixo do ponteiro, que está no topo.
+     Cinco voltas inteiras antes, e um desvio dentro da fatia para não parar
+     sempre no mesmo sítio. */
+  function girar(indice){
+    var meio = -60 + indice * ARCO;          /* centro da fatia, em graus */
+    var desvio = (Math.random() - 0.5) * (ARCO - 16);
+    var angulo = 1800 - 90 - meio + desvio;
+    var roda = $("roda");
+    var caixa = $("roleta");
+    caixa.classList.add("a-rodar");
+    /* Dois quadros antes de escrever o alvo: sem isto o browser podia juntar
+       a transição e o valor final e a roda saltava. */
+    return new Promise(function(resolve){
+      requestAnimationFrame(function(){
+        requestAnimationFrame(function(){
+          roda.style.transform = "rotate(" + angulo.toFixed(2) + "deg)";
+          setTimeout(resolve, semAnimacao() ? 200 : DURACAO_RODA);
+        });
+      });
     });
   }
 
-  /* ---------- cronómetro ----------
-     Não aparece no ecrã, mas continua a correr: o tempo é guardado na
-     inscrição e serve para desempatar quem jogou mais depressa. */
-  function formatarTempo(s){
-    var m = Math.floor(s/60), r = s%60;
-    return m + ":" + (r<10?"0":"") + r;
-  }
-  function arrancarCronometro(){
-    estado.inicio = Date.now();
-    clearInterval(estado.cronometro);
-    estado.cronometro = setInterval(function(){
-      $("cronometro").textContent = formatarTempo(Math.floor((Date.now()-estado.inicio)/1000));
-    }, 500);
+  /* Num 360x640 o botão principal caía 66px abaixo da linha de água, e o botão
+     é a única coisa deste ecrã que não pode ficar escondida. Mede-se o excesso
+     real e tira-se dele: primeiro da roda, que é o que mais se pode encolher,
+     e só depois do ar em volta do título. Um breakpoint de altura já me tinha
+     apanhado um telemóvel grande por ser comprido. */
+  var RODA_MIN = 132, APERTO_MAX = 12;
+
+  function excessoDaPagina(){
+    /* A .app tem min-height:100dvh, por isso qualquer altura a mais é excesso.
+       Medir a app em vez do botão evita depender da posição do scroll. */
+    return document.querySelector(".app").getBoundingClientRect().height - window.innerHeight;
   }
 
-  /* ---------- fluxo ---------- */
-  /* Quantas linhas cabem com a célula que a largura permite. Medir com a
-     grelha por dimensionar, senão o tamanho anterior contamina a medição. */
-  function linhasQueCabem(){
-    var zona = document.querySelector(".zona-grelha");
-    var el = $("grelha");
-    if (!zona) return 10;
-    if (el){ el.style.width = ""; el.style.height = ""; }
-    var lacuna = el ? (parseFloat(getComputedStyle(el).gap) || 6) : 6;
-    var caixa = zona.getBoundingClientRect();
-    if (!caixa.width || !caixa.height) return 10;
-    var celula = (caixa.width - (COLUNAS - 1) * lacuna) / COLUNAS;
-    if (celula <= 0) return 10;
-    /* A folga reservada impede a grelha de engolir a altura toda: sem ela a
-       grelha crescia até ao limite e o cabeçalho ficava colado a si próprio. */
-    var FOLGA = 88;
-    var cabem = Math.floor((caixa.height - FOLGA + lacuna) / (celula + lacuna));
-    return Math.max(10, Math.min(12, cabem));
+  function ajustarRoleta(){
+    var caixa = $("roleta");
+    if (!caixa || !$("ecra-roleta").classList.contains("ativo")) return;
+    caixa.style.width = "";
+    document.documentElement.style.setProperty("--aperto", "0px");
+
+    var excesso = excessoDaPagina();
+    if (excesso <= 1) return;
+
+    /* A roda é quadrada, por isso cada pixel de largura é um de altura. */
+    var largura = caixa.getBoundingClientRect().width;
+    var nova = Math.max(RODA_MIN, largura - excesso);
+    if (nova < largura) caixa.style.width = Math.floor(nova) + "px";
+
+    excesso = excessoDaPagina();
+    if (excesso > 1){
+      document.documentElement.style.setProperty(
+        "--aperto", Math.min(Math.ceil(excesso / 2), APERTO_MAX) + "px");
+    }
   }
 
-  function iniciarJogo(){
-    LINHAS = linhasQueCabem();
-    var criada = criarGrelha();
-    estado.grelha = criada.grelha;
-    estado.posicoes = criada.posicoes;
-    estado.encontradas = [];
-    largarAncora();
-    limparSelecao();
-    desenharGrelha();
-    desenharPalavras();
-    $("cronometro").textContent = "0:00";
-    $("anuncio").textContent = "";
-    dizerDica("Arrasta ou toca na primeira e na última letra.", "");
-    agendarDica();
-    mostrar("ecra-jogo");
-    dimensionarGrelha();
-    arrancarCronometro();
-  }
-
-  function terminarJogo(){
-    clearInterval(estado.cronometro);
-    clearTimeout(relogioDica);
-    clearTimeout(relogioPista);
-    largarAncora();
-    $("btn-pista").hidden = true;
-    dizerDica("Todas apanhadas. Já sabes quem somos.", "vitoria");
-    estado.tempo = Math.floor((Date.now()-estado.inicio)/1000);
-    $("anuncio").textContent = "Encontraste as " + PALAVRAS.length + " palavras em " + formatarTempo(estado.tempo) + ".";
-    setTimeout(function(){ mostrar("ecra-email"); }, 1100);
-  }
-
-  /* A versão anterior aceitava qualquer caractere que não fosse espaço nem
-     arroba, e deixou passar um € num dos testes. Restringe-se ao que os
-     fornecedores realmente emitem. */
-  function emailValido(v){
-    return /^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/.test(v);
-  }
+  window.addEventListener("resize", ajustarRoleta);
+  window.addEventListener("orientationchange", function(){ setTimeout(ajustarRoleta, 120); });
 
   function guardarInscricao(){
-    return inserir("inscricoes", {
+    return inserirTeimoso("inscricoes", {
       id: estado.id,
-      nome: estado.nome || null,
+      nome: null,
       email: estado.email,
-      codigo: estado.codigo,
-      tempo_segundos: estado.tempo,
+      /* Só quem tira o cupão leva código; os outros levam o brinde na mão. */
+      codigo: estado.brinde.codigo || null,
+      brinde: estado.brinde.nome,
       origem: origemDaVisita(),
       consentimento_dados: true
-    });
+    }, 2);
   }
 
-  $("btn-quero-20").addEventListener("click", function(){
+  function apresentarBrinde(brinde){
+    $("nome-brinde").textContent = brinde.nome;
+    $("nota-brinde").textContent = brinde.codigo
+      ? "O código chega-te ao email daqui a nada."
+      : "Mostra este ecrã a quem está na carrinha e é teu.";
+    $("anuncio").textContent = "Ganhaste: " + brinde.nome + ".";
+  }
+
+  $("btn-rodar").addEventListener("click", function(){
     var botao = this;
     var email = $("email").value.trim();
     var erro = $("erro-email");
+
+    /* Quem já rodou e voltou atrás pelo swipe encontra o botão outra vez. Sem
+       isto tentava gravar de novo e apanhava o 409 do email repetido — um erro
+       à frente de alguém que não fez nada de errado. */
+    if (estado.guardado){
+      apresentarBrinde(estado.brinde);
+      mostrar("ecra-brinde");
+      return;
+    }
     if (!emailValido(email)) { dizerErro(erro, "Falta-te o @ ou o ponto algures. Tenta outra vez."); $("email").focus(); return; }
-    if (!$("rgpd").checked) { dizerErro(erro, "Sem essa cruzinha não te conseguimos enviar o código."); return; }
+    if (!$("rgpd").checked) { dizerErro(erro, "Sem essa cruzinha não te conseguimos mandar nada."); return; }
     dizerErro(erro, "");
 
-    /* O id fica preso à tentativa, para que repetir depois de uma falha de rede
-       não crie uma segunda inscrição da mesma pessoa. */
+    /* O id fica preso à tentativa: repetir depois de uma falha de rede não
+       cria uma segunda inscrição da mesma pessoa. E o brinde também, senão
+       carregar outra vez era rodar outra vez até dar o cupão. */
     if (!estado.id) estado.id = uuid();
-    estado.codigo = CODIGO;
-    estado.nome = $("nome").value.trim();
     estado.email = email;
+    if (!estado.brinde) estado.brinde = BRINDES[sortearBrinde()];
 
-    ocupar(botao, "A guardar…");
-    guardarInscricao().catch(function(falha){
+    ocupar(botao, "A rodar…");
+    /* A roda gira enquanto o registo viaja: três segundos e meio de animação
+       tapam a latência em vez de a pessoa ficar à espera de um spinner. */
+    var aGirar = estado.rodou ? Promise.resolve() : girar(BRINDES.indexOf(estado.brinde));
+    estado.rodou = true;
+
+    var aGuardar = guardarInscricao().catch(function(falha){
       if (jaEstavaGuardado(falha)) return;
       throw falha;
-    }).then(function(){
-      mostrar("ecra-codigo");
+    });
+
+    Promise.all([aGirar, aGuardar]).then(function(){
+      estado.guardado = true;
+      apresentarBrinde(estado.brinde);
+      mostrar("ecra-brinde");
     }).catch(function(falha){
       if (emailJaJogou(falha)){
-        dizerErro(erro, "Este email já jogou. É uma borla por pessoa.");
-        return;
+        dizerErro(erro, "Este email já rodou. É uma volta por pessoa.");
+      } else {
+        dizerErro(erro, "Não conseguimos guardar agora. Vê a ligação e carrega outra vez.");
+        if (window.console) console.error("Falhou a inscrição:", falha);
       }
-      dizerErro(erro, "Não conseguimos guardar agora. Vê a ligação e carrega outra vez.");
-      if (window.console) console.error("Falhou a inscrição:", falha);
     }).then(function(){
       libertar(botao);
+      $("roleta").classList.remove("a-rodar");
     });
   });
 
-  /* Os quatro estados do fim do percurso, em funções, para a barra de testes
-     os poder abrir sem repetir o que os botões fazem. */
+  /* ---------- os estados do fim do percurso ----------
+     Em funções para a barra de testes os poder abrir sem repetir o que os
+     botões fazem. */
   function abrirExtra(){
     $("convite").style.display = "none";
     $("caixa-extra").classList.add("aberta");
@@ -1191,9 +860,12 @@
     $("btn-satisfeito").textContent = "Quero ir dar um mergulho";
   }
   function finalSemFoto(){
-    $("titulo-final").innerHTML = "Já tens o doce.<br>Agora só falta o descanso.";
-    $("texto-final").textContent = "Espreita o email.";
-    /* Sem foto, perguntar se aparece nos stories não faz sentido nenhum. */
+    $("titulo-final").innerHTML = "Já tens o brinde.<br>Agora só falta o descanso.";
+    /* Prometer email a quem não tirou o cupão nem entrou no sorteio era
+       prometer o quê? */
+    $("texto-final").textContent = (estado.brinde && estado.brinde.codigo)
+      ? "O código chega ao email daqui a nada."
+      : "O resto é quando quiseres.";
     $("rotulo-stories").textContent = "O resto sai nos stories.";
   }
   function finalComFoto(){
@@ -1254,8 +926,6 @@
     img.src = origem;
   });
 
-  function instagramValido(v){ return /^@?[A-Za-z0-9._]{1,30}$/.test(v); }
-
   function mostrarProgresso(fracao){
     var barra = $("progresso");
     barra.hidden = false;
@@ -1268,10 +938,10 @@
   }
 
   /* Envia a foto com barra de progresso. Cinco megabytes numa rede de praia
-     podem levar meio minuto, e sem sinal de vida as pessoas carregam outra
-     vez ou desistem. Usa XHR porque o fetch não expõe o progresso do envio.
-     Se já foi enviada nesta sessão devolve o caminho guardado: uma falha a
-     gravar o registo não obriga a repetir o envio. */
+     podem levar meio minuto, e sem sinal de vida as pessoas carregam outra vez
+     ou desistem. Usa XHR porque o fetch não expõe o progresso do envio. Se já
+     foi enviada nesta sessão devolve o caminho guardado: uma falha a gravar o
+     registo não obriga a repetir o envio. */
   function enviarFoto(){
     if (estado.fotoCaminho) return Promise.resolve(estado.fotoCaminho);
     var caminho = estado.id + "/" + uuid() + ".jpg";
@@ -1295,19 +965,6 @@
       };
       xhr.onerror = function(){ reject(new Error("falha de rede no envio")); };
       xhr.send(estado.foto);
-    });
-  }
-
-  /* Uma falha de rede ou do servidor costuma passar à segunda. Erros de
-     validação não, por isso só se repete em falhas sem resposta ou 5xx. */
-  function inserirTeimoso(tabela, linha, tentativas){
-    return inserir(tabela, linha).catch(function(falha){
-      var vaiPassar = !falha.estado || falha.estado >= 500;
-      if (tentativas > 0 && vaiPassar){
-        return new Promise(function(r){ setTimeout(r, 1000); })
-          .then(function(){ return inserirTeimoso(tabela, linha, tentativas - 1); });
-      }
-      throw falha;
     });
   }
 
@@ -1353,67 +1010,15 @@
     });
   });
 
-
-  /* A grelha é um quadrado do tamanho do menor lado do espaço que sobra. Medir
-     e escrever em pixels evita as armadilhas de percentagens dentro de flex.
-     Limpa-se o tamanho antes de medir, senão a medição vinha contaminada pelo
-     valor anterior. */
-  /* A grelha tem teto: passado este tamanho a célula não fica melhor, só come
-     altura que o cabeçalho precisa mais. */
-  var TETO_CELULA = 33;
-
-  /* Uma passagem: mede o espaço livre, escreve o tamanho da grelha e devolve
-     quanto sobrou na zona — é essa sobra que vai virar ar no cabeçalho. */
-  function medirEEscrever(){
-    var zona = document.querySelector(".zona-grelha");
-    var el = $("grelha");
-    if (!zona || !el) return null;
-    el.style.width = "";
-    el.style.height = "";
-    var caixa = zona.getBoundingClientRect();
-    var lacuna = parseFloat(getComputedStyle(el).gap) || 6;
-    /* A célula é quadrada, por isso o lado é o menor que cabe nas duas
-       direções. As dimensões da grelha saem daí, não o contrário. */
-    var celula = Math.min(
-      (caixa.width  - (COLUNAS - 1) * lacuna) / COLUNAS,
-      (caixa.height - (LINHAS  - 1) * lacuna) / LINHAS,
-      TETO_CELULA
-    );
-    if (celula < 10) return null;
-    var altura = Math.floor(celula * LINHAS + (LINHAS - 1) * lacuna);
-    el.style.width  = Math.floor(celula * COLUNAS + (COLUNAS - 1) * lacuna) + "px";
-    el.style.height = altura + "px";
-    document.documentElement.style.setProperty("--letra", (celula * 0.5) + "px");
-    return { celula: celula, sobra: caixa.height - altura };
-  }
-
-  /* Duas passagens: a primeira descobre quanto espaço sobra com o cabeçalho
-     no mínimo, a segunda devolve-lhe esse espaço. Sem isto a grelha crescia
-     até ao limite e o topo ficava tudo colado. */
-  function dimensionarGrelha(){
-    var raiz = document.documentElement;
-    raiz.style.setProperty("--ar", "0px");
-    var r = medirEEscrever();
-    if (!r) return;
-    if (r.sobra > 12){
-      raiz.style.setProperty("--ar", Math.floor(r.sobra / 4.4) + "px");
-      medirEEscrever();
-    }
-  }
-
-  window.addEventListener("resize", dimensionarGrelha);
-  window.addEventListener("orientationchange", function(){ setTimeout(dimensionarGrelha, 120); });
-
   /* ---------- navegação por swipe ----------
-     Só entre ecrãs já completados, e nunca a partir da grelha, onde o arrasto
-     horizontal é a forma de marcar palavras. */
+     Só entre ecrãs já completados. */
   function ligarSwipe(){
     var x0 = 0, y0 = 0, valido = false;
 
     document.addEventListener("touchstart", function(e){
       if (e.touches.length !== 1) { valido = false; return; }
       var alvo = e.target;
-      valido = !(alvo.closest && (alvo.closest("#grelha") || alvo.closest(".barra-testes")));
+      valido = !(alvo.closest && alvo.closest(".barra-testes"));
       x0 = e.touches[0].clientX;
       y0 = e.touches[0].clientY;
     }, {passive: true});
@@ -1432,8 +1037,6 @@
       mostrar(ORDEM_ECRAS[destino - 1]);
     }, {passive: true});
   }
-
-  $("btn-pista").addEventListener("click", darPista);
 
   /* ---------- confetis ----------
      Marcam a chegada ao fim. Duram pouco, apagam-se sozinhos e não apanham
@@ -1494,18 +1097,23 @@
 
   /* ---------- barra de testes ----------
      Só aparece em localhost, na rede local, ou com ?dev no endereço. Não vai
-     ao ar para quem chega pelo QR. Nota: saltar para o ecrã 2 não contorna
-     nada de importante — o jogo nunca foi validado no servidor, e a regra de
-     uma inscrição por email vive no índice único da base de dados. */
+     ao ar para quem chega pelo QR da carrinha. */
   function barraDeTestes(){
     var local = /^(localhost|127\.|192\.168\.|10\.|172\.(1[6-9]|2\d|3[01])\.)/.test(location.hostname);
     if (!local && location.search.indexOf("dev") === -1) return;
 
+    function fingirBrinde(qual){
+      estado.brinde = qual;
+      apresentarBrinde(qual);
+    }
+    var cupao = BRINDES[0];
+    var coisa = BRINDES[1];
+
     var destinos = [
-      ["Jogo",    function(){ iniciarJogo(); }],
-      ["Email",   function(){ mostrar("ecra-email"); }],
-      ["Código",  function(){ fecharExtra(); mostrar("ecra-codigo"); }],
-      ["Foto",    function(){ abrirExtra(); mostrar("ecra-codigo"); }],
+      ["Roleta",  function(){ mostrar("ecra-roleta"); }],
+      ["Cupão",   function(){ fecharExtra(); fingirBrinde(cupao); mostrar("ecra-brinde"); }],
+      ["Brinde",  function(){ fecharExtra(); fingirBrinde(coisa); mostrar("ecra-brinde"); }],
+      ["Foto",    function(){ fingirBrinde(coisa); abrirExtra(); mostrar("ecra-brinde"); }],
       ["Final",   function(){ finalSemFoto(); mostrar("ecra-final"); }],
       ["Sorteio", function(){ finalComFoto(); mostrar("ecra-final"); }]
     ];
@@ -1531,10 +1139,9 @@
   }
 
   /* ---------- arranque ---------- */
-  ligarGrelha();
   ligarSwipe();
-  marcarPasso("ecra-jogo");
-  iniciarJogo();
+  ajustarRoleta();
+  marcarPasso("ecra-roleta");
   barraDeTestes();
 })();
 </script>
