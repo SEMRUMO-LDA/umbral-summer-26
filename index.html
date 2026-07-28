@@ -121,10 +121,12 @@
      mudar de tamanho, e não como uma a sair e outra a entrar. */
   .ecra .cabeca,
   .ecra .remate-final,
-  .ecra .folha > *{transition:opacity .2s ease}
+  .ecra .folha > *{transition:opacity .24s ease, transform .24s ease}
+  /* Um deslocamento pequeno com a opacidade: a troca lê-se como movimento
+     em vez de um piscar. */
   .ecra.a-esconder .cabeca,
   .ecra.a-esconder .remate-final,
-  .ecra.a-esconder .folha > *{opacity:0}
+  .ecra.a-esconder .folha > *{opacity:0;transform:translateY(7px)}
   /* No jogo o ecrã estica-se e a grelha fica com o que sobra, para caber
      inteira sem scroll em qualquer telemóvel. */
   #ecra-jogo.ativo{display:flex;flex-direction:column;flex:1;min-height:0}
@@ -696,9 +698,37 @@
     document.querySelector(".app").classList.toggle("fim", idEcra === "ecra-final");
   }
 
-  /* A troca tem três tempos: o conteúdo actual desvanece, o novo toma o lugar
-     e o cartão estica ou encolhe da altura antiga para a nova. Os pontos e o
-     logótipo ficam onde estão — só os pontos é que se transformam. */
+  var CURVA = "cubic-bezier(.32,.72,0,1)";
+  var DURACAO_ALTURA = 460;
+
+  /* Anima a altura de um elemento e devolve-o ao natural no fim.
+     A folha do jogo é um item flex com flex:1, e nesses a altura declarada é
+     ignorada pelo layout — daí o flex:none temporário. Sem isto, o cartão do
+     jogo saltava em vez de crescer. */
+  function animarAltura(el, de, para){
+    if (!el || !de || !para || Math.abs(de - para) < 2) return;
+    var flexAntes = el.style.flex;
+    el.style.flex = "none";
+    el.style.height = de + "px";
+    el.getBoundingClientRect();
+    el.style.transition = "height " + (DURACAO_ALTURA / 1000) + "s " + CURVA;
+    el.style.height = para + "px";
+    setTimeout(function(){
+      el.style.transition = "";
+      el.style.height = "";
+      el.style.flex = flexAntes;
+    }, DURACAO_ALTURA + 40);
+  }
+
+  function alturaDe(raiz, seletor){
+    var el = raiz && raiz.querySelector(seletor);
+    return el ? el.getBoundingClientRect().height : 0;
+  }
+
+  /* A troca tem três tempos: o conteúdo actual desvanece, o novo toma o lugar,
+     e a cabeça e o cartão crescem ou encolhem da altura antiga para a nova.
+     Animar as duas é o que evita o salto — animar só o cartão deixava a cabeça
+     mudar de altura de repente e empurrar tudo o que está abaixo. */
   function mostrar(idEcra){
     var novo = $(idEcra);
     var antigo = document.querySelector(".ecra.ativo");
@@ -708,8 +738,8 @@
     /* Os pontos mudam já, para a animação deles correr durante a troca. */
     marcarPasso(idEcra);
 
-    var folhaAntiga = antigo && antigo.querySelector(".folha");
-    var alturaAntiga = folhaAntiga ? folhaAntiga.getBoundingClientRect().height : 0;
+    var deCabeca = alturaDe(antigo, ".cabeca");
+    var deFolha = alturaDe(antigo, ".folha");
 
     if (antigo) antigo.classList.add("a-esconder");
 
@@ -717,29 +747,23 @@
       if (antigo){ antigo.classList.remove("ativo"); antigo.classList.remove("a-esconder"); }
       novo.classList.add("ativo", "a-esconder");
       window.scrollTo(0,0);
-      if (idEcra === "ecra-jogo") dimensionarGrelha();
       document.querySelector(".app").classList.toggle("fim", idEcra === "ecra-final");
+      /* A grelha é dimensionada antes de medir, para o alvo da animação ser a
+         altura final e não uma intermédia. */
+      if (idEcra === "ecra-jogo") dimensionarGrelha();
       if (idEcra === "ecra-final") confetis();
 
-      var folhaNova = novo.querySelector(".folha");
-      /* O ecrã do jogo dimensiona-se pelo flex; fixar-lhe uma altura estragava
-         o cálculo da grelha, por isso só o cartão dos outros é animado. */
-      if (folhaNova && alturaAntiga && idEcra !== "ecra-jogo"){
-        var alturaNova = folhaNova.getBoundingClientRect().height;
-        folhaNova.style.height = alturaAntiga + "px";
-        folhaNova.getBoundingClientRect();
-        folhaNova.style.transition = "height .42s cubic-bezier(.4,0,.2,1)";
-        folhaNova.style.height = alturaNova + "px";
-        setTimeout(function(){
-          folhaNova.style.height = "";
-          folhaNova.style.transition = "";
-        }, 460);
-      }
+      animarAltura(novo.querySelector(".cabeca"), deCabeca, alturaDe(novo, ".cabeca"));
+      animarAltura(novo.querySelector(".folha"), deFolha, alturaDe(novo, ".folha"));
+
+      /* A folha do jogo esteve com altura fixa durante a animação; volta a
+         medir-se quando ela é devolvida ao flex. */
+      if (idEcra === "ecra-jogo") setTimeout(dimensionarGrelha, DURACAO_ALTURA + 80);
 
       requestAnimationFrame(function(){
         requestAnimationFrame(function(){ novo.classList.remove("a-esconder"); });
       });
-    }, 200);
+    }, 190);
   }
 
   /* ---------- grelha ---------- */
@@ -1092,7 +1116,12 @@
     setTimeout(function(){ mostrar("ecra-email"); }, 1100);
   }
 
-  function emailValido(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v); }
+  /* A versão anterior aceitava qualquer caractere que não fosse espaço nem
+     arroba, e deixou passar um € num dos testes. Restringe-se ao que os
+     fornecedores realmente emitem. */
+  function emailValido(v){
+    return /^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/.test(v);
+  }
 
   function guardarInscricao(){
     return inserir("inscricoes", {
