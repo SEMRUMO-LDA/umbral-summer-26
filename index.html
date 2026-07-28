@@ -273,6 +273,15 @@
   .caixa-extra.aberta{display:block}
   #btn-satisfeito{margin-top:10px}
   .previsualizacao{width:100%;border-radius:16px;margin-bottom:14px;display:none}
+  .progresso{
+    height:6px;border-radius:3px;background:var(--nevoa-forte);
+    overflow:hidden;margin:0 0 14px;
+  }
+  .progresso[hidden]{display:none}
+  .progresso i{
+    display:block;height:100%;width:0;border-radius:3px;
+    background:var(--azul);transition:width .15s linear;
+  }
   input[type=file]{display:none}
 
   /* ---------- ecrã final: remate ----------
@@ -348,12 +357,17 @@
   .rodape{
     margin-top:auto;padding:9px 4px 0;
     display:flex;align-items:baseline;justify-content:center;
-    gap:16px;flex-wrap:wrap;
+    gap:34px;flex-wrap:wrap;
   }
   .credito{font-size:12px;font-weight:500;color:var(--branco);margin:0}
   .credito strong{font-weight:700}
   .credito a{color:inherit;text-decoration:none}
-  .legal{margin:0;font-size:12px;line-height:1.4}
+  .legal{margin:0;font-size:12px;line-height:1.4;position:relative}
+  /* Barra a separar, em vez de os dois textos se tocarem. */
+  .legal::before{
+    content:"";position:absolute;left:-17px;top:50%;transform:translateY(-50%);
+    width:1px;height:13px;background:rgba(255,255,255,.5);
+  }
   .legal a{
     font-size:12px;font-weight:600;color:var(--branco);
     text-decoration:underline;text-underline-offset:2px;
@@ -483,6 +497,7 @@
           <label for="consentimento-foto" style="margin:0"><span>Autorizo a Umbral a publicar a minha foto — e o meu @, se o tiver deixado — nas redes sociais da marca.</span></label>
         </div>
 
+        <div class="progresso" id="progresso" hidden aria-hidden="true"><i></i></div>
         <p class="erro" id="erro-foto"></p>
         <button class="btn" id="btn-concorrer">Enviar e concorrer</button>
       </div>
@@ -626,7 +641,7 @@
   var estado = {
     id:null, nome:"", email:"", instagram:"", codigo:"",
     grelha:[], posicoes:{}, encontradas:[], inicio:0, cronometro:null,
-    foto:null, fotoUrl:null, tempo:null
+    foto:null, fotoUrl:null, fotoCaminho:null, tempo:null
   };
 
   function ocupar(botao, texto){
@@ -1161,6 +1176,8 @@
     if (estado.fotoUrl) URL.revokeObjectURL(estado.fotoUrl);
     estado.foto = null;
     estado.fotoUrl = null;
+    /* Foto nova, envio novo: o caminho antigo deixa de servir. */
+    estado.fotoCaminho = null;
   }
 
   $("ficheiro").addEventListener("change", function(e){
@@ -1196,13 +1213,59 @@
 
   function instagramValido(v){ return /^@?[A-Za-z0-9._]{1,30}$/.test(v); }
 
+  function mostrarProgresso(fracao){
+    var barra = $("progresso");
+    barra.hidden = false;
+    barra.firstElementChild.style.width = Math.round(fracao * 100) + "%";
+  }
+  function esconderProgresso(){
+    var barra = $("progresso");
+    barra.hidden = true;
+    barra.firstElementChild.style.width = "0%";
+  }
+
+  /* Envia a foto com barra de progresso. Cinco megabytes numa rede de praia
+     podem levar meio minuto, e sem sinal de vida as pessoas carregam outra
+     vez ou desistem. Usa XHR porque o fetch não expõe o progresso do envio.
+     Se já foi enviada nesta sessão devolve o caminho guardado: uma falha a
+     gravar o registo não obriga a repetir o envio. */
   function enviarFoto(){
+    if (estado.fotoCaminho) return Promise.resolve(estado.fotoCaminho);
     var caminho = estado.id + "/" + uuid() + ".jpg";
-    return pedir("/storage/v1/object/" + BUCKET + "/" + caminho, {
-      method: "POST",
-      headers: {"apikey": SUPABASE_KEY, "Content-Type": "image/jpeg"},
-      body: estado.foto
-    }).then(function(){ return caminho; });
+    return new Promise(function(resolve, reject){
+      var xhr = new XMLHttpRequest();
+      xhr.open("POST", SUPABASE_URL + "/storage/v1/object/" + BUCKET + "/" + caminho);
+      xhr.setRequestHeader("apikey", SUPABASE_KEY);
+      xhr.setRequestHeader("Content-Type", "image/jpeg");
+      xhr.upload.onprogress = function(e){
+        if (e.lengthComputable) mostrarProgresso(e.loaded / e.total);
+      };
+      xhr.onload = function(){
+        if (xhr.status >= 200 && xhr.status < 300){
+          estado.fotoCaminho = caminho;
+          resolve(caminho);
+        } else {
+          var falha = new Error(xhr.responseText || ("HTTP " + xhr.status));
+          falha.estado = xhr.status;
+          reject(falha);
+        }
+      };
+      xhr.onerror = function(){ reject(new Error("falha de rede no envio")); };
+      xhr.send(estado.foto);
+    });
+  }
+
+  /* Uma falha de rede ou do servidor costuma passar à segunda. Erros de
+     validação não, por isso só se repete em falhas sem resposta ou 5xx. */
+  function inserirTeimoso(tabela, linha, tentativas){
+    return inserir(tabela, linha).catch(function(falha){
+      var vaiPassar = !falha.estado || falha.estado >= 500;
+      if (tentativas > 0 && vaiPassar){
+        return new Promise(function(r){ setTimeout(r, 1000); })
+          .then(function(){ return inserirTeimoso(tabela, linha, tentativas - 1); });
+      }
+      throw falha;
+    });
   }
 
   $("btn-concorrer").addEventListener("click", function(){
@@ -1218,20 +1281,25 @@
 
     ocupar(botao, "A enviar a foto…");
     enviarFoto().then(function(caminho){
-      return inserir("participacoes", {
+      return inserirTeimoso("participacoes", {
         inscricao_id: estado.id,
         instagram: estado.instagram || null,
         foto_caminho: caminho,
         consentimento_foto: true
-      });
+      }, 2);
     }).catch(function(falha){
       if (jaEstavaGuardado(falha)) return;
       throw falha;
     }).then(function(){
+      esconderProgresso();
       finalComFoto();
       mostrar("ecra-final");
     }).catch(function(falha){
-      dizerErro(erro, "A foto não subiu. Vê a ligação e carrega outra vez.");
+      esconderProgresso();
+      /* A foto já lá está: só falta o registo, e o botão diz isso. */
+      dizerErro(erro, estado.fotoCaminho
+        ? "A foto subiu mas o registo falhou. Carrega outra vez — não é preciso reenviar a foto."
+        : "A foto não subiu. Vê a ligação e carrega outra vez.");
       if (window.console) console.error("Falhou a participação:", falha);
     }).then(function(){
       libertar(botao);
