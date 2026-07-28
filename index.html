@@ -286,19 +286,21 @@
     line-height:1.35;letter-spacing:0;text-transform:none;
     color:var(--azul);margin:0 0 10px;
   }
-  /* A despedida fecha o cartão. Em azul sobre branco o mote pode ser maior
-     sem perder legibilidade — cá dentro tem mais força do que tinha lá fora. */
-  .despedida{
-    margin-top:18px;padding-top:18px;
-    border-top:1px solid var(--nevoa-forte);text-align:center;
-  }
-  /* Prefixado com .folha: agora que vivem dentro do cartão, a regra `.folha p`
-     tem mais especificidade e estava a impor-lhes 15px. */
-  .folha .piada{font-size:14px;font-weight:500;line-height:1.45;color:#5F6489;margin:0 0 10px}
+  /* O mote abre o cartão porque nomeia as duas ações que vêm a seguir: fica
+     (ver alojamentos) e não pares (seguir). Deixa de ser floreado e passa a
+     cabeçalho, e por isso não precisa de ser o maior do ecrã.
+     Prefixados com .folha: a regra `.folha p` tem mais especificidade e
+     impunha-lhes 15px. */
   .folha .mote{
-    font-family:var(--display);font-weight:900;
-    font-size:clamp(24px,6.6vw,30px);line-height:1;letter-spacing:-.02em;
-    text-transform:uppercase;color:var(--azul);margin:0;
+    font-family:var(--display);font-weight:900;font-size:20px;
+    line-height:1.1;letter-spacing:-.01em;text-transform:uppercase;
+    color:var(--azul);margin:0 0 18px;
+  }
+  /* A piada fecha. O balance reparte as linhas e evita a palavra órfã. */
+  .folha .piada{
+    margin:18px 0 0;padding-top:16px;border-top:1px solid var(--nevoa-forte);
+    font-size:14px;font-weight:500;line-height:1.45;color:#5F6489;
+    text-align:center;text-wrap:balance;
   }
 
   /* Depois do cartão fica só o lockup do protetor solar, que já traz a amostra
@@ -311,6 +313,12 @@
     gap:16px;padding:22px 4px 0;
   }
   .selo-fim{display:block;flex:none;-webkit-tap-highlight-color:transparent}
+  /* O último ecrã estica-se para os selos poderem encostar ao fundo, onde o
+     crédito estava nos outros. Sem isto o margin-top:auto não tinha espaço
+     nenhum para empurrar, porque a secção media apenas o seu conteúdo. */
+  #ecra-final.ativo{display:flex;flex-direction:column;flex:1;min-height:0}
+  #ecra-final .cabeca,
+  #ecra-final .folha{flex:none}
   .selo-fim svg{display:block;height:clamp(46px,14.5vw,62px);width:auto}
   .selo-fim:active{opacity:.7}
   .app.fim .rodape{display:none}
@@ -475,6 +483,7 @@
       <p class="lead" id="texto-final">Fica atento ao teu email.</p>
     </div>
     <div class="folha">
+      <p class="mote">Fica mas não pares!</p>
       <div class="accao">
         <h2>Agora escolhe onde te deixares ficar.</h2>
         <a class="btn" href="https://byumbral.com">Ver alojamentos</a>
@@ -483,10 +492,7 @@
         <h2>O resto sai nos stories.</h2>
         <a class="btn secundario" href="https://instagram.com/byumbral">Seguir a Umbral</a>
       </div>
-      <div class="despedida">
-        <p class="piada">Agora que já tens todas as borlas da Umbral, limpa o ecrã!</p>
-        <p class="mote">Fica mas não pares!</p>
-      </div>
+      <p class="piada">Agora que já tens todas as borlas da Umbral, limpa o ecrã!</p>
     </div>
 
     <div class="remate-final">
