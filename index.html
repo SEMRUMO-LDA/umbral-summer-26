@@ -286,28 +286,26 @@
     line-height:1.35;letter-spacing:0;text-transform:none;
     color:var(--azul);margin:0 0 10px;
   }
-  .nota-sol{
-    margin:18px 0 0;padding-top:14px;border-top:1px solid var(--nevoa-forte);
-    font-size:12px;line-height:1.5;color:#5F6489;
+  /* A despedida fecha o cartão. Em azul sobre branco o mote pode ser maior
+     sem perder legibilidade — cá dentro tem mais força do que tinha lá fora. */
+  .despedida{
+    margin-top:18px;padding-top:18px;
+    border-top:1px solid var(--nevoa-forte);text-align:center;
   }
-  .nota-sol strong{font-weight:700;color:var(--azul)}
-  .amostra{
-    display:inline-block;width:11px;height:11px;border-radius:3px;
-    background:var(--coral);margin-right:6px;vertical-align:-1px;
+  /* Prefixado com .folha: agora que vivem dentro do cartão, a regra `.folha p`
+     tem mais especificidade e estava a impor-lhes 15px. */
+  .folha .piada{font-size:14px;font-weight:500;line-height:1.45;color:#5F6489;margin:0 0 10px}
+  .folha .mote{
+    font-family:var(--display);font-weight:900;
+    font-size:clamp(24px,6.6vw,30px);line-height:1;letter-spacing:-.02em;
+    text-transform:uppercase;color:var(--azul);margin:0;
   }
 
-  /* O mote fecha a interação, já fora do cartão. */
-  .remate-final{padding:22px 4px 0;text-align:center}
-  .piada{
-    font-size:19px;font-weight:700;line-height:1.3;
-    color:var(--branco);margin:0 0 10px;
-  }
-  /* Mesmo tamanho da piada; o que o distingue é o Montserrat Black. */
-  .mote{
-    font-family:var(--display);font-weight:900;font-size:19px;
-    line-height:1.25;letter-spacing:-.01em;
-    text-transform:uppercase;color:var(--branco);margin:0;
-  }
+  /* O aviso do sol fica cá fora, sobre o coral: o fundo é a própria amostra
+     do Pantone, o que dispensa o quadradinho e torna a piada melhor. */
+  .remate-final{padding:20px 8px 0;text-align:center}
+  .aviso-sol{font-size:14px;font-weight:500;line-height:1.5;color:var(--branco);margin:0}
+  .aviso-sol strong{font-weight:700}
 
   /* Confetis: camada por cima de tudo, sem apanhar toques. */
   .confetis{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50}
@@ -385,7 +383,7 @@
   <section class="ecra ativo" id="ecra-jogo">
     <div class="cabeca">
       <h1>Olhaaá boooorla<br>da Umbral!</h1>
-      <p class="lead">Seis palavras escondidas. As nossas letras pequenas são assim.</p>
+      <p class="lead">Seis palavras escondidas. Tudo o que precisas de saber sobre nós.</p>
     </div>
     <div class="folha">
       <p class="oculto" id="contador">0 de 6 encontradas</p>
@@ -427,13 +425,13 @@
   <!-- ECRÃ 3 · CÓDIGO + EXTRA -->
   <section class="ecra" id="ecra-codigo">
     <div class="cabeca">
-      <h1>Está reservado.</h1>
+      <h1>Feito. Já é teu.</h1>
       <p class="lead">Chega ao email daqui a nada.</p>
     </div>
     <div class="folha">
       <div id="convite">
-        <h2>Isto foi só para provar.</h2>
-        <p>Uma <strong>semana num alojamento nosso</strong>, sem pagares nada. Só te pedimos uma foto.</p>
+        <h2>Isto foi só para abrir o apetite.</h2>
+        <p>E que tal uma <strong>semana num alojamento nosso</strong>, sem pagares nada? Só te pedimos uma foto.</p>
         <button class="btn" id="btn-quero-mais">Alinho</button>
       </div>
 
@@ -476,12 +474,14 @@
         <h2>O resto sai nos stories.</h2>
         <a class="btn secundario" href="https://instagram.com/byumbral">Seguir a Umbral</a>
       </div>
-      <p class="nota-sol"><i class="amostra" aria-hidden="true"></i><strong>Pantone Escaldão.</strong> Com creme é sempre melhor — está na hora de pôr protetor solar.</p>
+      <div class="despedida">
+        <p class="piada">Agora que já tens todas as borlas da Umbral, limpa o ecrã!</p>
+        <p class="mote">Fica mas não pares!</p>
+      </div>
     </div>
 
     <div class="remate-final">
-      <p class="piada">Agora que já tens todas as borlas da Umbral, limpa o ecrã!</p>
-      <p class="mote">Fica mas não pares!</p>
+      <p class="aviso-sol">Esta cor chama-se <strong>Pantone Escaldão</strong>. Com creme é sempre melhor — está na hora de pôr protetor solar.</p>
     </div>
   </section>
 
