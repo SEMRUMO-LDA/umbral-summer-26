@@ -32,10 +32,20 @@ borla. Um rolo diz a verdade da mecânica: uma fita de prémios que para num
 deles. A fita tem oito cópias da lista empilhadas; a máquina para na sétima e as
 que sobram são a folga de que o recuo final precisa.
 
-**Falta a arte dos brindes.** Cada entrada de `BRINDES` tem um campo `imagem`
-por preencher; enquanto for `null` entra um símbolo desenhado, que é provisório.
-Recorte transparente, WebP, lado maior a 600px — a fita mostra-os a ~150px de
-altura e isto abre-se na rua, com uma barra de rede.
+**A arte está em `carrinha/img/`** — sete quadrados de 451px com fundo branco, e
+é por isso que a janela da máquina é branca: assim não se vê a moldura de cada
+JPEG.
+
+**Trocar uma foto obriga a medir outra vez.** Cada brinde traz um `ocupa`: a
+altura do artigo dentro da sua fotografia, em fração da altura total. Serve para
+todos aparecerem do mesmo tamanho na janela — a almofada ocupa 37% do seu
+quadrado e o saco 87%, e desenhados os dois à altura da janela a almofada saía
+2,3 vezes menor. A app amplia cada foto até o artigo chegar a 74% da janela e
+deixa as margens brancas serem cortadas, o que só funciona enquanto o número
+corresponder ao ficheiro.
+
+Para medir: contar os pixéis que não são brancos e dividir a altura da caixa que
+os contém pela altura da imagem.
 
 ## Correr localmente
 
@@ -106,7 +116,8 @@ quantas pessoas, em que datas.
 Falta também o endereço do QR do saco, para entrar no mapa `CANAIS` e as
 inscrições desse meio se distinguirem das do avião.
 
-E falta a arte dos seis brindes da carrinha, como acima.
+O render do `-20%` é um azul brilhante que não é o azul da marca (`#2A3176`).
+Fica como foi entregue, mas destoa das outras seis fotos e do resto da app.
 
 ## Acessibilidade
 
