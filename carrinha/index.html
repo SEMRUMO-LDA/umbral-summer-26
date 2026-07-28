@@ -131,12 +131,19 @@
     position:relative;height:var(--rolo,150px);overflow:hidden;
     border-radius:12px;background:var(--branco);
   }
-  /* Sombra no topo e no fundo, a sugerir que a fita curva para dentro da
-     máquina. Chega a zero antes do meio, para não escurecer a arte. */
+  /* A sombra que sugere a fita a curvar para dentro da máquina. Estreita e
+     encostada às bordas: espalhada até um terço da janela escurecia a arte e
+     lia-se como um degradê em vez de um rolo. Mais forte exactamente na borda,
+     e desaparecida aos 14%. */
   .maquina-janela::after{
     content:"";position:absolute;inset:0;border-radius:12px;pointer-events:none;
-    background:linear-gradient(rgba(28,28,30,.16),rgba(28,28,30,0) 32%,
-                               rgba(28,28,30,0) 68%,rgba(28,28,30,.16));
+    background:linear-gradient(
+      rgba(28,28,30,.30) 0%,
+      rgba(28,28,30,.12) 5%,
+      rgba(28,28,30,0) 14%,
+      rgba(28,28,30,0) 86%,
+      rgba(28,28,30,.12) 95%,
+      rgba(28,28,30,.30) 100%);
   }
   .fita{will-change:transform}
   /* Antes de alguém carregar, a fita passeia: é assim que os prémios se mostram
@@ -396,58 +403,58 @@
       <div class="maquina" id="maquina">
         <div class="maquina-janela" role="img" aria-label="Máquina com 7 prémios: 20% na próxima estadia, Chapéu de palha, Chapéu de sol, Saco de pano, Almofada de praia, Para-sol para o carro, Caneta da Umbral.">
           <div class="fita" id="fita">
-            <div class="maquina-item"><img class="arte" src="img/Umbral-20.jpg" alt="" decoding="async" style="height:191.7%"></div>
+            <div class="maquina-item"><img class="arte" src="img/Umbral-20.jpg" alt="" decoding="async" style="height:189.7%"></div>
             <div class="maquina-item"><img class="arte" src="img/Umbral-Chapeu.jpg" alt="" decoding="async" style="height:132.4%"></div>
-            <div class="maquina-item"><img class="arte" src="img/Umbral-Chaepeu-de-sol.jpg" alt="" decoding="async" style="height:85.2%"></div>
+            <div class="maquina-item"><img class="arte" src="img/Umbral-Chapeu-de-sol.jpg" alt="" decoding="async" style="height:85.2%"></div>
             <div class="maquina-item"><img class="arte" src="img/Umbral-Saco.jpg" alt="" decoding="async" style="height:85.2%"></div>
             <div class="maquina-item"><img class="arte" src="img/Umbral-Almofada.jpg" alt="" decoding="async" style="height:198.4%"></div>
             <div class="maquina-item"><img class="arte" src="img/Umbral-Para-Sol.jpg" alt="" decoding="async" style="height:120.9%"></div>
             <div class="maquina-item"><img class="arte" src="img/Umbral-Caneta.jpg" alt="" decoding="async" style="height:112.3%"></div>
-            <div class="maquina-item"><img class="arte" src="img/Umbral-20.jpg" alt="" decoding="async" style="height:191.7%"></div>
+            <div class="maquina-item"><img class="arte" src="img/Umbral-20.jpg" alt="" decoding="async" style="height:189.7%"></div>
             <div class="maquina-item"><img class="arte" src="img/Umbral-Chapeu.jpg" alt="" decoding="async" style="height:132.4%"></div>
-            <div class="maquina-item"><img class="arte" src="img/Umbral-Chaepeu-de-sol.jpg" alt="" decoding="async" style="height:85.2%"></div>
+            <div class="maquina-item"><img class="arte" src="img/Umbral-Chapeu-de-sol.jpg" alt="" decoding="async" style="height:85.2%"></div>
             <div class="maquina-item"><img class="arte" src="img/Umbral-Saco.jpg" alt="" decoding="async" style="height:85.2%"></div>
             <div class="maquina-item"><img class="arte" src="img/Umbral-Almofada.jpg" alt="" decoding="async" style="height:198.4%"></div>
             <div class="maquina-item"><img class="arte" src="img/Umbral-Para-Sol.jpg" alt="" decoding="async" style="height:120.9%"></div>
             <div class="maquina-item"><img class="arte" src="img/Umbral-Caneta.jpg" alt="" decoding="async" style="height:112.3%"></div>
-            <div class="maquina-item"><img class="arte" src="img/Umbral-20.jpg" alt="" decoding="async" style="height:191.7%"></div>
+            <div class="maquina-item"><img class="arte" src="img/Umbral-20.jpg" alt="" decoding="async" style="height:189.7%"></div>
             <div class="maquina-item"><img class="arte" src="img/Umbral-Chapeu.jpg" alt="" decoding="async" style="height:132.4%"></div>
-            <div class="maquina-item"><img class="arte" src="img/Umbral-Chaepeu-de-sol.jpg" alt="" decoding="async" style="height:85.2%"></div>
+            <div class="maquina-item"><img class="arte" src="img/Umbral-Chapeu-de-sol.jpg" alt="" decoding="async" style="height:85.2%"></div>
             <div class="maquina-item"><img class="arte" src="img/Umbral-Saco.jpg" alt="" decoding="async" style="height:85.2%"></div>
             <div class="maquina-item"><img class="arte" src="img/Umbral-Almofada.jpg" alt="" decoding="async" style="height:198.4%"></div>
             <div class="maquina-item"><img class="arte" src="img/Umbral-Para-Sol.jpg" alt="" decoding="async" style="height:120.9%"></div>
             <div class="maquina-item"><img class="arte" src="img/Umbral-Caneta.jpg" alt="" decoding="async" style="height:112.3%"></div>
-            <div class="maquina-item"><img class="arte" src="img/Umbral-20.jpg" alt="" decoding="async" style="height:191.7%"></div>
+            <div class="maquina-item"><img class="arte" src="img/Umbral-20.jpg" alt="" decoding="async" style="height:189.7%"></div>
             <div class="maquina-item"><img class="arte" src="img/Umbral-Chapeu.jpg" alt="" decoding="async" style="height:132.4%"></div>
-            <div class="maquina-item"><img class="arte" src="img/Umbral-Chaepeu-de-sol.jpg" alt="" decoding="async" style="height:85.2%"></div>
+            <div class="maquina-item"><img class="arte" src="img/Umbral-Chapeu-de-sol.jpg" alt="" decoding="async" style="height:85.2%"></div>
             <div class="maquina-item"><img class="arte" src="img/Umbral-Saco.jpg" alt="" decoding="async" style="height:85.2%"></div>
             <div class="maquina-item"><img class="arte" src="img/Umbral-Almofada.jpg" alt="" decoding="async" style="height:198.4%"></div>
             <div class="maquina-item"><img class="arte" src="img/Umbral-Para-Sol.jpg" alt="" decoding="async" style="height:120.9%"></div>
             <div class="maquina-item"><img class="arte" src="img/Umbral-Caneta.jpg" alt="" decoding="async" style="height:112.3%"></div>
-            <div class="maquina-item"><img class="arte" src="img/Umbral-20.jpg" alt="" decoding="async" style="height:191.7%"></div>
+            <div class="maquina-item"><img class="arte" src="img/Umbral-20.jpg" alt="" decoding="async" style="height:189.7%"></div>
             <div class="maquina-item"><img class="arte" src="img/Umbral-Chapeu.jpg" alt="" decoding="async" style="height:132.4%"></div>
-            <div class="maquina-item"><img class="arte" src="img/Umbral-Chaepeu-de-sol.jpg" alt="" decoding="async" style="height:85.2%"></div>
+            <div class="maquina-item"><img class="arte" src="img/Umbral-Chapeu-de-sol.jpg" alt="" decoding="async" style="height:85.2%"></div>
             <div class="maquina-item"><img class="arte" src="img/Umbral-Saco.jpg" alt="" decoding="async" style="height:85.2%"></div>
             <div class="maquina-item"><img class="arte" src="img/Umbral-Almofada.jpg" alt="" decoding="async" style="height:198.4%"></div>
             <div class="maquina-item"><img class="arte" src="img/Umbral-Para-Sol.jpg" alt="" decoding="async" style="height:120.9%"></div>
             <div class="maquina-item"><img class="arte" src="img/Umbral-Caneta.jpg" alt="" decoding="async" style="height:112.3%"></div>
-            <div class="maquina-item"><img class="arte" src="img/Umbral-20.jpg" alt="" decoding="async" style="height:191.7%"></div>
+            <div class="maquina-item"><img class="arte" src="img/Umbral-20.jpg" alt="" decoding="async" style="height:189.7%"></div>
             <div class="maquina-item"><img class="arte" src="img/Umbral-Chapeu.jpg" alt="" decoding="async" style="height:132.4%"></div>
-            <div class="maquina-item"><img class="arte" src="img/Umbral-Chaepeu-de-sol.jpg" alt="" decoding="async" style="height:85.2%"></div>
+            <div class="maquina-item"><img class="arte" src="img/Umbral-Chapeu-de-sol.jpg" alt="" decoding="async" style="height:85.2%"></div>
             <div class="maquina-item"><img class="arte" src="img/Umbral-Saco.jpg" alt="" decoding="async" style="height:85.2%"></div>
             <div class="maquina-item"><img class="arte" src="img/Umbral-Almofada.jpg" alt="" decoding="async" style="height:198.4%"></div>
             <div class="maquina-item"><img class="arte" src="img/Umbral-Para-Sol.jpg" alt="" decoding="async" style="height:120.9%"></div>
             <div class="maquina-item"><img class="arte" src="img/Umbral-Caneta.jpg" alt="" decoding="async" style="height:112.3%"></div>
-            <div class="maquina-item"><img class="arte" src="img/Umbral-20.jpg" alt="" decoding="async" style="height:191.7%"></div>
+            <div class="maquina-item"><img class="arte" src="img/Umbral-20.jpg" alt="" decoding="async" style="height:189.7%"></div>
             <div class="maquina-item"><img class="arte" src="img/Umbral-Chapeu.jpg" alt="" decoding="async" style="height:132.4%"></div>
-            <div class="maquina-item"><img class="arte" src="img/Umbral-Chaepeu-de-sol.jpg" alt="" decoding="async" style="height:85.2%"></div>
+            <div class="maquina-item"><img class="arte" src="img/Umbral-Chapeu-de-sol.jpg" alt="" decoding="async" style="height:85.2%"></div>
             <div class="maquina-item"><img class="arte" src="img/Umbral-Saco.jpg" alt="" decoding="async" style="height:85.2%"></div>
             <div class="maquina-item"><img class="arte" src="img/Umbral-Almofada.jpg" alt="" decoding="async" style="height:198.4%"></div>
             <div class="maquina-item"><img class="arte" src="img/Umbral-Para-Sol.jpg" alt="" decoding="async" style="height:120.9%"></div>
             <div class="maquina-item"><img class="arte" src="img/Umbral-Caneta.jpg" alt="" decoding="async" style="height:112.3%"></div>
-            <div class="maquina-item"><img class="arte" src="img/Umbral-20.jpg" alt="" decoding="async" style="height:191.7%"></div>
+            <div class="maquina-item"><img class="arte" src="img/Umbral-20.jpg" alt="" decoding="async" style="height:189.7%"></div>
             <div class="maquina-item"><img class="arte" src="img/Umbral-Chapeu.jpg" alt="" decoding="async" style="height:132.4%"></div>
-            <div class="maquina-item"><img class="arte" src="img/Umbral-Chaepeu-de-sol.jpg" alt="" decoding="async" style="height:85.2%"></div>
+            <div class="maquina-item"><img class="arte" src="img/Umbral-Chapeu-de-sol.jpg" alt="" decoding="async" style="height:85.2%"></div>
             <div class="maquina-item"><img class="arte" src="img/Umbral-Saco.jpg" alt="" decoding="async" style="height:85.2%"></div>
             <div class="maquina-item"><img class="arte" src="img/Umbral-Almofada.jpg" alt="" decoding="async" style="height:198.4%"></div>
             <div class="maquina-item"><img class="arte" src="img/Umbral-Para-Sol.jpg" alt="" decoding="async" style="height:120.9%"></div>

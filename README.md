@@ -125,8 +125,7 @@ quantas pessoas, em que datas.
 Falta também o endereço do QR do saco, para entrar no mapa `CANAIS` e as
 inscrições desse meio se distinguirem das do avião.
 
-O render do `-20%` é um azul brilhante que não é o azul da marca (`#2A3176`).
-Fica como foi entregue, mas destoa das outras seis fotos e do resto da app.
+Nada por fazer do lado da arte: as sete fotos estão em `carrinha/img/` e medidas.
 
 ## Acessibilidade
 
