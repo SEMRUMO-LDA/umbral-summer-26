@@ -273,7 +273,7 @@
   /* ---------- ecrã final: remate ----------
      Título a dominar, um sol a marcar o fim, o botão em destaque e o resto
      em nota de rodapé. */
-  #ecra-final h1{font-size:clamp(32px,9.4vw,44px)}
+  #ecra-final h1{font-size:clamp(27px,8vw,37px)}
 
   /* O cartão do fim tem duas saídas: reservar e seguir. Alinhado à esquerda
      como os outros ecrãs. */
@@ -485,11 +485,11 @@
     <div class="folha">
       <p class="mote">Fica mas não pares!</p>
       <div class="accao">
-        <h2>Agora escolhe onde te deixares ficar.</h2>
+        <h2>Agora podes escolher onde vão ser as próximas férias.</h2>
         <a class="btn" href="https://byumbral.com">Ver alojamentos</a>
       </div>
       <div class="accao">
-        <h2>O resto sai nos stories.</h2>
+        <h2 id="rotulo-stories">O resto sai nos stories.</h2>
         <a class="btn secundario" href="https://instagram.com/byumbral">Seguir a Umbral</a>
       </div>
       <p class="piada">Isso é açúcar ou areia? Bem, agora que já tens todas as borlas da Umbral, limpa o ecrã!</p>
@@ -1080,10 +1080,13 @@
   function finalSemFoto(){
     $("titulo-final").innerHTML = "Já tens o doce.<br>Agora só falta o descanso.";
     $("texto-final").textContent = "Espreita o email.";
+    /* Sem foto, perguntar se aparece nos stories não faz sentido nenhum. */
+    $("rotulo-stories").textContent = "O resto sai nos stories.";
   }
   function finalComFoto(){
     $("titulo-final").innerHTML = "Foto recebida.<br>Estás no sorteio!";
     $("texto-final").textContent = "Espreita o email.";
+    $("rotulo-stories").textContent = "Será que apareces nos nossos stories?";
   }
 
   $("btn-quero-mais").addEventListener("click", function(){
