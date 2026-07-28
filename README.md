@@ -116,16 +116,65 @@ O email das `participacoes` é copiado da inscrição por um trigger
 
 ## Por fazer
 
-**Nada envia o email com o código de desconto.** As duas apps prometem-no e é o
-único sítio onde o utilizador o pode receber, desde que o código deixou de
-aparecer no ecrã. Falta uma Edge Function ligada a um serviço de envio, e falta
-decidir as regras do sorteio que o email tem de explicar — quantos dias, para
-quantas pessoas, em que datas.
+**Os emails estão montados mas ainda não enviam nada — de propósito.** Ver a
+secção abaixo.
 
 Falta também o endereço do QR do saco, para entrar no mapa `CANAIS` e as
 inscrições desse meio se distinguirem das do avião.
 
 Nada por fazer do lado da arte: as sete fotos estão em `carrinha/img/` e medidas.
+
+## Emails
+
+Três, escolhidos pelo **prémio** e não pelo meio — na carrinha o cupão dos 20%
+também sai da máquina, e quem o tira precisa do email do código, não do brinde:
+
+| Email | Vai para | Dispara em |
+|---|---|---|
+| **A · o teu código** | Quem tem `codigo`: saco, avião, e o cupão da carrinha | `inscricoes` |
+| **B · o teu brinde** | Quem tirou um artigo na carrinha | `inscricoes` |
+| **C · estás no sorteio** | Só quem enviou foto | `participacoes` |
+
+O C não precisa de filtro: a linha em `participacoes` só existe se a foto foi
+mesmo enviada, portanto quem escolheu "quero ir dar um mergulho" nunca lá está.
+
+### Como funciona
+
+`enviar-emails` é uma Edge Function em **drenagem**: procura o que ainda não foi
+enviado, envia pelo Resend, e marca `email_enviado_em`. Não recebe o registo de
+que se trata. Por isso o mesmo código serve dois gatilhos — um Database Webhook
+no INSERT, que dá o envio quase imediato, e uma tarefa periódica que apanha o
+que o webhook falhou — e correrem os dois ao mesmo tempo não duplica nada: quem
+manda é a marca, não quem chamou.
+
+Falhas 4xx são a morada que não presta: marcam-se como tratadas com o erro à
+vista em `email_erro`, porque repetir dava sempre o mesmo. Falhas 5xx e de rede
+ficam por enviar e passam à próxima ronda.
+
+`?seco=1` conta o que enviaria sem enviar. Só aceita a chave de serviço: sem ela
+responde 401, incluindo à chave publicável que está no código das apps.
+
+### O que falta para enviar
+
+A função **recusa-se a enviar** enquanto duas constantes no topo do ficheiro
+estiverem por escrever, e responde 503 a dizer quais. É deliberado: vale mais
+não chegar email nenhum do que chegar um com um espaço em branco onde deviam
+estar as condições.
+
+1. `CONDICOES_CODIGO` — até quando o código é válido, em que alojamentos,
+   mínimo de noites, se acumula com outras campanhas.
+2. `REGRAS_SORTEIO` — quantas noites, para quantas pessoas, em que datas se pode
+   marcar, quando e onde é anunciado o vencedor.
+
+E do lado da conta:
+
+3. Domínio `byumbral.com` verificado no Resend — SPF, DKIM e DMARC no DNS. **É o
+   único passo com prazo de terceiros**, e é dele que depende a entregabilidade.
+4. Segredos `RESEND_API_KEY` e `REMETENTE_EMAIL` nas Edge Functions do Supabase.
+5. Database Webhook em INSERT nas duas tabelas, e uma tarefa periódica de
+   minuto a minuto como rede de segurança, ambos a chamar `enviar-emails`.
+6. Plano do Resend: o gratuito dá **100 emails por dia**. Uma semana de rua com
+   três meios em simultâneo passa disso à vontade.
 
 ## Acessibilidade
 
