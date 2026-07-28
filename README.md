@@ -26,6 +26,15 @@ brindes não têm stock limitado: quem está na carrinha é que os entrega.
 A lista de brindes e os pesos de cada um estão no topo do JS da carrinha, em
 `BRINDES`. Só o cupão dos 20% traz código; os outros entregam-se ali.
 
+**A fita passeia antes de alguém carregar** — uma cópia da lista a cada 11
+segundos. É assim que os prémios se mostram sem pedir a ninguém que leia nada, e
+resolve outra coisa: parada, a máquina ficava no `-20%`, o que se pode ler como
+"isto já é meu". Ao carregar, a app congela a fita onde ela vai e acelera dali
+até ao prémio — não parte do zero, senão dava um salto para trás.
+
+O passeio pára enquanto se escreve o email, e não existe para quem pediu menos
+movimento: conteúdo que se move sozinho e nunca pára contraria o WCAG 2.2.2.
+
 **Um rolo, não três.** Numa slot machine a três rolos perde-se quando os
 símbolos não combinam, e aqui não há como perder — a app promete que sai sempre
 borla. Um rolo diz a verdade da mecânica: uma fita de prémios que para num

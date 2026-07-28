@@ -139,6 +139,18 @@
                                rgba(28,28,30,0) 68%,rgba(28,28,30,.16));
   }
   .fita{will-change:transform}
+  /* Antes de alguém carregar, a fita passeia: é assim que os prémios se mostram
+     sem pedir que se leia nada, e é o que faz o botão parecer o que é. Uma cópia
+     da lista por volta — e como as cópias são iguais, o ciclo não tem costura.
+     Linear e não ease: um passeio com aceleração parecia uma jogada a começar. */
+  @keyframes ronda{
+    from{transform:translateY(0)}
+    to{transform:translateY(calc(var(--rolo,150px) * -7))}
+  }
+  .fita.a-passear{animation:ronda 11s linear infinite}
+  /* Pausa, não paragem: remover a animação devolvia a fita ao zero de um salto.
+     Isto congela-a onde está. */
+  .fita.a-passear.parada{animation-play-state:paused}
   .maquina-item{
     height:var(--rolo,150px);overflow:hidden;
     display:flex;align-items:center;justify-content:center;
@@ -816,6 +828,24 @@
     return it ? it.getBoundingClientRect().height : 150;
   }
 
+  /* Conteúdo que se move sozinho e nunca pára contraria o WCAG 2.2.2, por isso
+     quem pediu menos movimento não vê a fita andar. */
+  function passear(ligar){
+    $("fita").classList.toggle("a-passear", !!ligar && !semAnimacao());
+  }
+  /* Pausa o passeio sem o desligar: a fita fica onde está. */
+  function pausarPasseio(pausar){
+    $("fita").classList.toggle("parada", !!pausar);
+  }
+
+  /* Onde a fita está neste instante, a passear ou parada. Sem isto a jogada
+     partia do zero e a fita dava um salto para trás antes de acelerar. */
+  function ondeVaiAFita(){
+    var m = getComputedStyle($("fita")).transform;
+    var p = m && m.match(/matrix(([^)]+))/);
+    return p ? (parseFloat(p[1].split(",")[5]) || 0) : 0;
+  }
+
   /* Roda a fita até o prémio parar na linha, passa um pouco do sítio e volta
      atrás. É esse recuo que faz a máquina parecer uma máquina, e não uma lista
      a deslizar até ao fim. */
@@ -824,6 +854,13 @@
     var h = alturaDoItem();
     var alvo = -((COPIA_ALVO * BRINDES.length + indice) * h);
     var passou = alvo - h * 0.26;
+
+    /* Congelar antes de largar a animação, na mesma volta do event loop: nada é
+       pintado entre as duas coisas, por isso não se vê salto nenhum. */
+    var agora = ondeVaiAFita();
+    passear(false);
+    pausarPasseio(false);
+    fita.style.transform = "translateY(" + agora.toFixed(1) + "px)";
 
     if (semAnimacao()){
       fita.style.transform = "translateY(" + alvo.toFixed(1) + "px)";
@@ -836,7 +873,7 @@
          juntar a transição e o valor final, e a fita saltava. */
       requestAnimationFrame(function(){
         requestAnimationFrame(function(){
-          fita.style.transition = "transform " + (DURACAO_ROLO/1000) + "s cubic-bezier(.12,.72,.04,1)";
+          fita.style.transition = "transform " + (DURACAO_ROLO/1000) + "s cubic-bezier(.38,.05,.12,1)";
           fita.style.transform = "translateY(" + passou.toFixed(1) + "px)";
           setTimeout(function(){
             fita.style.transition = "transform " + (DURACAO_ASSENTO/1000) + "s cubic-bezier(.3,1.3,.5,1)";
@@ -964,6 +1001,11 @@
       libertar(botao);
     });
   });
+
+  /* Movimento ao lado de um campo que se está a preencher estorva, e não custa
+     nada calá-lo enquanto lá se escreve. */
+  $("email").addEventListener("focus", function(){ if (!estado.rolou) pausarPasseio(true); });
+  $("email").addEventListener("blur",  function(){ if (!estado.rolou) pausarPasseio(false); });
 
   /* ---------- os estados do fim do percurso ----------
      Em funções para a barra de testes os poder abrir sem repetir o que os
@@ -1260,6 +1302,7 @@
   /* ---------- arranque ---------- */
   ligarSwipe();
   ajustarMaquina();
+  passear(true);
   marcarPasso("ecra-sorte");
   barraDeTestes();
 })();
