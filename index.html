@@ -319,7 +319,7 @@
   #ecra-final.ativo{display:flex;flex-direction:column;flex:1;min-height:0}
   #ecra-final .cabeca,
   #ecra-final .folha{flex:none}
-  .selo-fim svg{display:block;height:clamp(46px,14.5vw,62px);width:auto}
+  .selo-fim svg{display:block;height:clamp(52px,19vw,80px);width:auto}
   .selo-fim:active{opacity:.7}
   .app.fim .rodape{display:none}
   .app.fim .remate-final{margin-top:auto}
@@ -480,7 +480,7 @@
   <section class="ecra" id="ecra-final">
     <div class="cabeca">
       <h1 id="titulo-final">Já tens o doce.<br>Agora só falta o descanso.</h1>
-      <p class="lead" id="texto-final">Fica atento ao teu email.</p>
+      <p class="lead" id="texto-final">Espreita o email.</p>
     </div>
     <div class="folha">
       <p class="mote">Fica mas não pares!</p>
@@ -492,7 +492,7 @@
         <h2>O resto sai nos stories.</h2>
         <a class="btn secundario" href="https://instagram.com/byumbral">Seguir a Umbral</a>
       </div>
-      <p class="piada">Agora que já tens todas as borlas da Umbral, limpa o ecrã!</p>
+      <p class="piada">Isso é açúcar ou areia? Bem, agora que já tens todas as borlas da Umbral, limpa o ecrã!</p>
     </div>
 
     <div class="remate-final">
@@ -1079,11 +1079,11 @@
   }
   function finalSemFoto(){
     $("titulo-final").innerHTML = "Já tens o doce.<br>Agora só falta o descanso.";
-    $("texto-final").textContent = "Fica atento ao teu email.";
+    $("texto-final").textContent = "Espreita o email.";
   }
   function finalComFoto(){
     $("titulo-final").innerHTML = "Foto recebida.<br>Estás no sorteio!";
-    $("texto-final").textContent = "Fica atento ao teu email.";
+    $("texto-final").textContent = "Espreita o email.";
   }
 
   $("btn-quero-mais").addEventListener("click", function(){
