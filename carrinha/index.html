@@ -397,7 +397,7 @@
   <section class="ecra ativo" id="ecra-sorte">
     <div class="cabeca">
       <h1>Deixa<br>rolar</h1>
-      <p class="lead">Deixa o email e a máquina faz o resto. Não há linhas vazias — sai sempre borla.</p>
+      <p class="lead">O email põe isto a andar. E sai sempre borla.</p>
     </div>
     <div class="folha">
       <div class="maquina" id="maquina">
@@ -463,6 +463,9 @@
         </div>
       </div>
 
+      <label for="nome">Nome</label>
+      <input type="text" id="nome" autocomplete="given-name" placeholder="Como te chamamos">
+
       <label for="email">Email</label>
       <input type="email" id="email" autocomplete="email" inputmode="email" placeholder="o.teu@email.pt">
 
@@ -482,7 +485,7 @@
   <section class="ecra" id="ecra-brinde">
     <div class="cabeca">
       <h1>Olha o que<br>te saiu</h1>
-      <p class="lead">Saiu à primeira. E não há letras pequenas.</p>
+      <p class="lead">Uma volta e já está.</p>
     </div>
     <div class="folha">
       <div class="maquina">
@@ -694,7 +697,7 @@
   }
 
   var estado = {
-    id:null, email:"", instagram:"", brinde:null,
+    id:null, nome:"", email:"", instagram:"", brinde:null,
     foto:null, fotoUrl:null, fotoCaminho:null,
     rolou:false, guardado:false, aRolar:false
   };
@@ -899,9 +902,13 @@
   var ROLO_MIN = 86, APERTO_MAX = 14;
 
   function excessoDaPagina(){
-    /* A .app tem min-height:100dvh, por isso qualquer altura a mais é excesso.
-       Medir a app em vez do botão evita depender da posição do scroll. */
-    return document.querySelector(".app").getBoundingClientRect().height - window.innerHeight;
+    /* O que não pode ficar escondido é o botão. Medir a app inteira exigia que
+       o rodapé coubesse também, o que é mais estrito do que preciso e custava
+       à janela da máquina 40px que ela precisa mais — a política de privacidade
+       fica a um dedo de scroll e ninguém a procura antes de jogar.
+       O scrollY entra para a medição não depender de onde a página está. */
+    var b = $("btn-rolar").getBoundingClientRect();
+    return (b.bottom + window.scrollY + 16) - window.innerHeight;
   }
 
   function ajustarMaquina(){
@@ -935,7 +942,8 @@
   function guardarInscricao(){
     return inserirTeimoso("inscricoes", {
       id: estado.id,
-      nome: null,
+      /* Opcional, como no saco: quem não o quiser dar joga na mesma. */
+      nome: estado.nome || null,
       email: estado.email,
       /* Só quem tira o cupão leva código; os outros levam o brinde na mão. */
       codigo: estado.brinde.codigo || null,
@@ -979,6 +987,7 @@
        uma segunda inscrição da mesma pessoa. E o brinde também, senão carregar
        outra vez era jogar outra vez até sair o cupão. */
     if (!estado.id) estado.id = uuid();
+    estado.nome = $("nome").value.trim();
     estado.email = email;
     if (!estado.brinde) estado.brinde = BRINDES[sortearBrinde()];
 
@@ -1011,8 +1020,10 @@
 
   /* Movimento ao lado de um campo que se está a preencher estorva, e não custa
      nada calá-lo enquanto lá se escreve. */
-  $("email").addEventListener("focus", function(){ if (!estado.rolou) pausarPasseio(true); });
-  $("email").addEventListener("blur",  function(){ if (!estado.rolou) pausarPasseio(false); });
+  ["nome", "email"].forEach(function(campo){
+    $(campo).addEventListener("focus", function(){ if (!estado.rolou) pausarPasseio(true); });
+    $(campo).addEventListener("blur",  function(){ if (!estado.rolou) pausarPasseio(false); });
+  });
 
   /* ---------- os estados do fim do percurso ----------
      Em funções para a barra de testes os poder abrir sem repetir o que os
@@ -1028,7 +1039,9 @@
     $("btn-satisfeito").textContent = "Quero ir dar um mergulho";
   }
   function finalSemFoto(){
-    $("titulo-final").innerHTML = "Já tens o brinde.<br>Agora só falta o descanso.";
+    /* Quem tirou o cupão não tem brinde nenhum na mão. */
+    var levou = (estado.brinde && estado.brinde.codigo) ? "os 20%" : "o brinde";
+    $("titulo-final").innerHTML = "Já tens " + levou + ".<br>Agora só falta o descanso.";
     /* Prometer email a quem não tirou o cupão nem entrou no sorteio era
        prometer o quê? */
     $("texto-final").textContent = (estado.brinde && estado.brinde.codigo)

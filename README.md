@@ -20,7 +20,8 @@ alojamento e o remate com o aviso de proteção solar.
 conhecer a marca → email (destrava os 20% e o sorteio) → foto → remate.
 
 **Carrinha** — três passos: a máquina (o email é o que a faz rolar) → prémio,
-com o convite para o sorteio → remate. O prémio sai no telemóvel porque os
+com o convite para o sorteio → remate. O nome é pedido nas duas apps e é
+opcional nas duas: quem o deixar é tratado por ele nos emails. O prémio sai no telemóvel porque os
 brindes não têm stock limitado: quem está na carrinha é que os entrega.
 
 A lista de brindes está no topo do JS da carrinha, em `BRINDES`. Só o cupão dos
