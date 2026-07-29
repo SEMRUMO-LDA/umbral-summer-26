@@ -579,19 +579,30 @@
   var SUPABASE_KEY = "sb_publishable_Nvj8cVRfIzvm9U6nzc8_PQ_BFR4hJYl";
   var BUCKET = "fotos-campanha";
 
-  /* De onde veio a pessoa. O domínio do avião é exclusivo dele e o saco tem
-     endereço próprio, por isso a origem lê-se do próprio endereço e o QR fica
-     limpo. Endereços desconhecidos — testes, pré-visualizações — ficam em
-     "direto", para não inflacionar nenhum canal. O ?o= serve para forçar. */
+  /* De onde veio a pessoa.
+     Lê-se do `utm_content` do próprio endereço, que é o que vai impresso em
+     cada QR. Preferido ao domínio porque sobrevive a redireccionamentos: se o
+     endereço do avião reencaminhar para o do saco, o domínio passa a ser o
+     mesmo e os dois meios deixavam de se distinguir — o utm não.
+     O valor entra tal e qual, em minúsculas. Isso quer dizer que acrescentar
+     um meio novo é imprimir um QR, sem tocar em código. Mas também quer dizer
+     que um `utm_content` que não caiba na regra da coluna faria a inscrição
+     falhar à frente da pessoa, por isso o que não encaixa passa a "direto".
+     O domínio fica como rede de segurança para endereços sem utm nenhum. */
+  var CANAL_VALIDO = /^[a-z]{3,20}$/;
   var CANAIS = {
     "borlasdaumbral.pt": "aviao",
-    "www.borlasdaumbral.pt": "aviao"
-    /* falta acrescentar aqui o endereço do QR do saco */
+    "www.borlasdaumbral.pt": "aviao",
+    "byumbral.com/verao": "saco",
+    "www.byumbral.com/verao": "saco"
   };
 
   function origemDaVisita(){
-    var forcada = new URLSearchParams(location.search).get("o");
-    if (forcada && /^[a-z]{3,20}$/.test(forcada)) return forcada;
+    var busca = new URLSearchParams(location.search);
+    var forcada = busca.get("o");
+    if (forcada && CANAL_VALIDO.test(forcada)) return forcada;
+    var utm = (busca.get("utm_content") || "").toLowerCase();
+    if (CANAL_VALIDO.test(utm)) return utm;
     var comCaminho = location.hostname + location.pathname.replace(/\/$/, "");
     return CANAIS[comCaminho] || CANAIS[location.hostname] || "direto";
   }
