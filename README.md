@@ -101,13 +101,21 @@ JPEG.
 altura do artigo dentro da sua fotografia, em fração da altura total. Serve para
 todos aparecerem do mesmo tamanho na janela — a almofada ocupa 37% do seu
 quadrado e o saco 87%, e desenhados os dois à altura da janela a almofada saía
-2,3 vezes menor. A app amplia cada foto até o artigo chegar a 82% da janela e
-deixa as margens brancas serem cortadas, o que só funciona enquanto o número
-corresponder ao ficheiro.
+2,3 vezes menor.
 
-Os 82% são o tecto que a almofada permite: é a foto com menos margem branca,
-29%, e a esse alvo o corte fica em 27,3%. Acima disso começava a cortar-lhe o
-insuflável.
+**A normalização é por massa, não por altura.** Cada brinde traz duas medidas —
+`ocupa` (altura) e `larga` (largura) — e a app iguala a **média geométrica** das
+duas, que é um proxy honesto para o peso visual.
+
+Normalizar só pela altura, que foi a primeira tentativa, dava a todos a mesma
+altura e larguras muito diferentes: a almofada, baixa e larga, esticava até
+ficar três vezes mais larga que o saco, alto e estreito. Aos olhos a massa ia de
+0,67 a 1,19 — quase o dobro entre o menor e o maior prémio. Pela média
+geométrica ficam todos em 0,76 e cada um mantém a sua forma.
+
+O tecto é o saco, o mais alto de todos: a 0,76 ocupa 93% da altura da janela. O
+construtor recusa-se a gerar o ficheiro se alguma foto passar disso ou se o
+corte da margem branca chegar aos 26%.
 
 Para medir: contar os pixéis que não são brancos e dividir a altura da caixa que
 os contém pela altura da imagem.
