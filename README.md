@@ -146,8 +146,8 @@ O email das `participacoes` é copiado da inscrição por um trigger
 
 ## Por fazer
 
-**Os emails estão montados mas ainda não enviam nada — de propósito.** Ver a
-secção abaixo.
+Falta ligar os gatilhos do envio — o webhook e a tarefa periódica. Ver a secção
+dos emails.
 
 Falta também o endereço do QR do saco, para entrar no mapa `CANAIS` e as
 inscrições desse meio se distinguirem das do avião.
@@ -184,27 +184,40 @@ ficam por enviar e passam à próxima ronda.
 `?seco=1` conta o que enviaria sem enviar. Só aceita a chave de serviço: sem ela
 responde 401, incluindo à chave publicável que está no código das apps.
 
+### O remetente é um subdomínio próprio
+
+`campanha.byumbral.com`, e não o `byumbral.com`. Duas razões, e ambas contam:
+
+O domínio principal já está em uso por **outra equipa Resend**, noutra parte da
+operação. Verificá-lo aqui teria transferido a posse e revogado o acesso deles —
+o próprio Resend avisa disso. O subdomínio não lhes toca.
+
+E isola a reputação. Uma campanha de rua para milhares de pessoas gera sempre
+algumas marcações de spam; num subdomínio isso não arrasta as confirmações de
+reserva que saem do domínio principal.
+
+Ganha-se ainda margem no DMARC: a raiz tem `p=reject` mas `sp=none`, portanto um
+email do subdomínio nunca é recusado em silêncio.
+
+**Verificado e testado.** Um envio de prova deu `DKIM=PASS` e `DMARC=PASS`. O SPF
+aparece como softfail quando o destinatário reencaminha o email — é o
+reencaminhamento a quebrar o SPF, não a montagem, e é por isso que o DKIM é o que
+segura tudo aqui.
+
+Os emails caem no separador **Promoções** do Gmail. Não é spam, é a categoria
+certa para o que eles são — mas é a razão pela qual o ecrã, e não o email, é o
+que vale para levantar o brinde na carrinha.
+
 ### O que falta para enviar
 
-A função **recusa-se a enviar** enquanto duas constantes no topo do ficheiro
-estiverem por escrever, e responde 503 a dizer quais. É deliberado: vale mais
-não chegar email nenhum do que chegar um com um espaço em branco onde deviam
-estar as condições.
-
-1. `CONDICOES_CODIGO` — até quando o código é válido, em que alojamentos,
-   mínimo de noites, se acumula com outras campanhas.
-2. `REGRAS_SORTEIO` — quantas noites, para quantas pessoas, em que datas se pode
-   marcar, quando e onde é anunciado o vencedor.
-
-E do lado da conta:
-
-3. Domínio `byumbral.com` verificado no Resend — SPF, DKIM e DMARC no DNS. **É o
-   único passo com prazo de terceiros**, e é dele que depende a entregabilidade.
-4. Segredos `RESEND_API_KEY` e `REMETENTE_EMAIL` nas Edge Functions do Supabase.
-5. Database Webhook em INSERT nas duas tabelas, e uma tarefa periódica de
-   minuto a minuto como rede de segurança, ambos a chamar `enviar-emails`.
-6. Plano do Resend: o gratuito dá **100 emails por dia**. Uma semana de rua com
+1. Database Webhook em INSERT nas duas tabelas, e uma tarefa periódica de minuto
+   a minuto como rede de segurança, ambos a chamar `enviar-emails`. Sem eles a
+   função só corre à mão.
+2. Plano do Resend: o gratuito dá **100 emails por dia**. Uma semana de rua com
    três meios em simultâneo passa disso à vontade.
+
+`?prova=<email>` manda os três para uma morada só, com dados de mentira e sem
+tocar na base de dados.
 
 ## Acessibilidade
 
