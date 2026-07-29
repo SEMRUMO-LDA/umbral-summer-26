@@ -57,6 +57,18 @@ app prometeu, não quantos artigos restam na carrinha — alguém ganha e vai-se
 embora sem levantar, alguém recebe um à mão sem passar pela app, e ao fim de dois
 dias o contador e a caixa não batem certo. Quem sabe o que resta é quem lá está.
 
+**O topo das duas apps alinha.** O jogo devolve ao cabeçalho a folga que a
+grelha lhe deixa, através da variável `--ar`; a carrinha faz o mesmo com a folga
+que sobra depois de o botão caber. Sem isso, a mesma marca abria de duas
+maneiras conforme o meio por onde a pessoa chegasse — os pontos e o título
+ficavam 34px mais acima na carrinha.
+
+Os números — dividir a folga por 4, com tecto de 20px — saíram de medir o `--ar`
+do jogo em seis telemóveis reais, onde vale 0, 3, 14, 15, 18 e 24. Ele cresce
+devagar e a folga da carrinha depressa (172px num Pro Max), por isso não bastava
+o divisor. Assim a diferença entre as duas apps não passa dos 8px no título em
+nenhum tamanho.
+
 **A fita passeia antes de alguém carregar** — uma cópia da lista a cada 11
 segundos. É assim que os prémios se mostram sem pedir a ninguém que leia nada, e
 resolve outra coisa: parada, a máquina ficava no `-20%`, o que se pode ler como

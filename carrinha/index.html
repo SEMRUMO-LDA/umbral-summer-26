@@ -55,13 +55,20 @@
   }
 
   /* ---------- logo ---------- */
-  .topo{display:flex;justify-content:center;padding:2px 0 12px}
+  /* O --ar é a folga que sobra, devolvida ao topo. Existe para esta app pôr os
+     pontos e o título à mesma altura que a do jogo, que faz o mesmo com o
+     espaço que a grelha lhe deixa. Sem isto, a mesma marca abria de duas
+     maneiras conforme o meio por onde a pessoa chegou. */
+  .topo{display:flex;justify-content:center;padding:2px 0 calc(12px + var(--ar,0px))}
   .logo{width:172px;color:var(--branco)}
   .logo svg{width:100%;height:auto;display:block}
 
   /* ---------- cabeça coral ---------- */
   .cabeca{padding:0 4px 20px}
-  .passos{display:flex;align-items:center;gap:6px;margin:0 4px 7px;flex:none}
+  .passos{
+    display:flex;align-items:center;gap:6px;flex:none;
+    margin:0 4px calc(7px + var(--ar,0px));
+  }
   .passos i{
     width:7px;height:7px;border-radius:50%;display:block;
     background:var(--branco);opacity:.42;
@@ -899,7 +906,13 @@
      pode ficar escondido. Mede-se o excesso real e tira-se dele: primeiro da
      janela, depois do ar em volta do título. Um breakpoint de altura já me
      tinha apanhado um telemóvel grande por ser comprido. */
-  var ROLO_MIN = 86, APERTO_MAX = 14;
+  /* O piso desceu de 86 para 72 quando o campo do nome entrou: num iPhone SE
+     (375x667) o botão ficava 2px abaixo da linha de água, e num ecrã desses o
+     botão vale mais do que catorze pixéis de fotografia.
+     O APERTO_MAX fica nos 14 e não sobe: ele desconta à margem do título, que
+     é de 14px — acima disso a margem ficava negativa e o lead trepava por cima
+     do título. */
+  var ROLO_MIN = 72, APERTO_MAX = 14;
 
   function excessoDaPagina(){
     /* O que não pode ficar escondido é o botão. Medir a app inteira exigia que
@@ -921,9 +934,27 @@
     var raiz = document.documentElement;
     raiz.style.setProperty("--rolo", "");
     raiz.style.setProperty("--aperto", "0px");
+    raiz.style.setProperty("--ar", "0px");
 
     var excesso = excessoDaPagina();
-    if (excesso <= 1) return;
+
+    /* Sobra espaço: devolve-se ao topo, para os pontos e o título ficarem à
+       mesma altura que na app do jogo. Sem isto a mesma marca abria de duas
+       maneiras conforme o meio por onde a pessoa chegou.
+       Os números saíram de medir o --ar do jogo em seis telemóveis reais: ele
+       vale 0, 3, 14, 15, 18 e 24, ou seja cresce devagar. A folga da carrinha
+       cresce muito mais depressa — chega a 172px num Pro Max — por isso não
+       basta um divisor, é preciso o tecto. Com estes dois, a diferença entre as
+       duas apps não passa dos 8px no título em nenhum tamanho.
+       O --ar entra em dois sítios, portanto consome metade da folga e nunca
+       chega a empurrar o botão para fora. */
+    if (excesso <= 1){
+      var folga = -excesso;
+      if (folga > 4){
+        raiz.style.setProperty("--ar", Math.min(Math.floor(folga / 4), 20) + "px");
+      }
+      return;
+    }
 
     var alt = alturaDoItem();
     var nova = Math.max(ROLO_MIN, alt - excesso);
