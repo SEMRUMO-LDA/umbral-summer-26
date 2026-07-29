@@ -196,17 +196,6 @@
   #ecra-brinde .maquina::before,
   #ecra-brinde .maquina::after{display:none}
 
-  /* O prémio é a resposta do ecrã seguinte: entra grande e em coral. O coral
-     sobre branco dá 3,94:1 — passa o AA porque isto é texto grande. */
-  /* Debaixo da janela, e centrado com ela. Já não é o headline do cartão — a
-     janela é que dá a notícia — mas o nome tem de estar escrito: quem entrega o
-     brinde na carrinha não pode ficar a interpretar uma fotografia. */
-  .folha .brinde{
-    font-family:var(--display);font-weight:900;
-    font-size:clamp(21px,6vw,26px);line-height:1.06;letter-spacing:-.02em;
-    text-transform:uppercase;color:var(--coral);
-    margin:0 0 4px;text-align:center;text-wrap:balance;
-  }
   /* Ponte entre o prémio e o convite. Em Montserrat Black e caixa alta
      competia com o prémio coral logo acima e com o título coral fora do
      cartão — tudo forte ao mesmo tempo não deixa nada ler-se primeiro. */
@@ -215,12 +204,6 @@
     line-height:1.35;letter-spacing:0;text-transform:none;
     color:var(--azul);margin:0 0 10px;
   }
-  .folha .brinde-nota{
-    font-size:13px;font-weight:600;line-height:1.4;color:#5F6489;
-    text-align:center;
-    margin:0 0 18px;padding-bottom:18px;border-bottom:1px solid var(--nevoa-forte);
-  }
-
   /* ---------- botões ---------- */
   .btn{
     display:block;width:100%;min-height:54px;border:0;cursor:pointer;
@@ -502,8 +485,8 @@
   <!-- ECRÃ 2 · BRINDE E CONVITE -->
   <section class="ecra" id="ecra-brinde">
     <div class="cabeca">
-      <h1>Saiu-te este.</h1>
-      <p class="lead">A máquina escolheu por nós.</p>
+      <h1 id="titulo-brinde">Bola de Berlim</h1>
+      <p class="lead" id="nota-brinde">Mostra este ecrã a quem está na carrinha e é teu.</p>
     </div>
     <div class="folha">
       <div class="maquina">
@@ -511,9 +494,6 @@
           <div class="maquina-item" id="vitrine"></div>
         </div>
       </div>
-      <p class="brinde" id="nome-brinde">Bola de Berlim</p>
-      <p class="brinde-nota" id="nota-brinde">Mostra este ecrã a quem está na carrinha e é teu.</p>
-
       <div id="convite">
         <h2 class="ponte">Uma borla já está! Vamos à segunda?</h2>
         <p>E que tal <strong>5 noites num alojamento nosso</strong>, sem pagares nada? Só te pedimos uma foto.</p>
@@ -945,14 +925,14 @@
     var alvo = $("ecra-brinde");
     var excesso = excessoDaPagina();
     if (atual && atual !== alvo){
-      var antes = $("nome-brinde").textContent;
-      $("nome-brinde").textContent = maior;
+      var antes = $("titulo-brinde").textContent;
+      $("titulo-brinde").textContent = maior;
       atual.classList.remove("ativo");
       alvo.classList.add("ativo");
       excesso = Math.max(excesso, excessoDaPagina());
       alvo.classList.remove("ativo");
       atual.classList.add("ativo");
-      $("nome-brinde").textContent = antes;
+      $("titulo-brinde").textContent = antes;
     }
     return excesso;
   }
@@ -1031,7 +1011,7 @@
        resposta em vez de a notícia passar a texto noutro sítio. */
     var naFita = document.querySelectorAll(".fita .maquina-item")[BRINDES.indexOf(brinde)];
     if (naFita) $("vitrine").innerHTML = naFita.innerHTML;
-    $("nome-brinde").textContent = brinde.nome;
+    $("titulo-brinde").textContent = brinde.nome;
     $("nota-brinde").textContent = brinde.codigo
       ? "O código chega-te ao email daqui a nada."
       : "Mostra este ecrã a quem está na carrinha e é teu.";
