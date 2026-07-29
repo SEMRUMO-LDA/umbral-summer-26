@@ -498,8 +498,8 @@
   <!-- ECRÃ 2 · BRINDE E CONVITE -->
   <section class="ecra" id="ecra-brinde">
     <div class="cabeca">
-      <h1>Saiu-te este.</h1>
-      <p class="lead" id="piada-brinde">Já tens onde encostar a cabeça.</p>
+      <h1>Olha o que te saiu</h1>
+      <p class="lead" id="piada-brinde">Aquela sestinha vai saber melhor!</p>
     </div>
     <div class="folha">
       <div class="maquina">
@@ -588,31 +588,31 @@
   var BRINDES = [
     {
       "nome": "20% na próxima estadia",
-      "piada": "A cama acabou de ficar mais barata.",
+      "piada": "As próximas férias acabaram de ficar mais baratas!",
       "codigo": "BORLA20",
       "peso": 1084
     },
     {
       "nome": "Chapéu de palha",
-      "piada": "Ao sol já não ficas.",
+      "piada": "Cabeça protegida e com estilo!",
       "codigo": null,
       "peso": 500
     },
     {
       "nome": "Guarda-sol de praia",
-      "piada": "Levas a tua própria sombra.",
+      "piada": "Ao sol já não ficas!",
       "codigo": null,
       "peso": 48
     },
     {
       "nome": "Saco de pano",
-      "piada": "Já tens onde levar o resto.",
+      "piada": "Já não precisas de levar a toalha na mão!",
       "codigo": null,
       "peso": 400
     },
     {
       "nome": "Almofada de praia",
-      "piada": "Já tens onde encostar a cabeça.",
+      "piada": "Aquela sestinha vai saber melhor!",
       "codigo": null,
       "peso": 500
     },
@@ -939,22 +939,29 @@
      O ecrã do prémio é medido com o nome mais comprido da lista, senão a conta
      dava certa com "Caneta" e falhava com "20% na próxima estadia". */
   function excessoDosDoisEcras(){
-    var maior = "";
+    /* O pior caso do ecrã do prémio: o nome mais comprido E o comentário mais
+       comprido, que podem ser de brindes diferentes. Medir com o que lá está
+       por omissão dava certo com uns e falhava com outros. */
+    var nomeMaior = "", piadaMaior = "";
     for (var i = 0; i < BRINDES.length; i++){
-      if (BRINDES[i].nome.length > maior.length) maior = BRINDES[i].nome;
+      if (BRINDES[i].nome.length > nomeMaior.length) nomeMaior = BRINDES[i].nome;
+      if (BRINDES[i].piada.length > piadaMaior.length) piadaMaior = BRINDES[i].piada;
     }
     var atual = document.querySelector(".ecra.ativo");
     var alvo = $("ecra-brinde");
     var excesso = excessoDaPagina();
     if (atual && atual !== alvo){
-      var antes = $("nome-brinde").textContent;
-      $("nome-brinde").textContent = maior;
+      var nomeAntes = $("nome-brinde").textContent;
+      var piadaAntes = $("piada-brinde").textContent;
+      $("nome-brinde").textContent = nomeMaior;
+      $("piada-brinde").textContent = piadaMaior;
       atual.classList.remove("ativo");
       alvo.classList.add("ativo");
       excesso = Math.max(excesso, excessoDaPagina());
       alvo.classList.remove("ativo");
       atual.classList.add("ativo");
-      $("nome-brinde").textContent = antes;
+      $("nome-brinde").textContent = nomeAntes;
+      $("piada-brinde").textContent = piadaAntes;
     }
     return excesso;
   }
