@@ -101,9 +101,13 @@ JPEG.
 altura do artigo dentro da sua fotografia, em fração da altura total. Serve para
 todos aparecerem do mesmo tamanho na janela — a almofada ocupa 37% do seu
 quadrado e o saco 87%, e desenhados os dois à altura da janela a almofada saía
-2,3 vezes menor. A app amplia cada foto até o artigo chegar a 74% da janela e
+2,3 vezes menor. A app amplia cada foto até o artigo chegar a 82% da janela e
 deixa as margens brancas serem cortadas, o que só funciona enquanto o número
 corresponder ao ficheiro.
+
+Os 82% são o tecto que a almofada permite: é a foto com menos margem branca,
+29%, e a esse alvo o corte fica em 27,3%. Acima disso começava a cortar-lhe o
+insuflável.
 
 Para medir: contar os pixéis que não são brancos e dividir a altura da caixa que
 os contém pela altura da imagem.
