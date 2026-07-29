@@ -84,7 +84,13 @@
     text-wrap:balance;
     margin:0 0 14px;text-transform:uppercase;color:var(--branco);
   }
-  .lead{font-size:17px;font-weight:500;line-height:1.5;margin:0;color:var(--branco)}
+  /* O balance reparte as linhas em vez de encher a primeira até ao limite: sem
+     ele, "E temos mais de 30 alojamentos para o fazer" deixava o "fazer" órfão
+     na segunda linha. É a mesma regra que o título já usa. */
+  .lead{
+    font-size:17px;font-weight:500;line-height:1.5;margin:0;
+    color:var(--branco);text-wrap:balance;
+  }
 
   /* ---------- folha branca ---------- */
   .folha{
