@@ -545,7 +545,7 @@
   <section class="ecra" id="ecra-final">
     <div class="cabeca">
       <h1 id="titulo-final">Já tens o brinde.<br>Agora só falta o descanso.</h1>
-      <p class="lead" id="texto-final">O resto é quando quiseres.</p>
+      <p class="lead" id="texto-final">O email do teu brinde chega daqui a nada.</p>
     </div>
     <div class="folha">
       <p class="mote">Fica mas não pares!</p>
@@ -554,7 +554,7 @@
         <a class="btn" href="https://byumbral.com/propriedades/">Ver alojamentos</a>
       </div>
       <div class="accao">
-        <h2 id="rotulo-stories">O resto sai nos stories.</h2>
+        <h2 id="rotulo-stories">As fotos do verão saem por lá.</h2>
         <a class="btn secundario" href="https://instagram.com/byumbral">Seguir a Umbral</a>
       </div>
       <p class="piada">A carrinha segue viagem. Os nossos quartos ficam quietos — e é essa a vantagem.</p>
@@ -1127,12 +1127,13 @@
     /* Quem tirou o cupão não tem brinde nenhum na mão. */
     var levou = (estado.brinde && estado.brinde.codigo) ? "os 20%" : "o brinde";
     $("titulo-final").innerHTML = "Já tens " + levou + ".<br>Agora só falta o descanso.";
-    /* Prometer email a quem não tirou o cupão nem entrou no sorteio era
-       prometer o quê? */
+    /* Os dois recebem email, mas não o mesmo: um leva o código, o outro leva o
+       registo do que ganhou. Dizer "o resto é quando quiseres" prometia um resto
+       que não existia, e repetia o "resto" do rótulo dos stories logo abaixo. */
     $("texto-final").textContent = (estado.brinde && estado.brinde.codigo)
       ? "O código chega ao email daqui a nada."
-      : "O resto é quando quiseres.";
-    $("rotulo-stories").textContent = "O resto sai nos stories.";
+      : "O email do teu brinde chega daqui a nada.";
+    $("rotulo-stories").textContent = "As fotos do verão saem por lá.";
   }
   function finalComFoto(){
     $("titulo-final").innerHTML = "Foto recebida.<br>Estás no sorteio!";
