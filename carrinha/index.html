@@ -271,8 +271,11 @@
   .consentimento input{margin-top:1px;width:24px;height:24px;accent-color:var(--coral);flex:none}
   /* Sem isto herdava o text-transform do label e o aviso RGPD saía todo em
      maiúsculas — precisamente o texto que mais precisa de se ler bem. */
+  /* 12px e a entrelinha mais curta são o que põe o consentimento em duas
+     linhas nos telemóveis estreitos. Não desce mais: isto é o texto que mais
+     precisa de se ler bem de todos os que estão neste ecrã. */
   .consentimento span{
-    font-size:13px;font-weight:500;line-height:1.45;color:var(--azul);
+    font-size:12px;font-weight:500;line-height:1.4;color:var(--azul);
     text-transform:none;letter-spacing:0;
   }
   .consentimento a{color:var(--azul);text-decoration:underline;text-underline-offset:2px}
@@ -488,7 +491,7 @@
 
       <div class="consentimento">
         <input type="checkbox" id="rgpd">
-        <label for="rgpd" style="margin:0"><span>Autorizo a Umbral a guardar o meu email para me enviar o prémio e novidades. Saio da lista quando quiser. <a href="https://drive.google.com/file/d/1m5NhpdfgIsI4HhKV9nCdjpDMnG8akkpS/view" target="_blank" rel="noopener noreferrer">Política de privacidade</a>.</span></label>
+        <label for="rgpd" style="margin:0"><span>Autorizo a Umbral a guardar o meu email para me enviar o prémio e novidades. Saio quando quiser.</span></label>
       </div>
 
       <button class="btn" id="btn-rolar">Deixa rolar</button>
@@ -925,7 +928,34 @@
      janela já não tinha mais para dar.
      O aperto pode agora ir aos 20 porque deixou de descontar à margem do
      título — desconta só à da máquina, que tem 22px de base. */
-  var ROLO_MIN = 72, APERTO_MAX = 20;
+  var ROLO_MIN = 62, APERTO_MAX = 20;
+
+  /* Os dois primeiros ecrãs partilham a altura da janela mas têm conteúdos
+     diferentes: encolher só para o que está à frente fazia o outro transbordar.
+     Isto mede ambos, trocando o ecrã activo e devolvendo-o ao sítio dentro da
+     mesma volta do event loop — o browser só pinta no fim, portanto não pisca.
+     O ecrã do prémio é medido com o nome mais comprido da lista, senão a conta
+     dava certa com "Caneta" e falhava com "20% na próxima estadia". */
+  function excessoDosDoisEcras(){
+    var maior = "";
+    for (var i = 0; i < BRINDES.length; i++){
+      if (BRINDES[i].nome.length > maior.length) maior = BRINDES[i].nome;
+    }
+    var atual = document.querySelector(".ecra.ativo");
+    var alvo = $("ecra-brinde");
+    var excesso = excessoDaPagina();
+    if (atual && atual !== alvo){
+      var antes = $("nome-brinde").textContent;
+      $("nome-brinde").textContent = maior;
+      atual.classList.remove("ativo");
+      alvo.classList.add("ativo");
+      excesso = Math.max(excesso, excessoDaPagina());
+      alvo.classList.remove("ativo");
+      atual.classList.add("ativo");
+      $("nome-brinde").textContent = antes;
+    }
+    return excesso;
+  }
 
   function excessoDaPagina(){
     /* Mede a página inteira, rodapé incluído: o crédito e a política têm de
@@ -948,7 +978,7 @@
     raiz.style.setProperty("--aperto", "0px");
     raiz.style.setProperty("--ar", "0px");
 
-    var excesso = excessoDaPagina();
+    var excesso = excessoDosDoisEcras();
 
     /* Sobra espaço: devolve-se ao topo, para os pontos e o título ficarem à
        mesma altura que na app do jogo. Sem isto a mesma marca abria de duas
@@ -960,7 +990,7 @@
        duas apps não passa dos 8px no título em nenhum tamanho.
        O --ar entra em dois sítios, portanto consome metade da folga e nunca
        chega a empurrar o botão para fora. */
-    if (excesso <= 1){
+    if (excesso <= 0){
       var folga = -excesso;
       if (folga > 4){
         raiz.style.setProperty("--ar", Math.min(Math.floor(folga / 4), 20) + "px");
@@ -972,8 +1002,8 @@
     var nova = Math.max(ROLO_MIN, alt - excesso);
     if (nova < alt) raiz.style.setProperty("--rolo", Math.floor(nova) + "px");
 
-    excesso = excessoDaPagina();
-    if (excesso > 1){
+    excesso = excessoDosDoisEcras();
+    if (excesso > 0){
       raiz.style.setProperty(
         "--aperto", Math.min(Math.ceil(excesso / 2), APERTO_MAX) + "px");
     }
