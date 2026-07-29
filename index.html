@@ -344,9 +344,12 @@
      ecrã. Encostado ao fundo, como o crédito estava nos outros. */
   /* Dois selos lado a lado, cada um com o seu destino: o do protetor aponta
      para a Liga Contra o Cancro, o da Ao Rubro para o Instagram deles. */
+  /* Os 22px de cima desceram para 16: o subtítulo mais comprido do ecrã final
+     punha a página 3px acima da linha de água num Android de 731px, e este é o
+     espaço menos notado de todo o ecrã. */
   .remate-final{
     display:flex;align-items:flex-end;justify-content:space-between;
-    gap:16px;padding:22px 4px 0;
+    gap:16px;padding:16px 4px 0;
   }
   .selo-fim{display:block;flex:none;-webkit-tap-highlight-color:transparent}
   /* O último ecrã estica-se para os selos poderem encostar ao fundo, onde o
@@ -1224,7 +1227,7 @@
     $("titulo-final").innerHTML = "Já tens o doce.<br>Agora só falta o descanso.";
     /* O email já foi anunciado no ecrã anterior; aqui o subtítulo vale mais a
        dar uma razão para carregar no botão que está logo abaixo. */
-    $("texto-final").textContent = "E temos mais de 30 alojamentos para o fazer.";
+    $("texto-final").textContent = "E já sabes onde estão mais de 30 alojamentos para o fazer.";
     /* Sem foto, perguntar se aparece nos stories não faz sentido nenhum. */
     $("rotulo-stories").textContent = "As fotos do verão saem por lá.";
   }
