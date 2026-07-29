@@ -237,14 +237,17 @@
   /* ---------- formulários ---------- */
   label{
     display:block;font-size:11px;font-weight:600;letter-spacing:.1em;
-    text-transform:uppercase;margin:0 0 7px;color:var(--azul);
+    text-transform:uppercase;margin:0 0 5px;color:var(--azul);
   }
+  /* 46px é o piso: abaixo disso o campo deixa de ser um alvo confortável para
+     o dedo. Igual ao da carrinha, para as duas apps terem formulários com a
+     mesma densidade. */
   input[type=email],input[type=text]{
     width:100%;font-family:var(--corpo);font-weight:500;
     /* 16px trava o zoom automático do Safari ao focar o campo. */
-    font-size:16px;min-height:54px;padding:16px;
-    border-radius:14px;border:2px solid var(--nevoa-forte);background:var(--nevoa);
-    color:var(--azul);margin-bottom:16px;
+    font-size:16px;min-height:46px;padding:12px 14px;
+    border-radius:12px;border:2px solid var(--nevoa-forte);background:var(--nevoa);
+    color:var(--azul);margin-bottom:12px;
   }
   .opcional{
     font-weight:500;letter-spacing:.04em;text-transform:none;
@@ -255,7 +258,7 @@
   .folha .ajuda-campo{font-size:12px;line-height:1.45;color:#5F6489;margin:-3px 0 9px}
   input::placeholder{color:#6B7099}
   input:focus{border-color:var(--azul);background:var(--branco);outline:none}
-  .consentimento{display:flex;gap:12px;align-items:flex-start;margin-bottom:18px}
+  .consentimento{display:flex;gap:12px;align-items:flex-start;margin-bottom:14px}
   .consentimento input{margin-top:1px;width:24px;height:24px;accent-color:var(--coral);flex:none}
   /* Sem isto herdava o text-transform do label e o aviso RGPD saía todo
      em maiúsculas — precisamente o texto que mais precisa de se ler bem. */
