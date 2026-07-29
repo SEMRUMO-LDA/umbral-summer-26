@@ -308,6 +308,14 @@
     line-height:1.35;letter-spacing:0;text-transform:none;
     color:var(--azul);margin:0 0 10px;
   }
+  /* Ponte entre o que já se ganhou e o convite seguinte. Em Montserrat Black e
+     caixa alta competia com o headline coral que está mesmo por cima. É a mesma
+     regra que a carrinha usa, para as duas apps lerem igual. */
+  .folha .ponte{
+    font-family:var(--corpo);font-weight:700;font-size:17px;
+    line-height:1.35;letter-spacing:0;text-transform:none;
+    color:var(--azul);margin:0 0 10px;
+  }
   /* O mote abre o cartão porque nomeia as duas ações que vêm a seguir: fica
      (ver alojamentos) e não pares (seguir). Deixa de ser floreado e passa a
      cabeçalho, e por isso não precisa de ser o maior do ecrã.
@@ -442,7 +450,7 @@
   <section class="ecra ativo" id="ecra-jogo">
     <div class="cabeca">
       <h1>Olhaaá boooorla<br>da Umbral!</h1>
-      <p class="lead">Seis palavras escondidas. Tudo o que precisas de saber sobre nós.</p>
+      <p class="lead">Seis palavras escondidas. Encontra-as e ficas a saber tudo sobre nós.</p>
     </div>
     <div class="folha">
       <p class="oculto" id="contador">0 de 6 encontradas</p>
@@ -489,14 +497,14 @@
     </div>
     <div class="folha">
       <div id="convite">
-        <h2>Isto foi só para abrir o apetite.</h2>
+        <h2 class="ponte">Uma borla já está! Vamos à segunda?</h2>
         <p>E que tal <strong>5 noites num alojamento nosso</strong>, sem pagares nada? Só te pedimos uma foto.</p>
         <button class="btn" id="btn-quero-mais">Alinho</button>
       </div>
 
       <div class="caixa-extra" id="caixa-extra">
         <h2>Mostra-nos o teu verão.</h2>
-        <p>Qualquer foto do teu verão serve para entrares. Se nos apanhares nela — a bola, o brinde, a carrinha, o avião lá em cima — é dessas que fazemos stories.</p>
+        <p>Qualquer foto do teu verão serve para entrares no concurso. Se nos apanhares nela — a bola, o brinde, a carrinha, o avião lá em cima — é dessas que fazemos stories.</p>
         <img class="previsualizacao" id="previsualizacao" alt="Pré-visualização da tua foto">
         <input type="file" id="ficheiro" accept="image/*" capture="environment">
         <button class="btn secundario" id="btn-escolher" style="margin-bottom:16px">Escolher a foto</button>
@@ -507,7 +515,7 @@
 
         <div class="consentimento">
           <input type="checkbox" id="consentimento-foto">
-          <label for="consentimento-foto" style="margin:0"><span>Autorizo a Umbral a publicar a minha foto — e o meu @, se o tiver deixado — nas redes sociais da marca.</span></label>
+          <label for="consentimento-foto" style="margin:0"><span>Autorizo a Umbral a publicar a minha foto — e o meu @, se o tiver deixado — nas redes sociais e no site da marca.</span></label>
         </div>
 
         <div class="progresso" id="progresso" hidden aria-hidden="true"><i></i></div>
