@@ -545,7 +545,7 @@
   <section class="ecra" id="ecra-final">
     <div class="cabeca">
       <h1 id="titulo-final">Já tens o brinde.<br>Agora só falta o descanso.</h1>
-      <p class="lead" id="texto-final">O email do teu brinde chega daqui a nada.</p>
+      <p class="lead" id="texto-final">E temos mais de 30 alojamentos para o fazer.</p>
     </div>
     <div class="folha">
       <p class="mote">Fica mas não pares!</p>
@@ -1127,12 +1127,10 @@
     /* Quem tirou o cupão não tem brinde nenhum na mão. */
     var levou = (estado.brinde && estado.brinde.codigo) ? "os 20%" : "o brinde";
     $("titulo-final").innerHTML = "Já tens " + levou + ".<br>Agora só falta o descanso.";
-    /* Os dois recebem email, mas não o mesmo: um leva o código, o outro leva o
-       registo do que ganhou. Dizer "o resto é quando quiseres" prometia um resto
-       que não existia, e repetia o "resto" do rótulo dos stories logo abaixo. */
-    $("texto-final").textContent = (estado.brinde && estado.brinde.codigo)
-      ? "O código chega ao email daqui a nada."
-      : "O email do teu brinde chega daqui a nada.";
+    /* O email — código ou registo do brinde — já foi anunciado no ecrã do
+       prémio. Aqui o subtítulo vale mais a dar uma razão para carregar no botão
+       que está logo abaixo. */
+    $("texto-final").textContent = "E temos mais de 30 alojamentos para o fazer.";
     $("rotulo-stories").textContent = "As fotos do verão saem por lá.";
   }
   function finalComFoto(){

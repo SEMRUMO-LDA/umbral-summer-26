@@ -1216,7 +1216,9 @@
   }
   function finalSemFoto(){
     $("titulo-final").innerHTML = "Já tens o doce.<br>Agora só falta o descanso.";
-    $("texto-final").textContent = "Espreita o email.";
+    /* O email já foi anunciado no ecrã anterior; aqui o subtítulo vale mais a
+       dar uma razão para carregar no botão que está logo abaixo. */
+    $("texto-final").textContent = "E temos mais de 30 alojamentos para o fazer.";
     /* Sem foto, perguntar se aparece nos stories não faz sentido nenhum. */
     $("rotulo-stories").textContent = "As fotos do verão saem por lá.";
   }
