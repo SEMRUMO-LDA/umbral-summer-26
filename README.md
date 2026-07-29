@@ -57,6 +57,15 @@ app prometeu, não quantos artigos restam na carrinha — alguém ganha e vai-se
 embora sem levantar, alguém recebe um à mão sem passar pela app, e ao fim de dois
 dias o contador e a caixa não batem certo. Quem sabe o que resta é quem lá está.
 
+**As duas apps abrem com o mesmo grito.** "Olhaaá boooorla da Umbral!" é a frase
+da campanha e é linguagem de rua, de quem apregoa — encaixa numa carrinha parada
+na estrada tão bem como num saco. O que muda entre as duas é a instrução por
+baixo. O trocadilho do mecanismo passou para o botão, que é onde uma instrução
+pertence: **Deixa rolar**.
+
+Isto também alinhou o que faltava: sendo o mesmo texto, o título tem a mesma
+altura nas duas, e o cartão branco passa a arrancar do mesmo sítio.
+
 **O topo das duas apps alinha.** O jogo devolve ao cabeçalho a folga que a
 grelha lhe deixa, através da variável `--ar`; a carrinha faz o mesmo com a folga
 que sobra depois de o botão caber. Sem isso, a mesma marca abria de duas
