@@ -591,8 +591,10 @@
      O domínio fica como rede de segurança para endereços sem utm nenhum. */
   var CANAL_VALIDO = /^[a-z]{3,20}$/;
   var CANAIS = {
-    "borlasdaumbral.pt": "aviao",
-    "www.borlasdaumbral.pt": "aviao",
+    /* O do avião só é lido se o reencaminhamento falhar: quando ele funciona,
+       a pessoa chega já a byumbral.com com o utm_content=aviao. */
+    "borlaumbral.com": "aviao",
+    "www.borlaumbral.com": "aviao",
     "byumbral.com/verao": "saco",
     "www.byumbral.com/verao": "saco"
   };
