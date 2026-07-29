@@ -196,6 +196,19 @@
   #ecra-brinde .maquina::before,
   #ecra-brinde .maquina::after{display:none}
 
+  /* O prémio é a resposta do ecrã: entra grande e em coral. O coral sobre
+     branco dá 3,94:1 — passa o AA porque isto é texto grande. */
+  .folha .brinde{
+    font-family:var(--display);font-weight:900;
+    font-size:clamp(21px,6vw,26px);line-height:1.06;letter-spacing:-.02em;
+    text-transform:uppercase;color:var(--coral);
+    margin:14px 0 4px;text-align:center;text-wrap:balance;
+  }
+  .folha .brinde-nota{
+    font-size:13px;font-weight:600;line-height:1.4;color:#5F6489;
+    text-align:center;
+    margin:0 0 18px;padding-bottom:18px;border-bottom:1px solid var(--nevoa-forte);
+  }
   /* Ponte entre o prémio e o convite. Em Montserrat Black e caixa alta
      competia com o prémio coral logo acima e com o título coral fora do
      cartão — tudo forte ao mesmo tempo não deixa nada ler-se primeiro. */
@@ -485,8 +498,8 @@
   <!-- ECRÃ 2 · BRINDE E CONVITE -->
   <section class="ecra" id="ecra-brinde">
     <div class="cabeca">
-      <h1 id="titulo-brinde">Bola de Berlim</h1>
-      <p class="lead" id="nota-brinde">Mostra este ecrã a quem está na carrinha e é teu.</p>
+      <h1>Saiu-te este.</h1>
+      <p class="lead" id="piada-brinde">Já tens onde encostar a cabeça.</p>
     </div>
     <div class="folha">
       <div class="maquina">
@@ -494,6 +507,8 @@
           <div class="maquina-item" id="vitrine"></div>
         </div>
       </div>
+      <p class="brinde" id="nome-brinde">Bola de Berlim</p>
+      <p class="brinde-nota" id="nota-brinde">Mostra este ecrã a quem está na carrinha e é teu.</p>
       <div id="convite">
         <h2 class="ponte">Uma borla já está! Vamos à segunda?</h2>
         <p>E que tal <strong>5 noites num alojamento nosso</strong>, sem pagares nada? Só te pedimos uma foto.</p>
@@ -573,36 +588,43 @@
   var BRINDES = [
     {
       "nome": "20% na próxima estadia",
+      "piada": "A cama acabou de ficar mais barata.",
       "codigo": "BORLA20",
       "peso": 1084
     },
     {
       "nome": "Chapéu de palha",
+      "piada": "Ao sol já não ficas.",
       "codigo": null,
       "peso": 500
     },
     {
       "nome": "Guarda-sol de praia",
+      "piada": "Levas a tua própria sombra.",
       "codigo": null,
       "peso": 48
     },
     {
       "nome": "Saco de pano",
+      "piada": "Já tens onde levar o resto.",
       "codigo": null,
       "peso": 400
     },
     {
       "nome": "Almofada de praia",
+      "piada": "Já tens onde encostar a cabeça.",
       "codigo": null,
       "peso": 500
     },
     {
       "nome": "Para-sol para o carro",
+      "piada": "O volante deixa de queimar.",
       "codigo": null,
       "peso": 100
     },
     {
       "nome": "Caneta da Umbral",
+      "piada": "Não é uma suite, mas escreve bem.",
       "codigo": null,
       "peso": 1238
     }
@@ -925,14 +947,14 @@
     var alvo = $("ecra-brinde");
     var excesso = excessoDaPagina();
     if (atual && atual !== alvo){
-      var antes = $("titulo-brinde").textContent;
-      $("titulo-brinde").textContent = maior;
+      var antes = $("nome-brinde").textContent;
+      $("nome-brinde").textContent = maior;
       atual.classList.remove("ativo");
       alvo.classList.add("ativo");
       excesso = Math.max(excesso, excessoDaPagina());
       alvo.classList.remove("ativo");
       atual.classList.add("ativo");
-      $("titulo-brinde").textContent = antes;
+      $("nome-brinde").textContent = antes;
     }
     return excesso;
   }
@@ -1011,7 +1033,10 @@
        resposta em vez de a notícia passar a texto noutro sítio. */
     var naFita = document.querySelectorAll(".fita .maquina-item")[BRINDES.indexOf(brinde)];
     if (naFita) $("vitrine").innerHTML = naFita.innerHTML;
-    $("titulo-brinde").textContent = brinde.nome;
+    $("nome-brinde").textContent = brinde.nome;
+    /* O comentário é o que dá personalidade a este ecrã: reage ao prémio que
+       saiu em vez de dizer uma frase que serviria para qualquer um. */
+    $("piada-brinde").textContent = brinde.piada;
     $("nota-brinde").textContent = brinde.codigo
       ? "O código chega-te ao email daqui a nada."
       : "Mostra este ecrã a quem está na carrinha e é teu.";
